@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import {
   Users,
   Stethoscope,
@@ -13,102 +14,121 @@ import {
   ChevronRight
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
-
-const stats = [
-  {
-    title: "Visitors",
-    value: "4,592",
-    change: "+15.9%",
-    description: "Stay informed with real-time data to enhance patient care and visitor management.",
-    icon: Users,
-    iconBg: "bg-gray-100",
-    iconColor: "text-gray-700",
-  },
-  {
-    title: "Doctors",
-    value: "260",
-    change: "+15.9%",
-    description: "Stay updated with essential details to streamline medical support and management.",
-    icon: Stethoscope,
-    iconBg: "bg-[#e2f1ff]",
-    iconColor: "text-[#1d4ed8]",
-    bgOverride: "bg-[#e2f1ff]",
-  },
-  {
-    title: "Patient",
-    value: "540",
-    change: "+15.9%",
-    description: "Keep track of patient information at a glance, with easy access to key details.",
-    icon: UserRound,
-    iconBg: "bg-gray-100",
-    iconColor: "text-gray-700",
-  },
-  {
-    title: "Total Bed",
-    value: "1205",
-    subtitle: "Available",
-    extra: [
-      { label: "Private Bed", value: "110 Bed" },
-      { label: "General Bed", value: "215 Bed" },
-    ],
-    icon: BedDouble,
-    iconBg: "bg-gray-100",
-    iconColor: "text-gray-700",
-  },
-];
-
-const chartData = [
-  { time: '10am', onTime: 40, onLate: 60 },
-  { time: '11am', onTime: 55, onLate: 45 },
-  { time: '12am', onTime: 45, onLate: 35 },
-  { time: '01am', onTime: 58, onLate: 48 },
-  { time: '02am', onTime: 55, onLate: 42 },
-  { time: '03am', onTime: 45, onLate: 50 },
-  { time: '04am', onTime: 55, onLate: 60 },
-  { time: '05am', onTime: 65, onLate: 45 },
-  { time: '06am', onTime: 45, onLate: 35 },
-  { time: '07am', onTime: 40, onLate: 30 },
-];
-
-const recentAppointments = [
-  {
-    id: 1,
-    patient: "Nevaeh Simmons",
-    department: "Melati Room",
-    age: 23,
-    dob: "23 February 2023",
-    status: "Active",
-    email: "nevaeh@example.com",
-    phone: "(316) 555-0116",
-    avatar: "https://i.pravatar.cc/150?img=1"
-  },
-  {
-    id: 2,
-    patient: "Nevaeh Simmons",
-    department: "Melati Room",
-    age: 23,
-    dob: "23 February 2023",
-    status: "Active",
-    email: "nevaeh@example.com",
-    phone: "(316) 555-0118",
-    avatar: "https://i.pravatar.cc/150?img=2"
-  },
-  {
-    id: 3,
-    patient: "Nevaeh Simmons",
-    department: "Melati Room",
-    age: 23,
-    dob: "23 February 2023",
-    status: "Active",
-    email: "nevaeh@example.com",
-    phone: "(316) 555-0143",
-    avatar: "https://i.pravatar.cc/150?img=3"
-  },
-];
+import { getDashboardSummary, getPatientsOverview, deletePatient, deletePatientBulk, getPatient } from "@/lib/api";
+import { EditPatientDialog } from "@/components/patients/edit-patient-dialog";
 
 export default function DashboardPage() {
+  const [data, setData] = useState<any>(null);
+  const [overviewData, setOverviewData] = useState<any[]>([]);
+  const [filter, setFilter] = useState("Today");
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
+  const [editingPatient, setEditingPatient] = useState<any>(null);
+
+  const loadOverview = (f: string) => {
+    getPatientsOverview(f).then(setOverviewData).catch(console.error);
+  };
+
+  useEffect(() => {
+    getDashboardSummary().then(setData).catch(console.error);
+    loadOverview(filter);
+  }, []);
+
+  const handleFilterChange = (f: string) => {
+    setFilter(f);
+    loadOverview(f);
+  };
+
+  const handleEditClick = async (id: string) => {
+    try {
+      const fullPatient = await getPatient(id);
+      setEditingPatient(fullPatient);
+    } catch (e) {
+      console.error(e);
+      // Fallback
+      setEditingPatient({ id });
+    }
+  };
+
+  const handleDelete = async (id: string) => {
+    if (!confirm("Are you sure you want to delete this patient?")) return;
+    try {
+      await deletePatient(id);
+      loadOverview(filter);
+      setSelectedIds(prev => prev.filter(selId => selId !== id));
+    } catch (e) { console.error(e); }
+  };
+
+  const handleBulkDelete = async () => {
+    if (!confirm(`Are you sure you want to delete ${selectedIds.length} patients?`)) return;
+    try {
+      await deletePatientBulk(selectedIds);
+      setSelectedIds([]);
+      loadOverview(filter);
+    } catch (e) { console.error(e); }
+  };
+
+  if (!data) return <div className="p-8 text-center text-gray-500">Loading dashboard...</div>;
+
+  const stats = [
+    {
+      title: "Visitors",
+      value: data.stats.visitors.total.toLocaleString(),
+      change: `${data.stats.visitors.percentageChange > 0 ? '+' : ''}${data.stats.visitors.percentageChange}%`,
+      changeColor: data.stats.visitors.percentageChange >= 0 ? "text-teal-600" : "text-red-500",
+      description: "Stay informed with real-time data to enhance patient care and visitor management.",
+      icon: Users,
+      iconBg: "bg-gray-100",
+      iconColor: "text-gray-700",
+    },
+    {
+      title: "Doctors",
+      value: data.stats.doctors.total.toLocaleString(),
+      change: `${data.stats.doctors.percentageChange > 0 ? '+' : ''}${data.stats.doctors.percentageChange}%`,
+      changeColor: data.stats.doctors.percentageChange >= 0 ? "text-teal-600" : "text-red-500",
+      description: "Stay updated with essential details to streamline medical support and management.",
+      icon: Stethoscope,
+      iconBg: "bg-[#e2f1ff]",
+      iconColor: "text-[#1d4ed8]",
+      bgOverride: "bg-[#e2f1ff]",
+    },
+    {
+      title: "Patient",
+      value: data.stats.patients.total.toLocaleString(),
+      change: `${data.stats.patients.percentageChange > 0 ? '+' : ''}${data.stats.patients.percentageChange}%`,
+      changeColor: data.stats.patients.percentageChange >= 0 ? "text-teal-600" : "text-red-500",
+      description: "Keep track of patient information at a glance, with easy access to key details.",
+      icon: UserRound,
+      iconBg: "bg-gray-100",
+      iconColor: "text-gray-700",
+    },
+    {
+      title: "Total Bed",
+      value: data.stats.beds.total.toLocaleString(),
+      subtitle: `${data.stats.beds.available} Available`,
+      extra: [
+        { label: "Private Bed", value: `${data.stats.beds.breakdown.private} Bed` },
+        { label: "General Bed", value: `${data.stats.beds.breakdown.general} Bed` },
+      ],
+      icon: BedDouble,
+      iconBg: "bg-gray-100",
+      iconColor: "text-gray-700",
+    },
+  ];
+
+  const chartData = data.patientOverviewChart?.labels?.map((label: string, index: number) => ({
+    time: label,
+    onTime: data.patientOverviewChart.datasets.onTime[index],
+    onLate: data.patientOverviewChart.datasets.onLate[index],
+  })) || [];
+
+  const getEventsForDay = (day: number) => {
+    const currentYear = new Date().getFullYear();
+    const currentMonth = String(new Date().getMonth() + 1).padStart(2, '0');
+    const dateStr = `${currentYear}-${currentMonth}-${String(day).padStart(2, '0')}`;
+    return data.calendarEvents?.filter((e: any) => e.date === dateStr).map((e: any) => e.type) || [];
+  };
+
   return (
     <div className="flex flex-col gap-6">
       {/* Stat cards */}
@@ -137,13 +157,13 @@ export default function DashboardPage() {
                     {stat.value}
                   </span>
                   {stat.change && (
-                    <span className="flex items-center gap-0.5 text-xs font-semibold text-gray-600 bg-white px-2 py-0.5 rounded-full shadow-sm">
-                      <TrendingUp className="size-3 text-gray-600" />
+                    <span className={`flex items-center gap-0.5 text-xs font-semibold bg-white px-2 py-0.5 rounded-full shadow-sm ${stat.changeColor}`}>
+                      <TrendingUp className={`size-3 ${stat.changeColor}`} />
                       {stat.change}
                     </span>
                   )}
                   {stat.subtitle && (
-                    <span className="text-xs font-semibold text-gray-600">
+                    <span className="text-xs font-semibold text-gray-600 ml-1">
                       {stat.subtitle}
                     </span>
                   )}
@@ -199,8 +219,8 @@ export default function DashboardPage() {
                   <Tooltip 
                     contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
                   />
-                  <Line type="monotone" dataKey="onTime" stroke="#0d9488" strokeWidth={2} dot={{ r: 4, fill: '#fff', stroke: '#0d9488', strokeWidth: 2 }} activeDot={{ r: 6 }} />
-                  <Line type="monotone" dataKey="onLate" stroke="#e9d5ff" strokeWidth={2} dot={{ r: 4, fill: '#fff', stroke: '#e9d5ff', strokeWidth: 2 }} activeDot={{ r: 6 }} />
+                  <Line name="On Time" type="monotone" dataKey="onTime" stroke="#0d9488" strokeWidth={2} dot={{ r: 4, fill: '#fff', stroke: '#0d9488', strokeWidth: 2 }} activeDot={{ r: 6 }} />
+                  <Line name="On Late" type="monotone" dataKey="onLate" stroke="#e9d5ff" strokeWidth={2} dot={{ r: 4, fill: '#fff', stroke: '#e9d5ff', strokeWidth: 2 }} activeDot={{ r: 6 }} />
                 </LineChart>
               </ResponsiveContainer>
             </div>
@@ -216,11 +236,11 @@ export default function DashboardPage() {
           </CardHeader>
           <CardContent className="pt-2">
              <div className="flex items-center justify-between mb-4 px-2">
-               <button className="p-1 rounded-full hover:bg-gray-100 transition-colors">
+               <button className="p-1 rounded-full hover:bg-gray-100 transition-colors cursor-pointer">
                   <ChevronLeft className="size-4 text-gray-500" />
                </button>
-               <span className="font-semibold text-sm">July 2026</span>
-               <button className="p-1 rounded-full border border-gray-200 hover:bg-gray-100 transition-colors">
+               <span className="font-semibold text-sm">{new Date().toLocaleString('default', { month: 'long', year: 'numeric' })}</span>
+               <button className="p-1 rounded-full border border-gray-200 hover:bg-gray-100 transition-colors cursor-pointer">
                   <ChevronRight className="size-4 text-gray-500" />
                </button>
              </div>
@@ -232,45 +252,30 @@ export default function DashboardPage() {
                 ))}
                 
                 {/* Previous month days */}
-                <div className="text-[12px] font-medium text-gray-300">26</div>
-                <div className="text-[12px] font-medium text-gray-300">27</div>
-                <div className="text-[12px] font-medium text-gray-300">28</div>
-                <div className="text-[12px] font-medium text-gray-300">29</div>
-                <div className="text-[12px] font-medium text-gray-300">30</div>
-                <div className="text-[12px] font-medium text-gray-700">1</div>
-                <div className="text-[12px] font-medium text-gray-700">2</div>
+                {[26,27,28,29,30].map((d) => <div key={'prev'+d} className="text-[12px] font-medium text-gray-300">{d}</div>)}
                 
-                <div className="text-[12px] font-medium text-gray-700">3</div>
-                <div className="text-[12px] font-medium text-teal-700 bg-teal-50 rounded-full w-6 h-6 flex items-center justify-center mx-auto">4</div>
-                <div className="text-[12px] font-medium text-gray-700">5</div>
-                <div className="text-[12px] font-medium text-gray-700 flex flex-col items-center">6<div className="flex gap-0.5 mt-0.5"><span className="size-1 rounded-full bg-orange-400"/><span className="size-1 rounded-full bg-purple-400"/></div></div>
-                <div className="text-[12px] font-medium text-gray-700">7</div>
-                <div className="text-[12px] font-medium text-gray-700">8</div>
-                <div className="text-[12px] font-medium text-gray-700">9</div>
-                
-                <div className="text-[12px] font-medium text-gray-700">10</div>
-                <div className="text-[12px] font-medium text-gray-700">11</div>
-                <div className="text-[12px] font-medium text-gray-700 flex flex-col items-center">12<div className="flex gap-0.5 mt-0.5"><span className="size-1 rounded-full bg-purple-400"/></div></div>
-                <div className="text-[12px] font-medium text-gray-700">13</div>
-                <div className="text-[12px] font-medium text-gray-700">14</div>
-                <div className="text-[12px] font-medium text-gray-700">15</div>
-                <div className="text-[12px] font-medium text-gray-700">16</div>
-                
-                <div className="text-[12px] font-medium text-gray-700">17</div>
-                <div className="text-[12px] font-medium text-gray-700">18</div>
-                <div className="text-[12px] font-medium text-gray-700">19</div>
-                <div className="text-[12px] font-medium text-gray-700">20</div>
-                <div className="text-[12px] font-medium text-gray-700">21</div>
-                <div className="text-[12px] font-medium text-gray-700">22</div>
-                <div className="text-[12px] font-medium text-gray-700">23</div>
-
-                <div className="text-[12px] font-medium text-gray-700">24</div>
-                <div className="text-[12px] font-medium text-gray-700 flex flex-col items-center">25<div className="flex gap-0.5 mt-0.5"><span className="size-1 rounded-full bg-orange-400"/></div></div>
-                <div className="text-[12px] font-medium text-gray-700">26</div>
-                <div className="text-[12px] font-medium text-gray-700">27</div>
-                <div className="text-[12px] font-medium text-gray-700">28</div>
-                <div className="text-[12px] font-medium text-gray-700">29</div>
-                <div className="text-[12px] font-medium text-gray-700 flex flex-col items-center">30<div className="flex gap-0.5 mt-0.5"><span className="size-1 rounded-full bg-red-500"/></div></div>
+                {/* Current month days */}
+                {Array.from({ length: 31 }).map((_, i) => {
+                  const day = i + 1;
+                  const events = getEventsForDay(day);
+                  
+                  return (
+                    <div key={'cur'+day} className={`text-[12px] font-medium ${day === 4 ? 'text-teal-700 bg-teal-50 rounded-full w-6 h-6 flex items-center justify-center mx-auto' : 'text-gray-700'} flex flex-col items-center`}>
+                      {day}
+                      {events.length > 0 && (
+                        <div className="flex gap-0.5 mt-0.5">
+                          {events.map((type: string, idx: number) => {
+                             let dotColor = "bg-gray-400";
+                             if (type === "appointment") dotColor = "bg-orange-400";
+                             if (type === "meeting") dotColor = "bg-red-500";
+                             if (type === "surgery") dotColor = "bg-purple-400";
+                             return <span key={idx} className={`size-1 rounded-full ${dotColor}`} />
+                          })}
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
              </div>
              
              <div className="flex justify-between px-2 text-[9px] font-semibold text-gray-500 mt-2">
@@ -289,22 +294,30 @@ export default function DashboardPage() {
             <CardTitle className="text-base font-bold text-gray-800">
               Patient Overview
             </CardTitle>
-            <p className="text-[11px] text-gray-400 mt-1">Lorem ipsum dolor sit amet consectetur sit amet ipsum dolor sit amet consectetur.</p>
+            <p className="text-[11px] text-gray-400 mt-1">Recent appointments to quickly review patient activity.</p>
           </div>
-          <div className="flex bg-white rounded-lg shadow-sm border border-gray-100 overflow-hidden">
-            {["Today", "Weekly", "Monthly", "Yearly"].map((period) => (
-              <button
-                key={period}
-                className={`px-4 py-1.5 text-xs font-semibold transition-colors ${
-                  period === "Today"
-                    ? "bg-[#efe6fa] text-[#6b21a8]"
-                    : "text-gray-500 hover:bg-gray-50"
-                }`}
-              >
-                {period}
-              </button>
-            ))}
-          </div>
+            <div className="flex bg-white rounded-lg shadow-sm border border-gray-100 overflow-hidden">
+              {selectedIds.length > 0 ? (
+                <button
+                  onClick={handleBulkDelete}
+                  className="cursor-pointer px-4 py-1.5 text-xs font-semibold transition-colors bg-red-50 text-red-600 hover:bg-red-100"
+                >
+                  Delete Selected ({selectedIds.length})
+                </button>
+              ) : ["Today", "Weekly", "Monthly", "Yearly"].map((period) => (
+                <button
+                  key={period}
+                  onClick={() => handleFilterChange(period)}
+                  className={`cursor-pointer px-4 py-1.5 text-xs font-semibold transition-colors ${
+                    period === filter
+                      ? "bg-[#efe6fa] text-[#6b21a8]"
+                      : "text-gray-500 hover:bg-gray-50"
+                  }`}
+                >
+                  {period}
+                </button>
+              ))}
+            </div>
         </CardHeader>
         <CardContent>
           <div className="overflow-x-auto">
@@ -312,7 +325,15 @@ export default function DashboardPage() {
               <thead>
                 <tr className="border-b border-gray-100">
                   <th className="pb-3 px-2 text-left">
-                    <input type="checkbox" className="rounded border-gray-300 text-teal-600 focus:ring-teal-600" />
+                    <input 
+                      type="checkbox" 
+                      className="rounded border-gray-300 text-teal-600 focus:ring-teal-600 cursor-pointer"
+                      checked={overviewData.length > 0 && selectedIds.length === overviewData.length}
+                      onChange={(e) => {
+                        if (e.target.checked) setSelectedIds(overviewData.map(o => o.id));
+                        else setSelectedIds([]);
+                      }}
+                    />
                   </th>
                   <th className="pb-3 text-left text-xs font-semibold text-gray-500">
                     No
@@ -341,31 +362,38 @@ export default function DashboardPage() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-50">
-                {recentAppointments.map((apt, idx) => (
+                {overviewData.map((apt, idx) => (
                   <tr
                     key={apt.id}
                     className="transition-colors hover:bg-gray-50/50"
                   >
                     <td className="py-4 px-2">
-                       <input type="checkbox" className="rounded border-gray-300 text-teal-600 focus:ring-teal-600" />
+                       <input 
+                         type="checkbox" 
+                         className="rounded border-gray-300 text-teal-600 focus:ring-teal-600 cursor-pointer"
+                         checked={selectedIds.includes(apt.id)}
+                         onChange={(e) => {
+                           if (e.target.checked) setSelectedIds(prev => [...prev, apt.id]);
+                           else setSelectedIds(prev => prev.filter(id => id !== apt.id));
+                         }}
+                       />
                     </td>
                     <td className="py-4 text-[13px] font-medium text-gray-500">
-                      {String(idx + 2).padStart(2, "0")}
+                      {String(apt.no || idx + 1).padStart(2, "0")}
                     </td>
                     <td className="py-4 flex items-center gap-3">
-                      <img src={apt.avatar} alt="Avatar" className="size-8 rounded-full object-cover" />
                       <div>
                         <p className="text-[13px] font-bold text-gray-800">
-                          {apt.patient}
+                          {apt.name}
                         </p>
                         <p className="text-[11px] text-gray-400 font-medium">
-                          {apt.department}
+                          {apt.room}
                         </p>
                       </div>
                     </td>
                     <td className="py-4 text-[13px] font-medium text-gray-600">{apt.age}</td>
                     <td className="py-4 text-[13px] font-medium text-gray-600">
-                      {apt.dob}
+                      {apt.dateOfBirth}
                     </td>
                     <td className="py-4">
                       <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-[#f0fdf4] w-fit border border-[#bbf7d0]">
@@ -381,8 +409,14 @@ export default function DashboardPage() {
                     </td>
                     <td className="py-4 text-center">
                        <div className="flex items-center justify-center gap-3">
-                          <Pencil className="size-4 text-gray-400 cursor-pointer hover:text-gray-600" />
-                          <Trash2 className="size-4 text-red-400 cursor-pointer hover:text-red-600" />
+                          <Pencil 
+                            onClick={() => handleEditClick(apt.id)}
+                            className="size-4 text-gray-400 cursor-pointer hover:text-gray-600" 
+                          />
+                          <Trash2 
+                            onClick={() => handleDelete(apt.id)}
+                            className="size-4 text-red-400 cursor-pointer hover:text-red-600" 
+                          />
                        </div>
                     </td>
                   </tr>
@@ -392,6 +426,17 @@ export default function DashboardPage() {
           </div>
         </CardContent>
       </Card>
+      {editingPatient && (
+        <EditPatientDialog
+          open={!!editingPatient}
+          onOpenChange={(open: boolean) => !open && setEditingPatient(null)}
+          item={editingPatient}
+          onSuccess={() => {
+            setEditingPatient(null);
+            loadOverview(filter);
+          }}
+        />
+      )}
     </div>
   );
 }

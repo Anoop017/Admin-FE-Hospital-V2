@@ -23,7 +23,9 @@ export function CreateBedDialog({ open, onOpenChange, onSuccess }: any) {
     e.preventDefault();
     setLoading(true);
     try {
-      await createBed({ wardId, bedNumber });
+      const payload: any = { wardId, bedNumber };
+      if (status) payload.status = status;
+      await createBed(payload);
       onSuccess();
       onOpenChange(false);
     } catch(err) { console.error(err); } finally { setLoading(false); }
@@ -37,7 +39,7 @@ export function CreateBedDialog({ open, onOpenChange, onSuccess }: any) {
           <div className="flex flex-col gap-2">
             <label className="text-sm font-medium capitalize">ward</label>
             <Select value={wardId} onValueChange={(val) => setWardId(val || "")} required>
-              <SelectTrigger>
+              <SelectTrigger className="w-full">
                 <SelectValue placeholder="Select ward">
                   {wardId ? wards.find(w => w.id === wardId)?.name : "Select ward"}
                 </SelectValue>
@@ -47,8 +49,24 @@ export function CreateBedDialog({ open, onOpenChange, onSuccess }: any) {
               </SelectContent>
             </Select>
           </div>
-          <div className="flex flex-col gap-2"><label className="text-sm font-medium capitalize">bedNumber</label><Input value={bedNumber} onChange={e => setBedNumber(e.target.value)} required /></div><div className="flex flex-col gap-2"><label className="text-sm font-medium capitalize">status</label><Input value={status} onChange={e => setStatus(e.target.value)} required /></div>
-          <DialogFooter>
+          <div className="flex flex-col gap-2">
+            <label className="text-sm font-medium">Bed Number</label>
+            <Input value={bedNumber} onChange={e => setBedNumber(e.target.value)} required />
+          </div>
+          <div className="flex flex-col gap-2">
+            <label className="text-sm font-medium">Status</label>
+            <Select value={status} onValueChange={setStatus}>
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder="Select status (default: Available)" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="available">Available</SelectItem>
+                <SelectItem value="occupied">Occupied</SelectItem>
+                <SelectItem value="maintenance">Maintenance</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          <DialogFooter className="mt-2">
             <Button variant="outline" type="button" onClick={() => onOpenChange(false)}>Cancel</Button>
             <Button type="submit" disabled={loading}>Create</Button>
           </DialogFooter>

@@ -58,3 +58,7 @@ next-env.d.ts
 AGENTS.md
 CLAUDE.md
 skills-lock.json
+
+#scratch - these are the script files - ignore the whole folder
+scratch/
+

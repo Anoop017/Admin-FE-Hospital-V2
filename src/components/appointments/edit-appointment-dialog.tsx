@@ -39,8 +39,33 @@ export function EditAppointmentDialog({ item, open, onOpenChange, onSuccess }: a
       <DialogContent>
         <DialogHeader><DialogTitle>Edit Appointment</DialogTitle></DialogHeader>
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-          <div className="flex flex-col gap-2"><label className="text-sm font-medium capitalize">patientId</label><Input value={patientId} onChange={e => setPatientId(e.target.value)} required /></div><div className="flex flex-col gap-2"><label className="text-sm font-medium capitalize">doctorId</label><Input value={doctorId} onChange={e => setDoctorId(e.target.value)} required /></div><div className="flex flex-col gap-2"><label className="text-sm font-medium capitalize">appointmentDate</label><Input value={appointmentDate} onChange={e => setAppointmentDate(e.target.value)} required /></div><div className="flex flex-col gap-2"><label className="text-sm font-medium capitalize">reason</label><Input value={reason} onChange={e => setReason(e.target.value)} required /></div><div className="flex flex-col gap-2"><label className="text-sm font-medium capitalize">notes</label><Input value={notes} onChange={e => setNotes(e.target.value)} required /></div><div className="flex flex-col gap-2"><label className="text-sm font-medium capitalize">status</label><Input value={status} onChange={e => setStatus(e.target.value)} required /></div>
-          <DialogFooter>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="flex flex-col gap-2">
+              <label className="text-sm font-medium">Patient</label>
+              <Input value={item?.patient?.user ? `${item.patient.user.firstName} ${item.patient.user.lastName}` : patientId} disabled className="bg-gray-50" />
+            </div>
+            <div className="flex flex-col gap-2">
+              <label className="text-sm font-medium">Doctor</label>
+              <Input value={item?.doctor?.user ? `Dr. ${item.doctor.user.firstName} ${item.doctor.user.lastName}` : doctorId} disabled className="bg-gray-50" />
+            </div>
+            <div className="flex flex-col gap-2">
+              <label className="text-sm font-medium">Appointment Date</label>
+              <Input type="datetime-local" value={appointmentDate?.substring(0, 16)} onChange={e => setAppointmentDate(e.target.value)} required />
+            </div>
+            <div className="flex flex-col gap-2">
+              <label className="text-sm font-medium">Status</label>
+              <Input value={status} onChange={e => setStatus(e.target.value)} required />
+            </div>
+          </div>
+          <div className="flex flex-col gap-2">
+            <label className="text-sm font-medium">Reason</label>
+            <Input value={reason} onChange={e => setReason(e.target.value)} required />
+          </div>
+          <div className="flex flex-col gap-2">
+            <label className="text-sm font-medium">Notes</label>
+            <Input value={notes} onChange={e => setNotes(e.target.value)} />
+          </div>
+          <DialogFooter className="mt-2">
             <Button variant="outline" type="button" onClick={() => onOpenChange(false)}>Cancel</Button>
             <Button type="submit" disabled={loading}>Save</Button>
           </DialogFooter>

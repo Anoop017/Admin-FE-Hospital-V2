@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { PatientsClient } from "@/components/patients/patients-client";
 
 export const metadata: Metadata = {
-  title: "Patient Management — MedAdmin",
+  title: "Patient Management — Admin - Hospital Dashboard",
   description: "Manage hospital patients, profiles, and records.",
 };
 

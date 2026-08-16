@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { BedsClient } from "@/components/beds/beds-client";
 
 export const metadata: Metadata = {
-  title: "Bed Management — MedAdmin",
+  title: "Bed Management — Admin - Hospital Dashboard",
   description: "Manage hospital beds.",
 };
 

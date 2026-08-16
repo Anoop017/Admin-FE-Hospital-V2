@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { WardsClient } from "@/components/wards/wards-client";
 
 export const metadata: Metadata = {
-  title: "Ward Management — MedAdmin",
+  title: "Ward Management — Admin - Hospital Dashboard",
   description: "Manage hospital wards.",
 };
 

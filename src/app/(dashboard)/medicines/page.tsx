@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { MedicinesClient } from "@/components/medicines/medicines-client";
 
 export const metadata: Metadata = {
-  title: "Medicine Management — MedAdmin",
+  title: "Medicine Management — Admin - Hospital Dashboard",
   description: "Manage pharmacy inventory.",
 };
 

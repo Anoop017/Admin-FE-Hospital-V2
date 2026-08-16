@@ -50,10 +50,10 @@ export function LoginForm() {
           <HousePlus className="size-7 text-primary-foreground" />
         </div>
         <h1 className="text-2xl font-semibold tracking-tight text-foreground">
-          MedAdmin
+          Admin - Hospital Dashboard
         </h1>
         <p className="mt-1.5 text-sm text-muted-foreground">
-          Hospital Management Portal
+          Sign in to your account
         </p>
       </div>
 

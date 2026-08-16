@@ -42,6 +42,11 @@ export async function getProfile(): Promise<AuthUser> {
   return data;
 }
 
+export async function getDashboardSummary(): Promise<any> {
+  const { data } = await api.get<any>("/dashboard/summary");
+  return data;
+}
+
 // ── Users API ────────────────────────────────────────
 export async function getUsers(role?: string): Promise<User[]> {
   const url = role ? `/users?role=${role}` : "/users";
@@ -89,6 +94,12 @@ export async function createPatientWithUser(
   return data;
 }
 
+export async function getPatientsOverview(filter?: string): Promise<any[]> {
+  const url = filter && filter !== 'Today' ? `/patients/overview?filter=${filter.toLowerCase()}` : "/patients/overview";
+  const { data } = await api.get<any[]>(url);
+  return data;
+}
+
 export async function getPatients(): Promise<Patient[]> {
   const { data } = await api.get<Patient[]>("/patients");
   return data;
@@ -109,6 +120,10 @@ export async function updatePatient(
 
 export async function deletePatient(id: string): Promise<void> {
   await api.delete(`/patients/${id}`);
+}
+
+export async function deletePatientBulk(ids: string[]): Promise<void> {
+  await api.delete("/patients/bulk", { data: { ids } });
 }
 
 export async function createDoctor(payload: CreateDoctorDto): Promise<Doctor> {

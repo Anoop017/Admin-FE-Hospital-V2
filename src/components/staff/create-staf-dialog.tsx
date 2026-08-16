@@ -63,7 +63,7 @@ export function CreateStafDialog({ open, onOpenChange, onSuccess }: any) {
               <div className="flex flex-col gap-2">
                 <label className="text-sm font-medium capitalize">User</label>
                 <Select value={userId} onValueChange={(val) => setUserId(val || "")} required={creationMode === 'assign'}>
-                  <SelectTrigger>
+                  <SelectTrigger className="w-full">
                     <SelectValue placeholder="Select user">
                       {userId ? users.find(u => u.id === userId)?.firstName + " " + users.find(u => u.id === userId)?.lastName : "Select user"}
                     </SelectValue>
@@ -93,7 +93,7 @@ export function CreateStafDialog({ open, onOpenChange, onSuccess }: any) {
                 <div className="flex flex-col gap-2">
                   <label className="text-sm font-medium capitalize">Department</label>
                   <Select value={departmentId} onValueChange={(val) => setDepartmentId(val || "")} required>
-                    <SelectTrigger>
+                    <SelectTrigger className="w-full">
                       <SelectValue placeholder="Select department">
                         {departmentId ? departments.find(d => d.id === departmentId)?.name : "Select department"}
                       </SelectValue>

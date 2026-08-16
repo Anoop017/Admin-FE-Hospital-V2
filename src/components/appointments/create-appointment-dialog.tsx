@@ -40,9 +40,9 @@ export function CreateAppointmentDialog({ open, onOpenChange, onSuccess }: any) 
         <DialogHeader><DialogTitle>Create Appointment</DialogTitle></DialogHeader>
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
           <div className="flex flex-col gap-2">
-            <label className="text-sm font-medium capitalize">patient</label>
+            <label className="text-sm font-medium">Patient</label>
             <Select value={patientId} onValueChange={(val) => setPatientId(val || "")} required>
-              <SelectTrigger>
+              <SelectTrigger className="w-full">
                 <SelectValue placeholder="Select patient">
                   {patientId ? patients.find(p => p.id === patientId)?.user.firstName + " " + patients.find(p => p.id === patientId)?.user.lastName : "Select patient"}
                 </SelectValue>
@@ -53,9 +53,9 @@ export function CreateAppointmentDialog({ open, onOpenChange, onSuccess }: any) 
             </Select>
           </div>
           <div className="flex flex-col gap-2">
-            <label className="text-sm font-medium capitalize">doctor</label>
+            <label className="text-sm font-medium">Doctor</label>
             <Select value={doctorId} onValueChange={(val) => setDoctorId(val || "")} required>
-              <SelectTrigger>
+              <SelectTrigger className="w-full">
                 <SelectValue placeholder="Select doctor">
                   {doctorId ? "Dr. " + doctors.find(d => d.id === doctorId)?.user.firstName + " " + doctors.find(d => d.id === doctorId)?.user.lastName : "Select doctor"}
                 </SelectValue>
@@ -65,8 +65,19 @@ export function CreateAppointmentDialog({ open, onOpenChange, onSuccess }: any) 
               </SelectContent>
             </Select>
           </div>
-          <div className="flex flex-col gap-2"><label className="text-sm font-medium capitalize">appointmentDate</label><Input value={appointmentDate} onChange={e => setAppointmentDate(e.target.value)} required /></div><div className="flex flex-col gap-2"><label className="text-sm font-medium capitalize">reason</label><Input value={reason} onChange={e => setReason(e.target.value)} required /></div><div className="flex flex-col gap-2"><label className="text-sm font-medium capitalize">notes</label><Input value={notes} onChange={e => setNotes(e.target.value)} required /></div><div className="flex flex-col gap-2"><label className="text-sm font-medium capitalize">status</label><Input value={status} onChange={e => setStatus(e.target.value)} required /></div>
-          <DialogFooter>
+          <div className="flex flex-col gap-2">
+            <label className="text-sm font-medium">Appointment Date</label>
+            <Input type="datetime-local" value={appointmentDate} onChange={e => setAppointmentDate(e.target.value)} required />
+          </div>
+          <div className="flex flex-col gap-2">
+            <label className="text-sm font-medium">Reason</label>
+            <Input value={reason} onChange={e => setReason(e.target.value)} required />
+          </div>
+          <div className="flex flex-col gap-2">
+            <label className="text-sm font-medium">Notes</label>
+            <Input value={notes} onChange={e => setNotes(e.target.value)} />
+          </div>
+          <DialogFooter className="mt-2">
             <Button variant="outline" type="button" onClick={() => onOpenChange(false)}>Cancel</Button>
             <Button type="submit" disabled={loading}>Create</Button>
           </DialogFooter>

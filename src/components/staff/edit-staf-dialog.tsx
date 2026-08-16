@@ -33,10 +33,31 @@ export function EditStafDialog({ item, open, onOpenChange, onSuccess }: any) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent>
-        <DialogHeader><DialogTitle>Edit Staf</DialogTitle></DialogHeader>
+        <DialogHeader><DialogTitle>Edit Staff</DialogTitle></DialogHeader>
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-          <div className="flex flex-col gap-2"><label className="text-sm font-medium capitalize">userId</label><Input value={userId} onChange={e => setUserId(e.target.value)} required /></div><div className="flex flex-col gap-2"><label className="text-sm font-medium capitalize">departmentId</label><Input value={departmentId} onChange={e => setDepartmentId(e.target.value)} required /></div><div className="flex flex-col gap-2"><label className="text-sm font-medium capitalize">jobTitle</label><Input value={jobTitle} onChange={e => setJobTitle(e.target.value)} required /></div><div className="flex flex-col gap-2"><label className="text-sm font-medium capitalize">hireDate</label><Input value={hireDate} onChange={e => setHireDate(e.target.value)} required /></div>
-          <DialogFooter>
+          
+          <div className="grid grid-cols-2 gap-4">
+            <div className="flex flex-col gap-2">
+              <label className="text-sm font-medium">First Name</label>
+              <Input value={item?.user?.firstName || "Unknown"} disabled className="bg-gray-50" />
+            </div>
+            <div className="flex flex-col gap-2">
+              <label className="text-sm font-medium">Last Name</label>
+              <Input value={item?.user?.lastName || ""} disabled className="bg-gray-50" />
+            </div>
+          </div>
+
+          <div className="flex flex-col gap-2">
+            <label className="text-sm font-medium capitalize">Job Title</label>
+            <Input value={jobTitle} onChange={e => setJobTitle(e.target.value)} required />
+          </div>
+          
+          <div className="flex flex-col gap-2">
+            <label className="text-sm font-medium capitalize">Hire Date</label>
+            <Input type="date" value={hireDate ? new Date(hireDate).toISOString().split('T')[0] : ''} onChange={e => setHireDate(e.target.value)} required />
+          </div>
+
+          <DialogFooter className="mt-2">
             <Button variant="outline" type="button" onClick={() => onOpenChange(false)}>Cancel</Button>
             <Button type="submit" disabled={loading}>Save</Button>
           </DialogFooter>

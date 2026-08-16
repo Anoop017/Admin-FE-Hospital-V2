@@ -64,7 +64,7 @@ export function CreatePatientDialog({ open, onOpenChange, onSuccess }: any) {
               <div className="flex flex-col gap-2">
                 <label className="text-sm font-medium capitalize">User</label>
                 <Select value={userId} onValueChange={(val) => setUserId(val || "")} required={creationMode === 'assign'}>
-                  <SelectTrigger>
+                  <SelectTrigger className="w-full">
                     <SelectValue placeholder="Select user">
                       {userId ? users.find(u => u.id === userId)?.firstName + " " + users.find(u => u.id === userId)?.lastName : "Select user"}
                     </SelectValue>
@@ -92,7 +92,7 @@ export function CreatePatientDialog({ open, onOpenChange, onSuccess }: any) {
               <h3 className="font-semibold text-sm">Patient Details</h3>
               <div className="grid grid-cols-2 gap-4">
                 <div className="flex flex-col gap-2"><label className="text-sm font-medium capitalize">Date of Birth</label><Input type="date" value={dateOfBirth} onChange={e => setDateOfBirth(e.target.value)} required /></div>
-                <div className="flex flex-col gap-2"><label className="text-sm font-medium capitalize">Gender</label><Select value={gender} onValueChange={(val) => setGender(val || "")} required><SelectTrigger><SelectValue placeholder="Select gender" /></SelectTrigger><SelectContent><SelectItem value="MALE">Male</SelectItem><SelectItem value="FEMALE">Female</SelectItem><SelectItem value="OTHER">Other</SelectItem></SelectContent></Select></div>
+                <div className="flex flex-col gap-2"><label className="text-sm font-medium capitalize">Gender</label><Select value={gender} onValueChange={(val) => setGender(val || "")} required><SelectTrigger className="w-full"><SelectValue placeholder="Select gender" /></SelectTrigger><SelectContent><SelectItem value="MALE">Male</SelectItem><SelectItem value="FEMALE">Female</SelectItem><SelectItem value="OTHER">Other</SelectItem></SelectContent></Select></div>
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div className="flex flex-col gap-2"><label className="text-sm font-medium capitalize">Blood Group</label><Input value={bloodGroup} onChange={e => setBloodGroup(e.target.value)} required /></div>

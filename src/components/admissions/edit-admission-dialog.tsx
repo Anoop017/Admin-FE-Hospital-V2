@@ -41,8 +41,42 @@ export function EditAdmissionDialog({ item, open, onOpenChange, onSuccess }: any
       <DialogContent>
         <DialogHeader><DialogTitle>Edit Admission</DialogTitle></DialogHeader>
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-          <div className="flex flex-col gap-2"><label className="text-sm font-medium capitalize">patientId</label><Input value={patientId} onChange={e => setPatientId(e.target.value)} required /></div><div className="flex flex-col gap-2"><label className="text-sm font-medium capitalize">admittingDoctorId</label><Input value={admittingDoctorId} onChange={e => setAdmittingDoctorId(e.target.value)} required /></div><div className="flex flex-col gap-2"><label className="text-sm font-medium capitalize">bedId</label><Input value={bedId} onChange={e => setBedId(e.target.value)} required /></div><div className="flex flex-col gap-2"><label className="text-sm font-medium capitalize">admissionDate</label><Input value={admissionDate} onChange={e => setAdmissionDate(e.target.value)} required /></div><div className="flex flex-col gap-2"><label className="text-sm font-medium capitalize">reason</label><Input value={reason} onChange={e => setReason(e.target.value)} required /></div><div className="flex flex-col gap-2"><label className="text-sm font-medium capitalize">status</label><Input value={status} onChange={e => setStatus(e.target.value)} required /></div><div className="flex flex-col gap-2"><label className="text-sm font-medium capitalize">dischargeDate</label><Input value={dischargeDate} onChange={e => setDischargeDate(e.target.value)} required /></div>
-          <DialogFooter>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="flex flex-col gap-2">
+              <label className="text-sm font-medium">Patient</label>
+              <Input value={item?.patient?.user ? `${item.patient.user.firstName} ${item.patient.user.lastName}` : patientId} disabled className="bg-gray-50" />
+            </div>
+            <div className="flex flex-col gap-2">
+              <label className="text-sm font-medium">Admitting Doctor</label>
+              <Input value={item?.admittingDoctor?.user ? `Dr. ${item.admittingDoctor.user.firstName} ${item.admittingDoctor.user.lastName}` : admittingDoctorId} disabled className="bg-gray-50" />
+            </div>
+            <div className="flex flex-col gap-2">
+              <label className="text-sm font-medium">Bed</label>
+              <Input value={item?.bed ? `Bed ${item.bed.bedNumber}` : bedId} disabled className="bg-gray-50" />
+            </div>
+            <div className="flex flex-col gap-2">
+              <label className="text-sm font-medium">Status</label>
+              <Input value={status} onChange={e => setStatus(e.target.value)} required />
+            </div>
+          </div>
+          
+          <div className="flex flex-col gap-2">
+            <label className="text-sm font-medium">Reason</label>
+            <Input value={reason} onChange={e => setReason(e.target.value)} required />
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="flex flex-col gap-2">
+              <label className="text-sm font-medium">Admission Date</label>
+              <Input type="datetime-local" value={admissionDate?.substring(0, 16)} onChange={e => setAdmissionDate(e.target.value)} required />
+            </div>
+            <div className="flex flex-col gap-2">
+              <label className="text-sm font-medium">Discharge Date</label>
+              <Input type="datetime-local" value={dischargeDate?.substring(0, 16)} onChange={e => setDischargeDate(e.target.value)} />
+            </div>
+          </div>
+          
+          <DialogFooter className="mt-2">
             <Button variant="outline" type="button" onClick={() => onOpenChange(false)}>Cancel</Button>
             <Button type="submit" disabled={loading}>Save</Button>
           </DialogFooter>

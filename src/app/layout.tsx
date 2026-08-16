@@ -10,7 +10,7 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "MedAdmin — Hospital Management Portal",
+  title: "Admin - Hospital Dashboard",
   description:
     "Modern hospital administration dashboard for managing staff, patients, appointments, billing, and clinical operations.",
 };

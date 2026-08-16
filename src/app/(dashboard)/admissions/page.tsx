@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { AdmissionsClient } from "@/components/admissions/admissions-client";
 
 export const metadata: Metadata = {
-  title: "Admission Management — MedAdmin",
+  title: "Admission Management — Admin - Hospital Dashboard",
   description: "Manage patient admissions.",
 };
 

@@ -65,11 +65,14 @@ export default function AccountPage() {
               <div className="grid gap-2">
                 <span className="text-sm font-medium text-muted-foreground">Roles</span>
                 <div className="flex gap-2 flex-wrap">
-                  {profile.roles?.map((role) => (
-                    <span key={role} className="rounded-full bg-primary/10 px-2.5 py-0.5 text-xs font-semibold text-primary">
-                      {role.replace(/_/g, ' ')}
-                    </span>
-                  ))}
+                  {profile.roles?.map((roleItem: any, idx: number) => {
+                    const roleStr = typeof roleItem === 'string' ? roleItem : roleItem?.name || String(roleItem);
+                    return (
+                      <span key={idx} className="rounded-full bg-primary/10 px-2.5 py-0.5 text-xs font-semibold text-primary capitalize">
+                        {roleStr.replace(/_/g, ' ')}
+                      </span>
+                    );
+                  })}
                 </div>
               </div>
             </div>
