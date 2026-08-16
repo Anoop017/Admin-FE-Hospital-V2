@@ -1,36 +1,64 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Hospital Admin Dashboard
+
+A modern, responsive, and feature-rich Admin Dashboard for Hospital Management
+
+## Features
+
+- **Comprehensive Dashboard:** Real-time summary of hospital statistics, patient overview, and upcoming calendar events.
+- **User & Access Management:** Manage staff, doctors, patients, and administrators with role-based access control.
+- **Patient & Medical Records:** Track patient histories, medical records, laboratory tests, and prescriptions.
+- **Operations:** Manage wards, beds, admissions, and appointments seamlessly.
+- **Billing & Payments:** Integrated billing module to handle invoices and payments.
+- **Modern UI:** Built using Tailwind CSS v4 and Base UI, featuring a clean, responsive, and accessible design system.
+
+## Tech Stack
+
+- **Framework:** Next.js 16 (App Router)
+- **Library:** React 19
+- **Language:** TypeScript
+- **Styling:** Tailwind CSS v4
+- **Components:** Base UI & custom accessible UI components
+- **HTTP Client:** Axios
 
 ## Getting Started
 
-First, run the development server:
+### Prerequisites
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+Ensure you have Node.js installed. You will also need the backend API running for the dashboard to fetch real data.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### Installation
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/Anoop017/Admin-FE-Hospital-V2.git
+   ```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+2. Navigate into the project directory:
+   ```bash
+   cd admin-hospital-dashboard
+   ```
 
-## Learn More
+3. Install dependencies:
+   ```bash
+   npm install
+   ```
 
-To learn more about Next.js, take a look at the following resources:
+4. Configure environment variables:
+   Create a `.env.local` file in the root directory and specify the backend API URL.
+   ```env
+   NEXT_PUBLIC_API_URL=http://localhost:3042/api/v1
+   ```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+5. Run the development server:
+   ```bash
+   npm run dev
+   ```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Open [http://localhost:3000](http://localhost:3000) with your browser to see the application.
 
-## Deploy on Vercel
+## Project Structure
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- `src/app`: Contains the Next.js App Router pages and nested layouts.
+- `src/components`: Reusable UI components, including specific feature modules (tables, dialogs) and base UI elements.
+- `src/lib`: Utility functions, API configurations (`api.ts`), and authentication helpers.
+- `src/types`: Global TypeScript definitions for data models and DTOs.
