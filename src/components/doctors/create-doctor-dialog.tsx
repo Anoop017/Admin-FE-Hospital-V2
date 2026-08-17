@@ -37,8 +37,8 @@ export function CreateDoctorDialog({ open, onOpenChange, onSuccess }: any) {
         await createDoctor({ userId, specialization, licenseNumber, experienceYears: Number(experienceYears), consultationFee: Number(consultationFee) });
       } else {
         await createDoctorWithUser({
-          user: { firstName, lastName, email, mobile, password, roles: ["DOCTOR"] },
-          doctor: { userId: "", specialization, licenseNumber, experienceYears: Number(experienceYears), consultationFee: Number(consultationFee) }
+          user: { firstName, lastName, email, mobile, password, roles: ["doctor"] },
+          doctor: { specialization, licenseNumber, experienceYears: Number(experienceYears), consultationFee: Number(consultationFee) }
         });
       }
       onSuccess();

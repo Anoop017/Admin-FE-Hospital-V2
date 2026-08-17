@@ -10,7 +10,12 @@ export function MedicineTable({ items, onEdit, onDelete }: { items: Medicine[], 
         <thead className="border-b bg-secondary/50">
           <tr>
             <th className="h-10 px-4 font-medium">ID</th>
-            <th className="h-10 px-4 font-medium capitalize">name</th><th className="h-10 px-4 font-medium capitalize">manufacturer</th><th className="h-10 px-4 font-medium capitalize">unitPrice</th><th className="h-10 px-4 font-medium capitalize">stockQuantity</th><th className="h-10 px-4 font-medium capitalize">expiryDate</th>
+            <th className="h-10 px-4 font-medium">Name</th>
+            <th className="h-10 px-4 font-medium">Manufacturer</th>
+            <th className="h-10 px-4 font-medium">Category</th>
+            <th className="h-10 px-4 font-medium">Price</th>
+            <th className="h-10 px-4 font-medium">Stock Quantity</th>
+            <th className="h-10 px-4 font-medium">Expiry Date</th>
             <th className="h-10 px-4 text-right font-medium">Actions</th>
           </tr>
         </thead>
@@ -18,7 +23,12 @@ export function MedicineTable({ items, onEdit, onDelete }: { items: Medicine[], 
           {items.map(item => (
             <tr key={item.id} className="border-b transition-colors hover:bg-muted/50">
               <td className="p-4 align-middle">{item.id?.substring(0,8)}...</td>
-              <td className="p-4 align-middle">{item.name?.toString()}</td><td className="p-4 align-middle">{item.manufacturer?.toString()}</td><td className="p-4 align-middle">{item.unitPrice?.toString()}</td><td className="p-4 align-middle">{item.stockQuantity?.toString()}</td><td className="p-4 align-middle">{item.expiryDate?.toString()}</td>
+              <td className="p-4 align-middle">{item.name?.toString()}</td>
+              <td className="p-4 align-middle">{item.manufacturer?.toString()}</td>
+              <td className="p-4 align-middle">{item.category?.toString()}</td>
+              <td className="p-4 align-middle">${Number(item.price || 0).toFixed(2)}</td>
+              <td className="p-4 align-middle">{item.stockQuantity?.toString()}</td>
+              <td className="p-4 align-middle">{item.expiryDate ? new Date(item.expiryDate).toLocaleDateString() : ''}</td>
               <td className="p-4 align-middle text-right">
                 <Button variant="ghost" size="icon" onClick={() => onEdit(item)}><Edit className="size-4" /></Button>
                 <Button variant="ghost" size="icon" onClick={() => onDelete(item)} className="text-destructive"><Trash2 className="size-4" /></Button>

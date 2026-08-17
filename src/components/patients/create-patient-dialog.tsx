@@ -39,8 +39,8 @@ export function CreatePatientDialog({ open, onOpenChange, onSuccess }: any) {
         await createPatient({ userId, dateOfBirth, gender: gender as any, bloodGroup: bloodGroup as any, address, medicalNotes });
       } else {
         await createPatientWithUser({
-          user: { firstName, lastName, email, mobile, password, roles: ["PATIENT"] },
-          patient: { userId: "", dateOfBirth, gender: gender as any, bloodGroup: bloodGroup as any, address, medicalNotes }
+          user: { firstName, lastName, email, mobile, password, roles: ["patient"] },
+          patient: { dateOfBirth, gender: gender as any, bloodGroup: bloodGroup as any, address, medicalNotes }
         });
       }
       onSuccess();

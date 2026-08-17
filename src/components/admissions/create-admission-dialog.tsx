@@ -30,7 +30,7 @@ export function CreateAdmissionDialog({ open, onOpenChange, onSuccess }: any) {
     e.preventDefault();
     setLoading(true);
     try {
-      await createAdmission({ patientId, admittingDoctorId, bedId, admissionDate, reason });
+      await createAdmission({ patientId, admittingDoctorId, bedId, admissionDate, reason, status: status || undefined });
       onSuccess();
       onOpenChange(false);
     } catch(err) { console.error(err); } finally { setLoading(false); }
@@ -80,9 +80,23 @@ export function CreateAdmissionDialog({ open, onOpenChange, onSuccess }: any) {
               </SelectContent>
             </Select>
           </div>
-          <div className="flex flex-col gap-2">
-            <label className="text-sm font-medium">Admission Date</label>
-            <Input type="datetime-local" value={admissionDate} onChange={e => setAdmissionDate(e.target.value)} required />
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="flex flex-col gap-2">
+              <label className="text-sm font-medium">Admission Date</label>
+              <Input type="datetime-local" value={admissionDate} onChange={e => setAdmissionDate(e.target.value)} required />
+            </div>
+            <div className="flex flex-col gap-2">
+              <label className="text-sm font-medium">Status</label>
+              <select className="flex h-10 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50" value={status} onChange={e => setStatus(e.target.value)}>
+                <option value="">Select Status</option>
+                <option value="pending">Pending</option>
+                <option value="admitted">Admitted</option>
+                <option value="observation">Observation</option>
+                <option value="transferred">Transferred</option>
+                <option value="discharged">Discharged</option>
+                <option value="cancelled">Cancelled</option>
+              </select>
+            </div>
           </div>
           <div className="flex flex-col gap-2">
             <label className="text-sm font-medium">Reason</label>

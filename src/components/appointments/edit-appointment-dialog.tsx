@@ -54,7 +54,12 @@ export function EditAppointmentDialog({ item, open, onOpenChange, onSuccess }: a
             </div>
             <div className="flex flex-col gap-2">
               <label className="text-sm font-medium">Status</label>
-              <Input value={status} onChange={e => setStatus(e.target.value)} required />
+              <select className="flex h-10 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50" value={status} onChange={e => setStatus(e.target.value)}>
+                <option value="scheduled">Scheduled</option>
+                <option value="completed">Completed</option>
+                <option value="cancelled">Cancelled</option>
+                <option value="no_show">No Show</option>
+              </select>
             </div>
           </div>
           <div className="flex flex-col gap-2">

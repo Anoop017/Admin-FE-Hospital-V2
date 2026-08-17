@@ -56,7 +56,14 @@ export function EditAdmissionDialog({ item, open, onOpenChange, onSuccess }: any
             </div>
             <div className="flex flex-col gap-2">
               <label className="text-sm font-medium">Status</label>
-              <Input value={status} onChange={e => setStatus(e.target.value)} required />
+              <select className="flex h-10 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50" value={status} onChange={e => setStatus(e.target.value)}>
+                <option value="pending">Pending</option>
+                <option value="admitted">Admitted</option>
+                <option value="observation">Observation</option>
+                <option value="transferred">Transferred</option>
+                <option value="discharged">Discharged</option>
+                <option value="cancelled">Cancelled</option>
+              </select>
             </div>
           </div>
           

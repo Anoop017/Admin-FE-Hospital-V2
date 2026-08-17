@@ -217,6 +217,7 @@ export interface CreateAdmissionDto {
   bedId: string;
   admissionDate: string;
   reason: string;
+  status?: string;
 }
 
 export interface UpdateAdmissionDto {
@@ -231,49 +232,51 @@ export interface UpdateAdmissionDto {
 
 export interface CreateMedicalRecordDto {
   patientId: string;
-  doctorId?: string;
-  appointmentId?: string;
-  recordType: string;
-  description: string;
-  attachments?: string;
+  doctorId: string;
+  diagnosis: string;
+  symptoms: string;
+  treatment: string;
+  notes?: string;
+  recordDate?: string;
 }
 
 export interface UpdateMedicalRecordDto {
   patientId?: string;
   doctorId?: string;
-  appointmentId?: string;
-  recordType?: string;
-  description?: string;
-  attachments?: string;
-}
-
-export interface CreatePrescriptionItemDto {
-  medicineId: string;
-  dosage: string;
-  frequency: string;
-  duration: string;
+  diagnosis?: string;
+  symptoms?: string;
+  treatment?: string;
+  notes?: string;
+  recordDate?: string;
 }
 
 export interface CreatePrescriptionDto {
   patientId: string;
   doctorId: string;
-  appointmentId?: string;
+  medication: string;
+  dosage: string;
+  frequency: string;
+  duration: string;
   notes?: string;
-  items: CreatePrescriptionItemDto[];
+  issuedDate?: string;
 }
 
 export interface UpdatePrescriptionDto {
   patientId?: string;
   doctorId?: string;
-  appointmentId?: string;
+  medication?: string;
+  dosage?: string;
+  frequency?: string;
+  duration?: string;
   notes?: string;
-  items?: CreatePrescriptionItemDto[];
+  issuedDate?: string;
 }
 
 export interface CreateMedicineDto {
   name: string;
   manufacturer: string;
-  unitPrice: number;
+  category: string;
+  price: number;
   stockQuantity: number;
   expiryDate?: string;
 }
@@ -281,7 +284,8 @@ export interface CreateMedicineDto {
 export interface UpdateMedicineDto {
   name?: string;
   manufacturer?: string;
-  unitPrice?: number;
+  category?: string;
+  price?: number;
   stockQuantity?: number;
   expiryDate?: string;
 }
@@ -290,16 +294,22 @@ export interface CreateLabTestDto {
   patientId: string;
   doctorId: string;
   testName: string;
-  cost?: number;
+  testType: string;
+  result?: string;
+  status?: string;
+  testDate?: string;
+  reportUrl?: string;
 }
 
 export interface UpdateLabTestDto {
   patientId?: string;
   doctorId?: string;
   testName?: string;
-  cost?: number;
+  testType?: string;
+  result?: string;
   status?: string;
-  resultDetails?: string;
+  testDate?: string;
+  reportUrl?: string;
 }
 
 export interface CreateBillDto {

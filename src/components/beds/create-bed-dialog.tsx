@@ -55,7 +55,7 @@ export function CreateBedDialog({ open, onOpenChange, onSuccess }: any) {
           </div>
           <div className="flex flex-col gap-2">
             <label className="text-sm font-medium">Status</label>
-            <Select value={status} onValueChange={setStatus}>
+            <Select value={status} onValueChange={(val: any) => setStatus(val || "")}>
               <SelectTrigger className="w-full">
                 <SelectValue placeholder="Select status (default: Available)" />
               </SelectTrigger>

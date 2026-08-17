@@ -38,8 +38,8 @@ export function CreateStafDialog({ open, onOpenChange, onSuccess }: any) {
         await createStaf({ userId, departmentId, jobTitle, hireDate });
       } else {
         await createStafWithUser({
-          user: { firstName, lastName, email, mobile, password, roles: ["STAFF"] },
-          staff: { userId: "", departmentId, jobTitle, hireDate }
+          user: { firstName, lastName, email, mobile, password, roles: ["staff"] },
+          staff: { departmentId, jobTitle, hireDate }
         });
       }
       onSuccess();

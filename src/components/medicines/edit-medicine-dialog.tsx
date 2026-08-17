@@ -5,20 +5,22 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "
 import { updateMedicine } from "@/lib/api";
 
 export function EditMedicineDialog({ item, open, onOpenChange, onSuccess }: any) {
-  const [name, setName] = useState(item.name || "");
-  const [manufacturer, setManufacturer] = useState(item.manufacturer || "");
-  const [unitPrice, setUnitPrice] = useState(item.unitPrice || "");
-  const [stockQuantity, setStockQuantity] = useState(item.stockQuantity || "");
-  const [expiryDate, setExpiryDate] = useState(item.expiryDate || "");
+  const [name, setName] = useState(item?.name || "");
+  const [manufacturer, setManufacturer] = useState(item?.manufacturer || "");
+  const [category, setCategory] = useState(item?.category || "");
+  const [price, setPrice] = useState(item?.price || "");
+  const [stockQuantity, setStockQuantity] = useState(item?.stockQuantity || "");
+  const [expiryDate, setExpiryDate] = useState(item?.expiryDate || "");
   const [loading, setLoading] = useState(false);
   
   useEffect(() => {
     if(item) {
       setName(item.name || "");
       setManufacturer(item.manufacturer || "");
-      setUnitPrice(item.unitPrice || "");
+      setCategory(item.category || "");
+      setPrice(item.price || "");
       setStockQuantity(item.stockQuantity || "");
-      setExpiryDate(item.expiryDate || "");
+      setExpiryDate(item.expiryDate ? item.expiryDate.split("T")[0] : "");
     }
   }, [item]);
 
@@ -26,7 +28,7 @@ export function EditMedicineDialog({ item, open, onOpenChange, onSuccess }: any)
     e.preventDefault();
     setLoading(true);
     try {
-      await updateMedicine(item.id, { name, manufacturer, unitPrice, stockQuantity, expiryDate });
+      await updateMedicine(item.id, { name, manufacturer, category, price: Number(price), stockQuantity: Number(stockQuantity), expiryDate });
       onSuccess();
       onOpenChange(false);
     } catch(err) { console.error(err); } finally { setLoading(false); }
@@ -34,11 +36,36 @@ export function EditMedicineDialog({ item, open, onOpenChange, onSuccess }: any)
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent>
+      <DialogContent className="max-w-md">
         <DialogHeader><DialogTitle>Edit Medicine</DialogTitle></DialogHeader>
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-          <div className="flex flex-col gap-2"><label className="text-sm font-medium capitalize">name</label><Input value={name} onChange={e => setName(e.target.value)} required /></div><div className="flex flex-col gap-2"><label className="text-sm font-medium capitalize">manufacturer</label><Input value={manufacturer} onChange={e => setManufacturer(e.target.value)} required /></div><div className="flex flex-col gap-2"><label className="text-sm font-medium capitalize">unitPrice</label><Input value={unitPrice} onChange={e => setUnitPrice(e.target.value)} required /></div><div className="flex flex-col gap-2"><label className="text-sm font-medium capitalize">stockQuantity</label><Input value={stockQuantity} onChange={e => setStockQuantity(e.target.value)} required /></div><div className="flex flex-col gap-2"><label className="text-sm font-medium capitalize">expiryDate</label><Input value={expiryDate} onChange={e => setExpiryDate(e.target.value)} required /></div>
-          <DialogFooter>
+          <div className="flex flex-col gap-2">
+            <label className="text-sm font-medium">Name</label>
+            <Input value={name} onChange={e => setName(e.target.value)} required />
+          </div>
+          <div className="flex flex-col gap-2">
+            <label className="text-sm font-medium">Manufacturer</label>
+            <Input value={manufacturer} onChange={e => setManufacturer(e.target.value)} required />
+          </div>
+          <div className="flex flex-col gap-2">
+            <label className="text-sm font-medium">Category</label>
+            <Input value={category} onChange={e => setCategory(e.target.value)} required />
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="flex flex-col gap-2">
+              <label className="text-sm font-medium">Price</label>
+              <Input type="number" step="0.01" value={price} onChange={e => setPrice(e.target.value)} required />
+            </div>
+            <div className="flex flex-col gap-2">
+              <label className="text-sm font-medium">Stock Quantity</label>
+              <Input type="number" value={stockQuantity} onChange={e => setStockQuantity(e.target.value)} required />
+            </div>
+          </div>
+          <div className="flex flex-col gap-2">
+            <label className="text-sm font-medium">Expiry Date</label>
+            <Input type="date" value={expiryDate} onChange={e => setExpiryDate(e.target.value)} required />
+          </div>
+          <DialogFooter className="mt-2">
             <Button variant="outline" type="button" onClick={() => onOpenChange(false)}>Cancel</Button>
             <Button type="submit" disabled={loading}>Save</Button>
           </DialogFooter>

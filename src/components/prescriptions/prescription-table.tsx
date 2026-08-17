@@ -10,7 +10,13 @@ export function PrescriptionTable({ items, onEdit, onDelete }: { items: Prescrip
         <thead className="border-b bg-secondary/50">
           <tr>
             <th className="h-10 px-4 font-medium">ID</th>
-            <th className="h-10 px-4 font-medium capitalize">Patient</th><th className="h-10 px-4 font-medium capitalize">Doctor</th><th className="h-10 px-4 font-medium capitalize">appointmentId</th><th className="h-10 px-4 font-medium capitalize">notes</th>
+            <th className="h-10 px-4 font-medium">Patient</th>
+            <th className="h-10 px-4 font-medium">Doctor</th>
+            <th className="h-10 px-4 font-medium">Medication</th>
+            <th className="h-10 px-4 font-medium">Dosage</th>
+            <th className="h-10 px-4 font-medium">Frequency</th>
+            <th className="h-10 px-4 font-medium">Duration</th>
+            <th className="h-10 px-4 font-medium">Issued Date</th>
             <th className="h-10 px-4 text-right font-medium">Actions</th>
           </tr>
         </thead>
@@ -18,7 +24,13 @@ export function PrescriptionTable({ items, onEdit, onDelete }: { items: Prescrip
           {items.map(item => (
             <tr key={item.id} className="border-b transition-colors hover:bg-muted/50">
               <td className="p-4 align-middle">{item.id?.substring(0,8)}...</td>
-              <td className="p-4 align-middle">{item.patient?.user ? `${item.patient.user.firstName} ${item.patient.user.lastName}` : item.patientId?.toString()}</td><td className="p-4 align-middle">{item.doctor?.user ? `Dr. ${item.doctor.user.firstName} ${item.doctor.user.lastName}` : item.doctorId?.toString()}</td><td className="p-4 align-middle">{item.appointmentId?.toString()}</td><td className="p-4 align-middle">{item.notes?.toString()}</td>
+              <td className="p-4 align-middle">{item.patient?.user ? `${item.patient.user.firstName} ${item.patient.user.lastName}` : item.patientId?.toString()}</td>
+              <td className="p-4 align-middle">{item.doctor?.user ? `Dr. ${item.doctor.user.firstName} ${item.doctor.user.lastName}` : item.doctorId?.toString()}</td>
+              <td className="p-4 align-middle">{item.medication?.toString()}</td>
+              <td className="p-4 align-middle">{item.dosage?.toString()}</td>
+              <td className="p-4 align-middle">{item.frequency?.toString()}</td>
+              <td className="p-4 align-middle">{item.duration?.toString()}</td>
+              <td className="p-4 align-middle">{item.issuedDate ? new Date(item.issuedDate).toLocaleDateString() : ''}</td>
               <td className="p-4 align-middle text-right">
                 <Button variant="ghost" size="icon" onClick={() => onEdit(item)}><Edit className="size-4" /></Button>
                 <Button variant="ghost" size="icon" onClick={() => onDelete(item)} className="text-destructive"><Trash2 className="size-4" /></Button>
