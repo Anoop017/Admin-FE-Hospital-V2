@@ -96,7 +96,7 @@ export function Sidebar() {
         {!collapsed && (
           <Link href="/dashboard" className="flex flex-col">
             <span className="text-xl font-bold tracking-tight text-foreground">
-              Admin - Hospital Dashboard
+              Admin Dashboard
             </span>
           </Link>
         )}
