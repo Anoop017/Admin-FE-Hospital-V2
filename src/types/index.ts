@@ -349,5 +349,44 @@ export interface Prescription { id: string; createdAt?: string; updatedAt?: stri
 export interface Medicine { id: string; createdAt?: string; updatedAt?: string; [key: string]: any; }
 export interface Laborator { id: string; createdAt?: string; updatedAt?: string; [key: string]: any; }
 export interface LabTest { id: string; createdAt?: string; updatedAt?: string; [key: string]: any; }
-export interface Bill { id: string; createdAt?: string; updatedAt?: string; [key: string]: any; }
-export interface Payment { id: string; createdAt?: string; updatedAt?: string; [key: string]: any; }
+export interface Bill {
+  id: string;
+  patientId: string;
+  admissionId?: string | null;
+  appointmentId?: string | null;
+  totalAmount: number | string;
+  paidAmount: number | string;
+  status: "unpaid" | "partially_paid" | "paid" | string;
+  dueDate: string;
+  patient?: {
+    id: string;
+    userId?: string;
+    user?: {
+      id?: string;
+      firstName?: string;
+      lastName?: string;
+      email?: string;
+      mobile?: string;
+    };
+  };
+  admission?: any;
+  appointment?: any;
+  payments?: Payment[];
+  createdAt?: string;
+  updatedAt?: string;
+  deletedAt?: string | null;
+  [key: string]: any;
+}
+
+export interface Payment {
+  id: string;
+  billId: string;
+  amount: number | string;
+  paymentDate: string;
+  paymentMethod: "cash" | "credit_card" | "insurance" | "transfer" | string;
+  referenceNumber?: string | null;
+  createdAt?: string;
+  updatedAt?: string;
+  deletedAt?: string | null;
+  [key: string]: any;
+}
