@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { Search, Bell, Mail, Sun, Moon, Settings } from "lucide-react";
+import { Search, Bell, Mail, Sun, Moon } from "lucide-react";
 import { useState, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
@@ -93,17 +93,6 @@ export function Topbar() {
             className="text-muted-foreground hover:text-foreground cursor-pointer"
           >
             <Mail className="size-[18px]" />
-          </Button>
-
-          {/* Settings / Security (Change Password) */}
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => setIsPasswordModalOpen(true)}
-            className="text-muted-foreground hover:text-foreground cursor-pointer"
-            title="Settings & Security (Change Password)"
-          >
-            <Settings className="size-[18px]" />
           </Button>
 
           {/* User menu */}
