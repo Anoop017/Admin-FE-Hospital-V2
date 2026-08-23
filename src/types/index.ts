@@ -112,7 +112,7 @@ export interface UpdateUserDto {
 }
 
 export interface CreatePatientDto {
-  userId: string;
+  userId?: string;
   dateOfBirth?: string;
   gender?: "MALE" | "FEMALE" | "OTHER";
   bloodGroup?: "A+" | "A-" | "B+" | "B-" | "AB+" | "AB-" | "O+" | "O-";
@@ -130,7 +130,7 @@ export interface UpdatePatientDto {
 }
 
 export interface CreateDoctorDto {
-  userId: string;
+  userId?: string;
   specialization: string;
   licenseNumber: string;
   experienceYears?: number;
@@ -146,7 +146,7 @@ export interface UpdateDoctorDto {
 }
 
 export interface CreateStaffDto {
-  userId: string;
+  userId?: string;
   departmentId?: string;
   jobTitle: string;
   hireDate?: string;

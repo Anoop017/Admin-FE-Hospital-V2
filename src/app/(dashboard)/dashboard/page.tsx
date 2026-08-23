@@ -10,28 +10,77 @@ import {
   MoreHorizontal,
   Pencil,
   Trash2,
-  ChevronLeft,
-  ChevronRight
+  CalendarCheck,
+  DollarSign,
+  Activity,
+  CheckCircle2,
+  Clock,
+  RefreshCw,
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
-import { getDashboardSummary, getPatientsOverview, deletePatient, deletePatientBulk, getPatient } from "@/lib/api";
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+  Legend,
+  Area,
+  AreaChart,
+} from "recharts";
+import {
+  getDashboardSummary,
+  getDashboardAnalytics,
+  getPatientsOverview,
+  deletePatient,
+  deletePatientBulk,
+  getPatient,
+} from "@/lib/api";
 import { EditPatientDialog } from "@/components/patients/edit-patient-dialog";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 
 export default function DashboardPage() {
   const [data, setData] = useState<any>(null);
+  const [analyticsData, setAnalyticsData] = useState<any>(null);
+  const [analyticsPeriod, setAnalyticsPeriod] = useState<"week" | "month" | "day">("week");
   const [overviewData, setOverviewData] = useState<any[]>([]);
   const [filter, setFilter] = useState("Today");
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [editingPatient, setEditingPatient] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
 
   const loadOverview = (f: string) => {
-    getPatientsOverview(f).then(setOverviewData).catch(console.error);
+    getPatientsOverview(f)
+      .then((res) => setOverviewData(Array.isArray(res) ? res : []))
+      .catch(console.error);
+  };
+
+  const loadAnalytics = (period: "week" | "month" | "day") => {
+    setAnalyticsPeriod(period);
+    getDashboardAnalytics(period)
+      .then(setAnalyticsData)
+      .catch(console.error);
+  };
+
+  const fetchAllData = async () => {
+    setLoading(true);
+    try {
+      const summary = await getDashboardSummary();
+      setData(summary);
+      await loadAnalytics("week");
+      loadOverview(filter);
+    } catch (e) {
+      console.error("Failed to load dashboard summary", e);
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => {
-    getDashboardSummary().then(setData).catch(console.error);
-    loadOverview(filter);
+    fetchAllData();
   }, []);
 
   const handleFilterChange = (f: string) => {
@@ -45,7 +94,6 @@ export default function DashboardPage() {
       setEditingPatient(fullPatient);
     } catch (e) {
       console.error(e);
-      // Fallback
       setEditingPatient({ id });
     }
   };
@@ -55,8 +103,10 @@ export default function DashboardPage() {
     try {
       await deletePatient(id);
       loadOverview(filter);
-      setSelectedIds(prev => prev.filter(selId => selId !== id));
-    } catch (e) { console.error(e); }
+      setSelectedIds((prev) => prev.filter((selId) => selId !== id));
+    } catch (e) {
+      console.error(e);
+    }
   };
 
   const handleBulkDelete = async () => {
@@ -65,367 +115,438 @@ export default function DashboardPage() {
       await deletePatientBulk(selectedIds);
       setSelectedIds([]);
       loadOverview(filter);
-    } catch (e) { console.error(e); }
+    } catch (e) {
+      console.error(e);
+    }
   };
 
-  if (!data) return <div className="p-8 text-center text-gray-500">Loading dashboard...</div>;
+  if (loading && !data) {
+    return (
+      <div className="flex h-96 items-center justify-center">
+        <div className="flex flex-col items-center gap-2 text-muted-foreground">
+          <RefreshCw className="size-6 animate-spin text-primary" />
+          <p className="text-sm">Loading hospital analytics dashboard...</p>
+        </div>
+      </div>
+    );
+  }
 
-  const stats = [
-    {
-      title: "Visitors",
-      value: data.stats.visitors.total.toLocaleString(),
-      change: `${data.stats.visitors.percentageChange > 0 ? '+' : ''}${data.stats.visitors.percentageChange}%`,
-      changeColor: data.stats.visitors.percentageChange >= 0 ? "text-teal-600" : "text-red-500",
-      description: "Stay informed with real-time data to enhance patient care and visitor management.",
-      icon: Users,
-      iconBg: "bg-gray-100",
-      iconColor: "text-gray-700",
-    },
-    {
-      title: "Doctors",
-      value: data.stats.doctors.total.toLocaleString(),
-      change: `${data.stats.doctors.percentageChange > 0 ? '+' : ''}${data.stats.doctors.percentageChange}%`,
-      changeColor: data.stats.doctors.percentageChange >= 0 ? "text-teal-600" : "text-red-500",
-      description: "Stay updated with essential details to streamline medical support and management.",
-      icon: Stethoscope,
-      iconBg: "bg-[#e2f1ff]",
-      iconColor: "text-[#1d4ed8]",
-      bgOverride: "bg-[#e2f1ff]",
-    },
-    {
-      title: "Patient",
-      value: data.stats.patients.total.toLocaleString(),
-      change: `${data.stats.patients.percentageChange > 0 ? '+' : ''}${data.stats.patients.percentageChange}%`,
-      changeColor: data.stats.patients.percentageChange >= 0 ? "text-teal-600" : "text-red-500",
-      description: "Keep track of patient information at a glance, with easy access to key details.",
-      icon: UserRound,
-      iconBg: "bg-gray-100",
-      iconColor: "text-gray-700",
-    },
-    {
-      title: "Total Bed",
-      value: data.stats.beds.total.toLocaleString(),
-      subtitle: `${data.stats.beds.available} Available`,
-      extra: [
-        { label: "Private Bed", value: `${data.stats.beds.breakdown.private} Bed` },
-        { label: "General Bed", value: `${data.stats.beds.breakdown.general} Bed` },
-      ],
-      icon: BedDouble,
-      iconBg: "bg-gray-100",
-      iconColor: "text-gray-700",
-    },
-  ];
+  // Safe fallback stats extracted from new backend payload
+  const patientStats = data?.stats?.patients || { total: 0, percentageChange: 0 };
+  const doctorStats = data?.stats?.doctors || { total: 0, percentageChange: 0 };
+  const staffStats = data?.stats?.staff || { total: 0 };
+  const appointmentsToday = data?.stats?.appointmentsToday ?? 0;
+  const bedStats = data?.stats?.beds || {
+    total: 0,
+    available: 0,
+    occupied: 0,
+    occupancyRate: 0,
+    breakdown: { private: 0, general: 0, icu: 0 },
+  };
+  const financials = data?.stats?.financials || {
+    totalRevenue: 0,
+    totalBilled: 0,
+    pendingReceivables: 0,
+  };
 
-  const chartData = data.patientOverviewChart?.labels?.map((label: string, index: number) => ({
+  const upcomingAppointments = Array.isArray(data?.upcomingAppointments)
+    ? data.upcomingAppointments
+    : [];
+
+  // Prepare chart series from analytics or appointmentTrendChart
+  const chartSeries = analyticsData?.labels?.map((label: string, idx: number) => {
+    const aptDataset = analyticsData?.datasets?.find((d: any) => d.label === "Appointments");
+    const admDataset = analyticsData?.datasets?.find((d: any) => d.label === "Admissions");
+    return {
+      time: label,
+      appointments: aptDataset?.data?.[idx] ?? data?.appointmentTrendChart?.data?.[idx] ?? 0,
+      admissions: admDataset?.data?.[idx] ?? 0,
+    };
+  }) || data?.appointmentTrendChart?.labels?.map((label: string, idx: number) => ({
     time: label,
-    onTime: data.patientOverviewChart.datasets.onTime[index],
-    onLate: data.patientOverviewChart.datasets.onLate[index],
+    appointments: data.appointmentTrendChart.data[idx],
+    admissions: 0,
   })) || [];
-
-  const getEventsForDay = (day: number) => {
-    const currentYear = new Date().getFullYear();
-    const currentMonth = String(new Date().getMonth() + 1).padStart(2, '0');
-    const dateStr = `${currentYear}-${currentMonth}-${String(day).padStart(2, '0')}`;
-    return data.calendarEvents?.filter((e: any) => e.date === dateStr).map((e: any) => e.type) || [];
-  };
 
   return (
     <div className="flex flex-col gap-6">
-      {/* Stat cards */}
-      <div className="grid grid-cols-1 gap-4 lg:grid-cols-4">
-        {stats.map((stat) => {
-          const Icon = stat.icon;
-          return (
-            <Card
-              key={stat.title}
-              className={`border-none shadow-sm ${stat.bgOverride || 'bg-white'}`}
-            >
-              <CardHeader className="flex flex-row items-center justify-between pb-2">
-                <div className="flex items-center gap-2">
-                  <div className={`flex size-8 items-center justify-center rounded-full ${stat.iconBg}`}>
-                    <Icon className={`size-4 ${stat.iconColor}`} />
-                  </div>
-                  <span className="text-sm font-semibold text-gray-700">
-                    {stat.title}
-                  </span>
-                </div>
-                <MoreHorizontal className="size-4 text-gray-400 cursor-pointer hover:text-gray-600" />
-              </CardHeader>
-              <CardContent>
-                <div className="flex items-baseline gap-2">
-                  <span className="text-3xl font-bold tracking-tight text-gray-900">
-                    {stat.value}
-                  </span>
-                  {stat.change && (
-                    <span className={`flex items-center gap-0.5 text-xs font-semibold bg-white px-2 py-0.5 rounded-full shadow-sm ${stat.changeColor}`}>
-                      <TrendingUp className={`size-3 ${stat.changeColor}`} />
-                      {stat.change}
-                    </span>
-                  )}
-                  {stat.subtitle && (
-                    <span className="text-xs font-semibold text-gray-600 ml-1">
-                      {stat.subtitle}
-                    </span>
-                  )}
-                </div>
-                {stat.description && (
-                  <p className="mt-4 text-[10px] text-gray-500 font-medium leading-relaxed max-w-[200px]">
-                    {stat.description}
-                  </p>
-                )}
-                {stat.extra && (
-                  <div className="mt-4 flex gap-6">
-                    {stat.extra.map((e) => (
-                      <div key={e.label} className="text-[11px] flex flex-col gap-0.5">
-                        <span className="font-bold text-gray-900">
-                          {e.value}
-                        </span>
-                        <span className="text-gray-500 font-medium">
-                          {e.label}
-                        </span>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-          );
-        })}
+      {/* Header */}
+      <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+          <h1 className="text-2xl font-bold tracking-tight text-foreground">Hospital Overview</h1>
+          <p className="text-sm text-muted-foreground">
+            Real-time analytics, bed occupancy, clinical volume, and financial performance.
+          </p>
+        </div>
+        <Button variant="outline" size="sm" onClick={fetchAllData} className="gap-1.5 self-start">
+          <RefreshCw className="size-3.5" /> Refresh Data
+        </Button>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-        {/* Patient Overview Chart */}
-        <Card className="lg:col-span-2 border-none shadow-sm">
+      {/* Top KPI Stat Cards */}
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        {/* Total Patients */}
+        <Card className="border border-border bg-card shadow-xs">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-base font-bold text-gray-800">
-              Patient Overview
-            </CardTitle>
-            <div className="flex items-center gap-4 text-xs font-medium text-gray-500">
-              <div className="flex items-center gap-1.5">
-                <span className="size-2 rounded-full bg-teal-600" /> On Time
-              </div>
-              <div className="flex items-center gap-1.5">
-                <span className="size-2 rounded-full bg-purple-200" /> On Late
-              </div>
+            <span className="text-sm font-semibold text-muted-foreground">Total Patients</span>
+            <div className="flex size-8 items-center justify-center rounded-lg bg-teal-500/10 text-teal-600 dark:text-teal-400">
+              <UserRound className="size-4" />
             </div>
           </CardHeader>
           <CardContent>
-            <div className="h-[250px] w-full mt-4">
+            <div className="flex items-baseline gap-2">
+              <span className="text-3xl font-bold tracking-tight text-foreground">
+                {patientStats.total?.toLocaleString() ?? "0"}
+              </span>
+              {patientStats.percentageChange !== undefined && (
+                <span
+                  className={`flex items-center gap-0.5 text-xs font-semibold px-2 py-0.5 rounded-full ${
+                    patientStats.percentageChange >= 0
+                      ? "bg-teal-500/10 text-teal-600 dark:text-teal-400"
+                      : "bg-red-500/10 text-red-500"
+                  }`}
+                >
+                  <TrendingUp className="size-3" />
+                  {patientStats.percentageChange > 0 ? "+" : ""}
+                  {patientStats.percentageChange}%
+                </span>
+              )}
+            </div>
+            <p className="mt-2 text-xs text-muted-foreground">
+              Active registered patients across all departments.
+            </p>
+          </CardContent>
+        </Card>
+
+        {/* Doctors & Specialists */}
+        <Card className="border border-border bg-card shadow-xs">
+          <CardHeader className="flex flex-row items-center justify-between pb-2">
+            <span className="text-sm font-semibold text-muted-foreground">Active Doctors</span>
+            <div className="flex size-8 items-center justify-center rounded-lg bg-blue-500/10 text-blue-600 dark:text-blue-400">
+              <Stethoscope className="size-4" />
+            </div>
+          </CardHeader>
+          <CardContent>
+            <div className="flex items-baseline gap-2">
+              <span className="text-3xl font-bold tracking-tight text-foreground">
+                {doctorStats.total?.toLocaleString() ?? "0"}
+              </span>
+              {doctorStats.percentageChange !== undefined && (
+                <span className="flex items-center gap-0.5 text-xs font-semibold bg-blue-500/10 text-blue-600 dark:text-blue-400 px-2 py-0.5 rounded-full">
+                  <TrendingUp className="size-3" />
+                  {doctorStats.percentageChange > 0 ? "+" : ""}
+                  {doctorStats.percentageChange}%
+                </span>
+              )}
+            </div>
+            <p className="mt-2 text-xs text-muted-foreground">
+              Medical specialists on active hospital duty roster.
+            </p>
+          </CardContent>
+        </Card>
+
+        {/* Staff & Appointments Today */}
+        <Card className="border border-border bg-card shadow-xs">
+          <CardHeader className="flex flex-row items-center justify-between pb-2">
+            <span className="text-sm font-semibold text-muted-foreground">Today's Appointments</span>
+            <div className="flex size-8 items-center justify-center rounded-lg bg-indigo-500/10 text-indigo-600 dark:text-indigo-400">
+              <CalendarCheck className="size-4" />
+            </div>
+          </CardHeader>
+          <CardContent>
+            <div className="flex items-baseline gap-2">
+              <span className="text-3xl font-bold tracking-tight text-foreground">
+                {appointmentsToday}
+              </span>
+              <span className="text-xs text-muted-foreground font-medium">scheduled today</span>
+            </div>
+            <p className="mt-2 text-xs text-muted-foreground">
+              Supported by {staffStats.total ?? 0} active administrative & clinical staff.
+            </p>
+          </CardContent>
+        </Card>
+
+        {/* Bed Occupancy Matrix KPI */}
+        <Card className="border border-border bg-card shadow-xs">
+          <CardHeader className="flex flex-row items-center justify-between pb-2">
+            <span className="text-sm font-semibold text-muted-foreground">Bed Occupancy</span>
+            <div className="flex size-8 items-center justify-center rounded-lg bg-amber-500/10 text-amber-600 dark:text-amber-400">
+              <BedDouble className="size-4" />
+            </div>
+          </CardHeader>
+          <CardContent>
+            <div className="flex items-baseline gap-2">
+              <span className="text-3xl font-bold tracking-tight text-foreground">
+                {bedStats.available ?? 0}
+              </span>
+              <span className="text-xs text-muted-foreground">/ {bedStats.total ?? 0} Available</span>
+              <span className="ml-auto text-xs font-semibold px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-600 dark:text-amber-400">
+                {bedStats.occupancyRate ?? 0}% occ.
+              </span>
+            </div>
+            <div className="mt-3 flex items-center justify-between text-[11px] text-muted-foreground border-t border-border/60 pt-2">
+              <span>ICU: <strong>{bedStats.breakdown?.icu ?? 0}</strong></span>
+              <span>Private: <strong>{bedStats.breakdown?.private ?? 0}</strong></span>
+              <span>General: <strong>{bedStats.breakdown?.general ?? 0}</strong></span>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Financial Health Summary Banner */}
+      <Card className="border border-border bg-card shadow-xs">
+        <CardContent className="p-4 sm:p-5">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 divide-y sm:divide-y-0 sm:divide-x divide-border">
+            <div className="flex items-center gap-3.5">
+              <div className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">
+                <DollarSign className="size-5" />
+              </div>
+              <div>
+                <p className="text-xs font-medium text-muted-foreground">Total Revenue Collected</p>
+                <p className="text-xl font-bold text-foreground mt-0.5">
+                  ${parseFloat(String(financials.totalRevenue || 0)).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                </p>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-3.5 sm:pl-4 pt-3 sm:pt-0">
+              <div className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
+                <Activity className="size-5" />
+              </div>
+              <div>
+                <p className="text-xs font-medium text-muted-foreground">Total Invoiced Volume</p>
+                <p className="text-xl font-bold text-foreground mt-0.5">
+                  ${parseFloat(String(financials.totalBilled || 0)).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                </p>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-3.5 sm:pl-4 pt-3 sm:pt-0">
+              <div className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-amber-500/10 text-amber-600 dark:text-amber-400">
+                <Clock className="size-5" />
+              </div>
+              <div>
+                <p className="text-xs font-medium text-muted-foreground">Pending Receivables</p>
+                <p className="text-xl font-bold text-amber-600 dark:text-amber-400 mt-0.5">
+                  ${parseFloat(String(financials.pendingReceivables || 0)).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                </p>
+              </div>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Analytics & Upcoming Appointments Grid */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Time-Series Analytics Chart */}
+        <Card className="lg:col-span-2 border border-border bg-card shadow-xs">
+          <CardHeader className="flex flex-row items-center justify-between pb-2">
+            <div>
+              <CardTitle className="text-base font-bold text-foreground">Clinical Activity Trend</CardTitle>
+              <p className="text-xs text-muted-foreground mt-0.5">Appointments & Admissions comparison</p>
+            </div>
+            {/* Period Selector Tabs */}
+            <div className="flex bg-muted/60 p-1 rounded-lg border border-border">
+              {(["day", "week", "month"] as const).map((p) => (
+                <button
+                  key={p}
+                  onClick={() => loadAnalytics(p)}
+                  className={`px-3 py-1 text-xs font-medium rounded-md capitalize transition-all ${
+                    analyticsPeriod === p
+                      ? "bg-background text-foreground shadow-xs font-semibold"
+                      : "text-muted-foreground hover:text-foreground"
+                  }`}
+                >
+                  {p}
+                </button>
+              ))}
+            </div>
+          </CardHeader>
+          <CardContent>
+            <div className="h-[280px] w-full mt-2">
               <ResponsiveContainer width="100%" height="100%">
-                <LineChart data={chartData} margin={{ top: 5, right: 20, bottom: 5, left: -20 }}>
-                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f3f4f6" />
-                  <XAxis dataKey="time" axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: '#9ca3af' }} dy={10} />
-                  <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: '#9ca3af' }} />
-                  <Tooltip 
-                    contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
-                  />
-                  <Line name="On Time" type="monotone" dataKey="onTime" stroke="#0d9488" strokeWidth={2} dot={{ r: 4, fill: '#fff', stroke: '#0d9488', strokeWidth: 2 }} activeDot={{ r: 6 }} />
-                  <Line name="On Late" type="monotone" dataKey="onLate" stroke="#e9d5ff" strokeWidth={2} dot={{ r: 4, fill: '#fff', stroke: '#e9d5ff', strokeWidth: 2 }} activeDot={{ r: 6 }} />
-                </LineChart>
+                <AreaChart data={chartSeries} margin={{ top: 10, right: 20, bottom: 5, left: -20 }}>
+                  <defs>
+                    <linearGradient id="colorApt" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="#0d9488" stopOpacity={0.3} />
+                      <stop offset="95%" stopColor="#0d9488" stopOpacity={0} />
+                    </linearGradient>
+                    <linearGradient id="colorAdm" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="#8b5cf6" stopOpacity={0.3} />
+                      <stop offset="95%" stopColor="#8b5cf6" stopOpacity={0} />
+                    </linearGradient>
+                  </defs>
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e5e7eb" className="dark:stroke-neutral-800" />
+                  <XAxis dataKey="time" axisLine={false} tickLine={false} tick={{ fontSize: 11, fill: "#9ca3af" }} dy={8} />
+                  <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 11, fill: "#9ca3af" }} />
+                  <Tooltip contentStyle={{ borderRadius: "8px", border: "1px solid #e5e7eb", backgroundColor: "#fff", color: "#111" }} />
+                  <Legend verticalAlign="top" height={36} />
+                  <Area name="Appointments" type="monotone" dataKey="appointments" stroke="#0d9488" strokeWidth={2} fillOpacity={1} fill="url(#colorApt)" />
+                  <Area name="Admissions" type="monotone" dataKey="admissions" stroke="#8b5cf6" strokeWidth={2} fillOpacity={1} fill="url(#colorAdm)" />
+                </AreaChart>
               </ResponsiveContainer>
             </div>
           </CardContent>
         </Card>
 
-        {/* Calendar Widget */}
-        <Card className="border-none shadow-sm">
+        {/* Upcoming Appointments List */}
+        <Card className="border border-border bg-card shadow-xs flex flex-col">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-base font-bold text-gray-800">
-              Calendar
-            </CardTitle>
+            <CardTitle className="text-base font-bold text-foreground">Upcoming Appointments</CardTitle>
+            <Badge variant="secondary" className="text-xs">{upcomingAppointments.length}</Badge>
           </CardHeader>
-          <CardContent className="pt-2">
-             <div className="flex items-center justify-between mb-4 px-2">
-               <button className="p-1 rounded-full hover:bg-gray-100 transition-colors cursor-pointer">
-                  <ChevronLeft className="size-4 text-gray-500" />
-               </button>
-               <span className="font-semibold text-sm">{new Date().toLocaleString('default', { month: 'long', year: 'numeric' })}</span>
-               <button className="p-1 rounded-full border border-gray-200 hover:bg-gray-100 transition-colors cursor-pointer">
-                  <ChevronRight className="size-4 text-gray-500" />
-               </button>
-             </div>
-             
-             {/* Simple static calendar grid for the mockup */}
-             <div className="grid grid-cols-7 gap-y-3 text-center mb-4">
-                {['S','M','T','W','T','F','S'].map((d, i) => (
-                  <div key={i} className="text-[10px] font-bold text-gray-400">{d}</div>
-                ))}
-                
-                {/* Previous month days */}
-                {[26,27,28,29,30].map((d) => <div key={'prev'+d} className="text-[12px] font-medium text-gray-300">{d}</div>)}
-                
-                {/* Current month days */}
-                {Array.from({ length: 31 }).map((_, i) => {
-                  const day = i + 1;
-                  const events = getEventsForDay(day);
-                  
-                  return (
-                    <div key={'cur'+day} className={`text-[12px] font-medium ${day === 4 ? 'text-teal-700 bg-teal-50 rounded-full w-6 h-6 flex items-center justify-center mx-auto' : 'text-gray-700'} flex flex-col items-center`}>
-                      {day}
-                      {events.length > 0 && (
-                        <div className="flex gap-0.5 mt-0.5">
-                          {events.map((type: string, idx: number) => {
-                             let dotColor = "bg-gray-400";
-                             if (type === "appointment") dotColor = "bg-orange-400";
-                             if (type === "meeting") dotColor = "bg-red-500";
-                             if (type === "surgery") dotColor = "bg-purple-400";
-                             return <span key={idx} className={`size-1 rounded-full ${dotColor}`} />
-                          })}
-                        </div>
-                      )}
-                    </div>
-                  );
-                })}
-             </div>
-             
-             <div className="flex justify-between px-2 text-[9px] font-semibold text-gray-500 mt-2">
-                <div className="flex items-center gap-1.5"><span className="size-1.5 rounded-full bg-orange-400"/> Appointment</div>
-                <div className="flex items-center gap-1.5"><span className="size-1.5 rounded-full bg-red-500"/> Meeting</div>
-                <div className="flex items-center gap-1.5"><span className="size-1.5 rounded-full bg-purple-400"/> Surgery</div>
-             </div>
+          <CardContent className="flex-1 overflow-y-auto max-h-[320px] divide-y divide-border/60">
+            {upcomingAppointments.length === 0 ? (
+              <div className="flex flex-col items-center justify-center p-8 text-center text-muted-foreground">
+                <CalendarCheck className="size-6 mb-2 opacity-50" />
+                <p className="text-xs">No upcoming appointments scheduled.</p>
+              </div>
+            ) : (
+              upcomingAppointments.map((apt: any, i: number) => (
+                <div key={apt.id || i} className="py-3 flex justify-between items-start first:pt-0 last:pb-0">
+                  <div className="space-y-0.5">
+                    <p className="text-sm font-semibold text-foreground">{apt.patientName || "Patient"}</p>
+                    <p className="text-xs text-muted-foreground flex items-center gap-1">
+                      <Stethoscope className="size-3" /> {apt.doctorName || "General Practitioner"}
+                    </p>
+                    <p className="text-[11px] text-muted-foreground font-mono">
+                      {apt.date ? new Date(apt.date).toLocaleString([], { dateStyle: "short", timeStyle: "short" }) : "N/A"}
+                    </p>
+                  </div>
+                  <Badge variant={apt.status === "scheduled" ? "default" : "secondary"} className="capitalize text-[10px]">
+                    {apt.status || "scheduled"}
+                  </Badge>
+                </div>
+              ))
+            )}
           </CardContent>
         </Card>
       </div>
 
       {/* Patient Overview table */}
-      <Card className="border-none shadow-sm">
-        <CardHeader className="flex flex-row items-center justify-between pb-6">
+      <Card className="border border-border bg-card shadow-xs">
+        <CardHeader className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-4">
           <div>
-            <CardTitle className="text-base font-bold text-gray-800">
-              Patient Overview
-            </CardTitle>
-            <p className="text-[11px] text-gray-400 mt-1">Recent appointments to quickly review patient activity.</p>
+            <CardTitle className="text-base font-bold text-foreground">Patient Activity Log</CardTitle>
+            <p className="text-xs text-muted-foreground mt-0.5">Recent clinical visits, triage, and patient activity.</p>
           </div>
-            <div className="flex bg-white rounded-lg shadow-sm border border-gray-100 overflow-hidden">
-              {selectedIds.length > 0 ? (
-                <button
-                  onClick={handleBulkDelete}
-                  className="cursor-pointer px-4 py-1.5 text-xs font-semibold transition-colors bg-red-50 text-red-600 hover:bg-red-100"
-                >
-                  Delete Selected ({selectedIds.length})
-                </button>
-              ) : ["Today", "Weekly", "Monthly", "Yearly"].map((period) => (
+          <div className="flex bg-muted/60 p-1 rounded-lg border border-border">
+            {selectedIds.length > 0 ? (
+              <Button
+                variant="destructive"
+                size="sm"
+                onClick={handleBulkDelete}
+                className="text-xs h-7"
+              >
+                Delete Selected ({selectedIds.length})
+              </Button>
+            ) : (
+              ["Today", "Weekly", "Monthly", "Yearly"].map((period) => (
                 <button
                   key={period}
                   onClick={() => handleFilterChange(period)}
-                  className={`cursor-pointer px-4 py-1.5 text-xs font-semibold transition-colors ${
+                  className={`px-3 py-1 text-xs font-medium rounded-md transition-all ${
                     period === filter
-                      ? "bg-[#efe6fa] text-[#6b21a8]"
-                      : "text-gray-500 hover:bg-gray-50"
+                      ? "bg-background text-foreground shadow-xs font-semibold"
+                      : "text-muted-foreground hover:text-foreground"
                   }`}
                 >
                   {period}
                 </button>
-              ))}
-            </div>
+              ))
+            )}
+          </div>
         </CardHeader>
-        <CardContent>
+        <CardContent className="p-0">
           <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead>
-                <tr className="border-b border-gray-100">
-                  <th className="pb-3 px-2 text-left">
-                    <input 
-                      type="checkbox" 
-                      className="rounded border-gray-300 text-teal-600 focus:ring-teal-600 cursor-pointer"
+            <table className="w-full text-left text-sm">
+              <thead className="border-b border-border bg-muted/40 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                <tr>
+                  <th className="py-3 px-4 w-10">
+                    <input
+                      type="checkbox"
+                      className="rounded border-border text-primary focus:ring-primary cursor-pointer"
                       checked={overviewData.length > 0 && selectedIds.length === overviewData.length}
                       onChange={(e) => {
-                        if (e.target.checked) setSelectedIds(overviewData.map(o => o.id));
+                        if (e.target.checked) setSelectedIds(overviewData.map((o) => o.id));
                         else setSelectedIds([]);
                       }}
                     />
                   </th>
-                  <th className="pb-3 text-left text-xs font-semibold text-gray-500">
-                    No
-                  </th>
-                  <th className="pb-3 text-left text-xs font-semibold text-gray-500">
-                    Name
-                  </th>
-                  <th className="pb-3 text-left text-xs font-semibold text-gray-500">
-                    Age
-                  </th>
-                  <th className="pb-3 text-left text-xs font-semibold text-gray-500">
-                    Date of Birth
-                  </th>
-                  <th className="pb-3 text-left text-xs font-semibold text-gray-500">
-                    Status
-                  </th>
-                  <th className="pb-3 text-left text-xs font-semibold text-gray-500">
-                    Email address
-                  </th>
-                  <th className="pb-3 text-left text-xs font-semibold text-gray-500">
-                    Phone
-                  </th>
-                  <th className="pb-3 text-center text-xs font-semibold text-gray-500">
-                    Action
-                  </th>
+                  <th className="py-3 px-4">No</th>
+                  <th className="py-3 px-4">Patient</th>
+                  <th className="py-3 px-4">Age</th>
+                  <th className="py-3 px-4">Date of Birth</th>
+                  <th className="py-3 px-4">Status</th>
+                  <th className="py-3 px-4">Email</th>
+                  <th className="py-3 px-4">Phone</th>
+                  <th className="py-3 px-4 text-center">Action</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-50">
-                {overviewData.map((apt, idx) => (
-                  <tr
-                    key={apt.id}
-                    className="transition-colors hover:bg-gray-50/50"
-                  >
-                    <td className="py-4 px-2">
-                       <input 
-                         type="checkbox" 
-                         className="rounded border-gray-300 text-teal-600 focus:ring-teal-600 cursor-pointer"
-                         checked={selectedIds.includes(apt.id)}
-                         onChange={(e) => {
-                           if (e.target.checked) setSelectedIds(prev => [...prev, apt.id]);
-                           else setSelectedIds(prev => prev.filter(id => id !== apt.id));
-                         }}
-                       />
-                    </td>
-                    <td className="py-4 text-[13px] font-medium text-gray-500">
-                      {String(apt.no || idx + 1).padStart(2, "0")}
-                    </td>
-                    <td className="py-4 flex items-center gap-3">
-                      <div>
-                        <p className="text-[13px] font-bold text-gray-800">
-                          {apt.name}
-                        </p>
-                        <p className="text-[11px] text-gray-400 font-medium">
-                          {apt.room}
-                        </p>
-                      </div>
-                    </td>
-                    <td className="py-4 text-[13px] font-medium text-gray-600">{apt.age}</td>
-                    <td className="py-4 text-[13px] font-medium text-gray-600">
-                      {apt.dateOfBirth}
-                    </td>
-                    <td className="py-4">
-                      <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-[#f0fdf4] w-fit border border-[#bbf7d0]">
-                         <span className="size-1.5 rounded-full bg-[#16a34a]" />
-                         <span className="text-[11px] font-semibold text-[#16a34a]">{apt.status}</span>
-                      </div>
-                    </td>
-                    <td className="py-4 text-[13px] font-medium text-gray-500">
-                      {apt.email}
-                    </td>
-                    <td className="py-4 text-[13px] font-medium text-gray-500">
-                      {apt.phone}
-                    </td>
-                    <td className="py-4 text-center">
-                       <div className="flex items-center justify-center gap-3">
-                          <Pencil 
-                            onClick={() => handleEditClick(apt.id)}
-                            className="size-4 text-gray-400 cursor-pointer hover:text-gray-600" 
-                          />
-                          <Trash2 
-                            onClick={() => handleDelete(apt.id)}
-                            className="size-4 text-red-400 cursor-pointer hover:text-red-600" 
-                          />
-                       </div>
+              <tbody className="divide-y divide-border">
+                {overviewData.length === 0 ? (
+                  <tr>
+                    <td colSpan={9} className="py-8 text-center text-xs text-muted-foreground">
+                      No patient records found for this period.
                     </td>
                   </tr>
-                ))}
+                ) : (
+                  overviewData.map((apt, idx) => (
+                    <tr key={apt.id || idx} className="transition-colors hover:bg-muted/30">
+                      <td className="py-3.5 px-4">
+                        <input
+                          type="checkbox"
+                          className="rounded border-border text-primary focus:ring-primary cursor-pointer"
+                          checked={selectedIds.includes(apt.id)}
+                          onChange={(e) => {
+                            if (e.target.checked) setSelectedIds((prev) => [...prev, apt.id]);
+                            else setSelectedIds((prev) => prev.filter((id) => id !== apt.id));
+                          }}
+                        />
+                      </td>
+                      <td className="py-3.5 px-4 text-xs font-medium text-muted-foreground">
+                        {String(apt.no || idx + 1).padStart(2, "0")}
+                      </td>
+                      <td className="py-3.5 px-4">
+                        <p className="text-sm font-semibold text-foreground">{apt.name}</p>
+                        {apt.room && <p className="text-xs text-muted-foreground">{apt.room}</p>}
+                      </td>
+                      <td className="py-3.5 px-4 text-xs text-foreground">{apt.age || "—"}</td>
+                      <td className="py-3.5 px-4 text-xs text-muted-foreground">{apt.dateOfBirth || "—"}</td>
+                      <td className="py-3.5 px-4">
+                        <Badge variant="outline" className="bg-emerald-500/10 text-emerald-600 border-emerald-500/30 text-xs">
+                          {apt.status || "Active"}
+                        </Badge>
+                      </td>
+                      <td className="py-3.5 px-4 text-xs text-muted-foreground">{apt.email || "—"}</td>
+                      <td className="py-3.5 px-4 text-xs text-muted-foreground">{apt.phone || "—"}</td>
+                      <td className="py-3.5 px-4 text-center">
+                        <div className="flex items-center justify-center gap-2">
+                          <button
+                            onClick={() => handleEditClick(apt.id)}
+                            className="text-muted-foreground hover:text-foreground p-1 transition-colors"
+                            title="Edit Patient"
+                          >
+                            <Pencil className="size-3.5" />
+                          </button>
+                          <button
+                            onClick={() => handleDelete(apt.id)}
+                            className="text-muted-foreground hover:text-destructive p-1 transition-colors"
+                            title="Delete Patient"
+                          >
+                            <Trash2 className="size-3.5" />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))
+                )}
               </tbody>
             </table>
           </div>
         </CardContent>
       </Card>
+
       {editingPatient && (
         <EditPatientDialog
           open={!!editingPatient}

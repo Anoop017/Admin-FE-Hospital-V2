@@ -17,9 +17,29 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
-// ── Response Interceptor (handle 401) ────────────────
+// ── Response Interceptor (handle envelope & 401) ──
 api.interceptors.response.use(
-  (response) => response,
+  (response) => {
+    // If response is formatted with standard envelope { success, data, meta }
+    if (
+      response.data &&
+      typeof response.data === "object" &&
+      "data" in response.data &&
+      ("success" in response.data || "statusCode" in response.data)
+    ) {
+      const envelope = response.data;
+      const innerData = envelope.data;
+      if (innerData !== null && typeof innerData === "object" && envelope.meta) {
+        try {
+          (innerData as any)._meta = envelope.meta;
+        } catch {
+          // ignore frozen objects
+        }
+      }
+      response.data = innerData;
+    }
+    return response;
+  },
   (error) => {
     if (error.response?.status === 401) {
       clearSession();
@@ -39,6 +59,14 @@ export async function login(payload: LoginPayload): Promise<LoginResponse> {
 
 export async function getProfile(): Promise<AuthUser> {
   const { data } = await api.get<AuthUser>("/auth/profile");
+  return data;
+}
+
+export async function changePassword(payload: {
+  currentPassword: string;
+  newPassword: string;
+}): Promise<any> {
+  const { data } = await api.post<any>("/auth/change-password", payload);
   return data;
 }
 
@@ -415,8 +443,8 @@ export async function createMedicine(
   return data;
 }
 
-export async function getMedicines(): Promise<Medicine[]> {
-  const { data } = await api.get<Medicine[]>("/medicines");
+export async function getMedicines(params?: Record<string, any>): Promise<Medicine[]> {
+  const { data } = await api.get<Medicine[]>("/medicines", { params });
   return data;
 }
 
@@ -473,13 +501,63 @@ export async function deleteLaborator(id: string): Promise<void> {
   await api.delete(`/laboratory/${id}`);
 }
 
+export async function getDashboardAnalytics(period: "week" | "month" | "day" = "week"): Promise<any> {
+  const { data } = await api.get<any>(`/dashboard/analytics?period=${period}`);
+  return data;
+}
+
+export async function getBillingStats(): Promise<any> {
+  const { data } = await api.get<any>("/billing/stats");
+  return data;
+}
+
+export async function getBedAvailabilityMatrix(): Promise<any[]> {
+  const { data } = await api.get<any[]>("/beds/availability-matrix");
+  return data;
+}
+
+export async function dischargeAdmission(
+  id: string,
+  dischargeDate?: string,
+): Promise<Admission> {
+  const { data } = await api.patch<Admission>(`/admissions/${id}`, {
+    status: "discharged",
+    dischargeDate: dischargeDate || new Date().toISOString(),
+  });
+  return data;
+}
+
+export async function getPatientSummary(id: string): Promise<any> {
+  const { data } = await api.get<any>(`/patients/${id}/summary`);
+  return data;
+}
+
+export async function getMedicinesStats(): Promise<{
+  totalMedicines: number;
+  lowStockCount: number;
+  outOfStockCount: number;
+}> {
+  const { data } = await api.get<any>("/medicines/stats");
+  return data;
+}
+
+export async function getLaboratoryStats(): Promise<{
+  total: number;
+  pending: number;
+  completed: number;
+  cancelled: number;
+}> {
+  const { data } = await api.get<any>("/laboratory/stats");
+  return data;
+}
+
 export async function createBillBilling(payload: CreateBillDto): Promise<any> {
   const { data } = await api.post<any>("/billing/bills", payload);
   return data;
 }
 
-export async function findAllBillsBilling(): Promise<any> {
-  const { data } = await api.get<any>("/billing/bills");
+export async function findAllBillsBilling(params?: Record<string, any>): Promise<any> {
+  const { data } = await api.get<any>("/billing/bills", { params });
   return data;
 }
 
@@ -506,3 +584,4 @@ export async function makePaymentBilling(
   const { data } = await api.post<any>("/billing/payments", payload);
   return data;
 }
+
