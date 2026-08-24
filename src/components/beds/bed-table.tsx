@@ -19,7 +19,7 @@ export function BedTable({ items, onEdit, onDelete }: { items: Bed[], onEdit: (i
         <tbody>
           {items.map(item => (
             <tr key={item.id} className="border-b transition-colors hover:bg-muted/50">
-              <td className="p-4 align-middle">{item.id?.substring(0,8)}...</td>
+              <td className="p-4 align-middle font-mono font-medium">#{item.id}</td>
               <td className="p-4 align-middle">{item.ward?.name || item.wardId?.toString()}</td>
               <td className="p-4 align-middle">{item.bedNumber?.toString()}</td>
               <td className="p-4 align-middle capitalize">

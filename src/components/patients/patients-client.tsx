@@ -19,7 +19,7 @@ export function PatientsClient() {
   const [createOpen, setCreateOpen] = useState(false);
   const [editItem, setEditItem] = useState<Patient | null>(null);
   const [deleteItem, setDeleteItem] = useState<Patient | null>(null);
-  const [summaryPatientId, setSummaryPatientId] = useState<string | null>(null);
+  const [summaryPatientId, setSummaryPatientId] = useState<number | string | null>(null);
 
   const fetchItems = useCallback(async () => {
     try {
@@ -45,7 +45,7 @@ export function PatientsClient() {
     const mobile = i.user?.mobile || "";
     const bloodGroup = i.bloodGroup?.toLowerCase() || "";
     const address = i.address?.toLowerCase() || "";
-    return name.includes(q) || email.includes(q) || mobile.includes(q) || bloodGroup.includes(q) || address.includes(q) || i.id.includes(q);
+    return name.includes(q) || email.includes(q) || mobile.includes(q) || bloodGroup.includes(q) || address.includes(q) || String(i.id).includes(q);
   });
 
   return (

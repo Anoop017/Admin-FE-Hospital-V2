@@ -17,7 +17,7 @@ export function WardTable({ items, onEdit, onDelete }: { items: Ward[], onEdit: 
         <tbody>
           {items.map(item => (
             <tr key={item.id} className="border-b transition-colors hover:bg-muted/50">
-              <td className="p-4 align-middle">{item.id?.substring(0,8)}...</td>
+              <td className="p-4 align-middle font-mono font-medium">#{item.id}</td>
               <td className="p-4 align-middle">{item.name?.toString()}</td><td className="p-4 align-middle">{item.type?.toString()}</td><td className="p-4 align-middle">{item.capacity?.toString()}</td><td className="p-4 align-middle">{item.floor?.toString()}</td>
               <td className="p-4 align-middle text-right">
                 <Button variant="ghost" size="icon" onClick={() => onEdit(item)}><Edit className="size-4" /></Button>

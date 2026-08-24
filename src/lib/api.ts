@@ -1,14 +1,60 @@
 import axios from "axios";
-import { getToken, clearSession } from "@/lib/auth";
-import type { Role, User, AuthUser, LoginPayload, LoginResponse, UserCreatePayload, UserUpdatePayload, NavItem, NavSection, LoginDto, RegisterDto, CreateUserDto, UpdateUserDto, CreatePatientDto, UpdatePatientDto, CreateDoctorDto, UpdateDoctorDto, CreateStaffDto, UpdateStaffDto, CreateDepartmentDto, UpdateDepartmentDto, CreateAppointmentDto, UpdateAppointmentDto, CreateWardDto, UpdateWardDto, CreateBedDto, UpdateBedDto, CreateAdmissionDto, UpdateAdmissionDto, CreateMedicalRecordDto, UpdateMedicalRecordDto, CreatePrescriptionDto, UpdatePrescriptionDto, CreateMedicineDto, UpdateMedicineDto, CreateLabTestDto, UpdateLabTestDto, CreateBillDto, UpdateBillDto, CreatePaymentDto, Patient, Doctor, Staf, Staff, Department, Appointment, Ward, Bed, Admission, MedicalRecord, Prescription, Medicine, Laborator, LabTest, Bill, Payment } from "@/types";
+import { clearSession, getToken } from "./auth";
+import type {
+  AuthUser,
+  LoginPayload,
+  LoginResponse,
+  User,
+  UserCreatePayload,
+  UserUpdatePayload,
+  CreatePatientDto,
+  UpdatePatientDto,
+  Patient,
+  CreateDoctorDto,
+  UpdateDoctorDto,
+  Doctor,
+  CreateStaffDto,
+  UpdateStaffDto,
+  Staf,
+  CreateDepartmentDto,
+  UpdateDepartmentDto,
+  Department,
+  CreateAppointmentDto,
+  UpdateAppointmentDto,
+  Appointment,
+  CreateWardDto,
+  UpdateWardDto,
+  Ward,
+  CreateBedDto,
+  UpdateBedDto,
+  Bed,
+  CreateAdmissionDto,
+  UpdateAdmissionDto,
+  Admission,
+  CreateMedicalRecordDto,
+  UpdateMedicalRecordDto,
+  MedicalRecord,
+  CreatePrescriptionDto,
+  UpdatePrescriptionDto,
+  Prescription,
+  CreateMedicineDto,
+  UpdateMedicineDto,
+  Medicine,
+  CreateLabTestDto,
+  UpdateLabTestDto,
+  Laborator,
+  CreateBillDto,
+  UpdateBillDto,
+  CreatePaymentDto,
+} from "@/types";
 
-// ── Axios Instance ───────────────────────────────────
 const api = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_URL || "http://localhost:3042/api/v1",
-  headers: { "Content-Type": "application/json" },
+  baseURL: process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000/api/v1",
+  headers: {
+    "Content-Type": "application/json",
+  },
 });
 
-// ── Request Interceptor (attach JWT) ─────────────────
 api.interceptors.request.use((config) => {
   const token = getToken();
   if (token) {
@@ -17,15 +63,14 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
-// ── Response Interceptor (handle envelope & 401) ──
 api.interceptors.response.use(
   (response) => {
-    // If response is formatted with standard envelope { success, data, meta }
+    // Unpack standard envelope: { success, statusCode, message, data, meta }
     if (
       response.data &&
       typeof response.data === "object" &&
-      "data" in response.data &&
-      ("success" in response.data || "statusCode" in response.data)
+      "success" in response.data &&
+      "data" in response.data
     ) {
       const envelope = response.data;
       const innerData = envelope.data;
@@ -93,14 +138,14 @@ export async function createUser(payload: UserCreatePayload): Promise<User> {
 }
 
 export async function updateUser(
-  id: string,
+  id: number | string,
   payload: UserUpdatePayload,
 ): Promise<User> {
   const { data } = await api.patch<User>(`/users/${id}`, payload);
   return data;
 }
 
-export async function deleteUser(id: string): Promise<void> {
+export async function deleteUser(id: number | string): Promise<void> {
   await api.delete(`/users/${id}`);
 }
 
@@ -133,24 +178,24 @@ export async function getPatients(): Promise<Patient[]> {
   return data;
 }
 
-export async function getPatient(id: string): Promise<Patient> {
+export async function getPatient(id: number | string): Promise<Patient> {
   const { data } = await api.get<Patient>(`/patients/${id}`);
   return data;
 }
 
 export async function updatePatient(
-  id: string,
+  id: number | string,
   payload: UpdatePatientDto,
 ): Promise<Patient> {
   const { data } = await api.patch<Patient>(`/patients/${id}`, payload);
   return data;
 }
 
-export async function deletePatient(id: string): Promise<void> {
+export async function deletePatient(id: number | string): Promise<void> {
   await api.delete(`/patients/${id}`);
 }
 
-export async function deletePatientBulk(ids: string[]): Promise<void> {
+export async function deletePatientBulk(ids: (number | string)[]): Promise<void> {
   await api.delete("/patients/bulk", { data: { ids } });
 }
 
@@ -171,20 +216,20 @@ export async function getDoctors(): Promise<Doctor[]> {
   return data;
 }
 
-export async function getDoctor(id: string): Promise<Doctor> {
+export async function getDoctor(id: number | string): Promise<Doctor> {
   const { data } = await api.get<Doctor>(`/doctors/${id}`);
   return data;
 }
 
 export async function updateDoctor(
-  id: string,
+  id: number | string,
   payload: UpdateDoctorDto,
 ): Promise<Doctor> {
   const { data } = await api.patch<Doctor>(`/doctors/${id}`, payload);
   return data;
 }
 
-export async function deleteDoctor(id: string): Promise<void> {
+export async function deleteDoctor(id: number | string): Promise<void> {
   await api.delete(`/doctors/${id}`);
 }
 
@@ -205,20 +250,20 @@ export async function getStaff(): Promise<Staf[]> {
   return data;
 }
 
-export async function getStaf(id: string): Promise<Staf> {
+export async function getStaf(id: number | string): Promise<Staf> {
   const { data } = await api.get<Staf>(`/staff/${id}`);
   return data;
 }
 
 export async function updateStaf(
-  id: string,
+  id: number | string,
   payload: UpdateStaffDto,
 ): Promise<Staf> {
   const { data } = await api.patch<Staf>(`/staff/${id}`, payload);
   return data;
 }
 
-export async function deleteStaf(id: string): Promise<void> {
+export async function deleteStaf(id: number | string): Promise<void> {
   await api.delete(`/staff/${id}`);
 }
 
@@ -234,20 +279,20 @@ export async function getDepartments(): Promise<Department[]> {
   return data;
 }
 
-export async function getDepartment(id: string): Promise<Department> {
+export async function getDepartment(id: number | string): Promise<Department> {
   const { data } = await api.get<Department>(`/departments/${id}`);
   return data;
 }
 
 export async function updateDepartment(
-  id: string,
+  id: number | string,
   payload: UpdateDepartmentDto,
 ): Promise<Department> {
   const { data } = await api.patch<Department>(`/departments/${id}`, payload);
   return data;
 }
 
-export async function deleteDepartment(id: string): Promise<void> {
+export async function deleteDepartment(id: number | string): Promise<void> {
   await api.delete(`/departments/${id}`);
 }
 
@@ -263,20 +308,20 @@ export async function getAppointments(): Promise<Appointment[]> {
   return data;
 }
 
-export async function getAppointment(id: string): Promise<Appointment> {
+export async function getAppointment(id: number | string): Promise<Appointment> {
   const { data } = await api.get<Appointment>(`/appointments/${id}`);
   return data;
 }
 
 export async function updateAppointment(
-  id: string,
+  id: number | string,
   payload: UpdateAppointmentDto,
 ): Promise<Appointment> {
   const { data } = await api.patch<Appointment>(`/appointments/${id}`, payload);
   return data;
 }
 
-export async function deleteAppointment(id: string): Promise<void> {
+export async function deleteAppointment(id: number | string): Promise<void> {
   await api.delete(`/appointments/${id}`);
 }
 
@@ -290,20 +335,20 @@ export async function getWards(): Promise<Ward[]> {
   return data;
 }
 
-export async function getWard(id: string): Promise<Ward> {
+export async function getWard(id: number | string): Promise<Ward> {
   const { data } = await api.get<Ward>(`/wards/${id}`);
   return data;
 }
 
 export async function updateWard(
-  id: string,
+  id: number | string,
   payload: UpdateWardDto,
 ): Promise<Ward> {
   const { data } = await api.patch<Ward>(`/wards/${id}`, payload);
   return data;
 }
 
-export async function deleteWard(id: string): Promise<void> {
+export async function deleteWard(id: number | string): Promise<void> {
   await api.delete(`/wards/${id}`);
 }
 
@@ -317,20 +362,20 @@ export async function getBeds(): Promise<Bed[]> {
   return data;
 }
 
-export async function getBed(id: string): Promise<Bed> {
+export async function getBed(id: number | string): Promise<Bed> {
   const { data } = await api.get<Bed>(`/beds/${id}`);
   return data;
 }
 
 export async function updateBed(
-  id: string,
+  id: number | string,
   payload: UpdateBedDto,
 ): Promise<Bed> {
   const { data } = await api.patch<Bed>(`/beds/${id}`, payload);
   return data;
 }
 
-export async function deleteBed(id: string): Promise<void> {
+export async function deleteBed(id: number | string): Promise<void> {
   await api.delete(`/beds/${id}`);
 }
 
@@ -346,20 +391,20 @@ export async function getAdmissions(): Promise<Admission[]> {
   return data;
 }
 
-export async function getAdmission(id: string): Promise<Admission> {
+export async function getAdmission(id: number | string): Promise<Admission> {
   const { data } = await api.get<Admission>(`/admissions/${id}`);
   return data;
 }
 
 export async function updateAdmission(
-  id: string,
+  id: number | string,
   payload: UpdateAdmissionDto,
 ): Promise<Admission> {
   const { data } = await api.patch<Admission>(`/admissions/${id}`, payload);
   return data;
 }
 
-export async function deleteAdmission(id: string): Promise<void> {
+export async function deleteAdmission(id: number | string): Promise<void> {
   await api.delete(`/admissions/${id}`);
 }
 
@@ -376,7 +421,7 @@ export async function getMedicalRecords(): Promise<MedicalRecord[]> {
 }
 
 export async function getMedicalRecordsByPatient(
-  patientId: string,
+  patientId: number | string,
 ): Promise<MedicalRecord[]> {
   const { data } = await api.get<MedicalRecord[]>(
     `/medical-records/patient/${patientId}`,
@@ -384,13 +429,13 @@ export async function getMedicalRecordsByPatient(
   return data;
 }
 
-export async function getMedicalRecord(id: string): Promise<MedicalRecord> {
+export async function getMedicalRecord(id: number | string): Promise<MedicalRecord> {
   const { data } = await api.get<MedicalRecord>(`/medical-records/${id}`);
   return data;
 }
 
 export async function updateMedicalRecord(
-  id: string,
+  id: number | string,
   payload: UpdateMedicalRecordDto,
 ): Promise<MedicalRecord> {
   const { data } = await api.patch<MedicalRecord>(
@@ -400,7 +445,7 @@ export async function updateMedicalRecord(
   return data;
 }
 
-export async function deleteMedicalRecord(id: string): Promise<void> {
+export async function deleteMedicalRecord(id: number | string): Promise<void> {
   await api.delete(`/medical-records/${id}`);
 }
 
@@ -416,13 +461,13 @@ export async function getPrescriptions(): Promise<Prescription[]> {
   return data;
 }
 
-export async function getPrescription(id: string): Promise<Prescription> {
+export async function getPrescription(id: number | string): Promise<Prescription> {
   const { data } = await api.get<Prescription>(`/prescriptions/${id}`);
   return data;
 }
 
 export async function updatePrescription(
-  id: string,
+  id: number | string,
   payload: UpdatePrescriptionDto,
 ): Promise<Prescription> {
   const { data } = await api.patch<Prescription>(
@@ -432,7 +477,7 @@ export async function updatePrescription(
   return data;
 }
 
-export async function deletePrescription(id: string): Promise<void> {
+export async function deletePrescription(id: number | string): Promise<void> {
   await api.delete(`/prescriptions/${id}`);
 }
 
@@ -448,25 +493,25 @@ export async function getMedicines(params?: Record<string, any>): Promise<Medici
   return data;
 }
 
-export async function getMedicine(id: string): Promise<Medicine> {
+export async function getMedicine(id: number | string): Promise<Medicine> {
   const { data } = await api.get<Medicine>(`/medicines/${id}`);
   return data;
 }
 
 export async function updateMedicine(
-  id: string,
+  id: number | string,
   payload: UpdateMedicineDto,
 ): Promise<Medicine> {
   const { data } = await api.patch<Medicine>(`/medicines/${id}`, payload);
   return data;
 }
 
-export async function deleteMedicine(id: string): Promise<void> {
+export async function deleteMedicine(id: number | string): Promise<void> {
   await api.delete(`/medicines/${id}`);
 }
 
 export async function fulfillPrescriptionPharmacy(
-  prescriptionId: string,
+  prescriptionId: number | string,
 ): Promise<any> {
   const { data } = await api.post<any>(`/pharmacy/fulfill/${prescriptionId}`);
   return data;
@@ -484,20 +529,20 @@ export async function getLaboratory(): Promise<Laborator[]> {
   return data;
 }
 
-export async function getLaborator(id: string): Promise<Laborator> {
+export async function getLaborator(id: number | string): Promise<Laborator> {
   const { data } = await api.get<Laborator>(`/laboratory/${id}`);
   return data;
 }
 
 export async function updateLaborator(
-  id: string,
+  id: number | string,
   payload: UpdateLabTestDto,
 ): Promise<Laborator> {
   const { data } = await api.patch<Laborator>(`/laboratory/${id}`, payload);
   return data;
 }
 
-export async function deleteLaborator(id: string): Promise<void> {
+export async function deleteLaborator(id: number | string): Promise<void> {
   await api.delete(`/laboratory/${id}`);
 }
 
@@ -517,7 +562,7 @@ export async function getBedAvailabilityMatrix(): Promise<any[]> {
 }
 
 export async function dischargeAdmission(
-  id: string,
+  id: number | string,
   dischargeDate?: string,
 ): Promise<Admission> {
   const { data } = await api.patch<Admission>(`/admissions/${id}`, {
@@ -527,7 +572,7 @@ export async function dischargeAdmission(
   return data;
 }
 
-export async function getPatientSummary(id: string): Promise<any> {
+export async function getPatientSummary(id: number | string): Promise<any> {
   const { data } = await api.get<any>(`/patients/${id}/summary`);
   return data;
 }
@@ -561,20 +606,20 @@ export async function findAllBillsBilling(params?: Record<string, any>): Promise
   return data;
 }
 
-export async function findOneBillBilling(id: string): Promise<any> {
+export async function findOneBillBilling(id: number | string): Promise<any> {
   const { data } = await api.get<any>(`/billing/bills/${id}`);
   return data;
 }
 
 export async function updateBillBilling(
-  id: string,
+  id: number | string,
   payload: UpdateBillDto,
 ): Promise<any> {
   const { data } = await api.patch<any>(`/billing/bills/${id}`, payload);
   return data;
 }
 
-export async function deleteBillBilling(id: string): Promise<void> {
+export async function deleteBillBilling(id: number | string): Promise<void> {
   await api.delete(`/billing/bills/${id}`);
 }
 
@@ -584,4 +629,3 @@ export async function makePaymentBilling(
   const { data } = await api.post<any>("/billing/payments", payload);
   return data;
 }
-

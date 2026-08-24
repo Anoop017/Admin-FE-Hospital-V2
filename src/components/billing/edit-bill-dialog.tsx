@@ -27,7 +27,7 @@ export function EditBillDialog({ item, open, onOpenChange, onSuccess }: EditBill
   useEffect(() => {
     if (open && item) {
       setError(null);
-      setPatientId(item.patientId || "");
+      setPatientId(item.patientId ? String(item.patientId) : "");
       setTotalAmount(String(item.totalAmount || ""));
       // format date YYYY-MM-DD
       const rawDate = item.dueDate ? item.dueDate.split("T")[0] : "";
@@ -71,7 +71,7 @@ export function EditBillDialog({ item, open, onOpenChange, onSuccess }: EditBill
 
   if (!item) return null;
 
-  const selectedPatient = patients.find((p) => p.id === patientId);
+  const selectedPatient = patients.find((p) => String(p.id) === String(patientId));
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -79,7 +79,7 @@ export function EditBillDialog({ item, open, onOpenChange, onSuccess }: EditBill
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <FileEdit className="size-5 text-primary" />
-            Edit Bill #{item.id.substring(0, 8)}
+            Edit Bill #{item.id}
           </DialogTitle>
           <DialogDescription>
             Update billing details, status, or due date.
@@ -104,7 +104,7 @@ export function EditBillDialog({ item, open, onOpenChange, onSuccess }: EditBill
               <SelectTrigger className="w-full">
                 <SelectValue placeholder="Select patient">
                   {selectedPatient
-                    ? `${selectedPatient.user?.firstName ?? ""} ${selectedPatient.user?.lastName ?? ""}`.trim() || selectedPatient.id
+                    ? `${selectedPatient.user?.firstName ?? ""} ${selectedPatient.user?.lastName ?? ""}`.trim() || `#${selectedPatient.id}`
                     : item.patient?.user
                     ? `${item.patient.user.firstName} ${item.patient.user.lastName}`
                     : "Select patient"}
@@ -112,8 +112,8 @@ export function EditBillDialog({ item, open, onOpenChange, onSuccess }: EditBill
               </SelectTrigger>
               <SelectContent>
                 {patients.map((p) => (
-                  <SelectItem key={p.id} value={p.id}>
-                    {`${p.user?.firstName ?? ""} ${p.user?.lastName ?? ""}`.trim() || p.id}
+                  <SelectItem key={p.id} value={String(p.id)}>
+                    {`${p.user?.firstName ?? ""} ${p.user?.lastName ?? ""}`.trim() || `Patient #${p.id}`}
                   </SelectItem>
                 ))}
               </SelectContent>

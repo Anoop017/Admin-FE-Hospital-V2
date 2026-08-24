@@ -72,7 +72,7 @@ export function RecordPaymentDialog({ bill, open, onOpenChange, onSuccess }: Rec
 
   const patientName = bill.patient?.user
     ? `${bill.patient.user.firstName} ${bill.patient.user.lastName}`
-    : `Patient #${bill.patientId.substring(0, 8)}`;
+    : `Patient #${bill.patientId}`;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -83,7 +83,7 @@ export function RecordPaymentDialog({ bill, open, onOpenChange, onSuccess }: Rec
             Record Payment
           </DialogTitle>
           <DialogDescription>
-            Record a payment transaction for invoice #{bill.id.substring(0, 8)}.
+            Record a payment transaction for invoice #{bill.id}.
           </DialogDescription>
         </DialogHeader>
 

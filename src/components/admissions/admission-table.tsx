@@ -38,21 +38,21 @@ export function AdmissionTable({
             const isAdmitted = item.status?.toLowerCase() === "admitted";
             const patientName = item.patient?.user
               ? `${item.patient.user.firstName} ${item.patient.user.lastName}`
-              : `Patient #${item.patientId?.substring(0, 8)}`;
+              : `Patient #${item.patientId}`;
             const docName = item.admittingDoctor?.user
               ? `Dr. ${item.admittingDoctor.user.firstName} ${item.admittingDoctor.user.lastName}`
-              : `Doctor #${item.admittingDoctorId?.substring(0, 8)}`;
+              : `Doctor #${item.admittingDoctorId}`;
 
             return (
               <tr key={item.id} className="transition-colors hover:bg-muted/30">
                 <td className="p-4 align-middle font-mono font-medium">
-                  #{item.id?.substring(0, 8)}
+                  #{item.id}
                 </td>
                 <td className="p-4 align-middle font-medium text-foreground">{patientName}</td>
                 <td className="p-4 align-middle text-muted-foreground">{docName}</td>
                 <td className="p-4 align-middle">
                   <Badge variant="outline" className="font-mono">
-                    {item.bed ? `Bed ${item.bed.bedNumber}` : item.bedId ? `Bed ${item.bedId.substring(0, 6)}` : "—"}
+                    {item.bed ? `Bed ${item.bed.bedNumber}` : item.bedId ? `Bed #${item.bedId}` : "—"}
                   </Badge>
                 </td>
                 <td className="p-4 align-middle text-xs text-muted-foreground">

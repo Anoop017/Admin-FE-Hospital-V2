@@ -37,7 +37,7 @@ export function AdmissionsClient() {
 
   const handleDischarge = async (item: Admission) => {
     const confirmDischarge = confirm(
-      `Discharge patient ${item.patient?.user?.firstName || ""} from admission #${item.id.substring(0, 8)}? This will automatically mark the assigned bed as available.`
+      `Discharge patient ${item.patient?.user?.firstName || ""} from admission #${item.id}? This will automatically mark the assigned bed as available.`
     );
     if (!confirmDischarge) return;
 
@@ -55,7 +55,7 @@ export function AdmissionsClient() {
     const q = searchQuery.toLowerCase().trim();
     const patientName = `${i.patient?.user?.firstName || ""} ${i.patient?.user?.lastName || ""}`.toLowerCase();
     const docName = `${i.admittingDoctor?.user?.firstName || ""} ${i.admittingDoctor?.user?.lastName || ""}`.toLowerCase();
-    return patientName.includes(q) || docName.includes(q) || i.reason?.toLowerCase().includes(q) || i.id.includes(q);
+    return patientName.includes(q) || docName.includes(q) || i.reason?.toLowerCase().includes(q) || String(i.id).includes(q);
   });
 
   return (

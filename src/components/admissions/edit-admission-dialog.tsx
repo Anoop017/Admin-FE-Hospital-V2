@@ -52,7 +52,7 @@ export function EditAdmissionDialog({ item, open, onOpenChange, onSuccess }: any
             </div>
             <div className="flex flex-col gap-2">
               <label className="text-sm font-medium">Bed</label>
-              <Input value={item?.bed ? `Bed ${item.bed.bedNumber}` : bedId} disabled className="bg-gray-50" />
+              <Input value={item?.bed ? `Bed ${item.bed.bedNumber}` : (bedId ? `Bed #${bedId}` : "")} disabled className="bg-gray-50" />
             </div>
             <div className="flex flex-col gap-2">
               <label className="text-sm font-medium">Status</label>

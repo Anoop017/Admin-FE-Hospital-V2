@@ -17,7 +17,7 @@ export function DoctorTable({ items, onEdit, onDelete }: { items: Doctor[], onEd
         <tbody>
           {items.map(item => (
             <tr key={item.id} className="border-b transition-colors hover:bg-muted/50">
-              <td className="p-4 align-middle">{item.id?.substring(0,8)}...</td>
+              <td className="p-4 align-middle font-mono font-medium">#{item.id}</td>
               <td className="p-4 align-middle">{item.user ? `Dr. ${item.user.firstName} ${item.user.lastName}` : item.userId?.toString()}</td><td className="p-4 align-middle">{item.specialization?.toString()}</td><td className="p-4 align-middle">{item.licenseNumber?.toString()}</td><td className="p-4 align-middle">{item.experienceYears?.toString()}</td><td className="p-4 align-middle">{item.consultationFee?.toString()}</td>
               <td className="p-4 align-middle text-right">
                 <Button variant="ghost" size="icon" onClick={() => onEdit(item)}><Edit className="size-4" /></Button>

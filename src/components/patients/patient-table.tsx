@@ -36,13 +36,13 @@ export function PatientTable({
           {items.map((item) => {
             const name = item.user
               ? `${item.user.firstName} ${item.user.lastName}`
-              : `Patient #${item.id?.substring(0, 8)}`;
+              : `Patient #${item.id}`;
             const emailOrPhone = item.user?.email || item.user?.mobile;
 
             return (
               <tr key={item.id} className="transition-colors hover:bg-muted/30">
                 <td className="p-4 align-middle font-mono font-medium">
-                  #{item.id?.substring(0, 8)}
+                  #{item.id}
                 </td>
                 <td className="p-4 align-middle">
                   <div className="font-semibold text-foreground">{name}</div>

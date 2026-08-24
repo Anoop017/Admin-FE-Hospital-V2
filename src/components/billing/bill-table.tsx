@@ -71,13 +71,13 @@ export function BillTable({ items, onView, onEdit, onDelete, onPay }: BillTableP
             const isOverdue = item.status !== "paid" && item.dueDate && new Date(item.dueDate) < new Date();
             const patientName = item.patient?.user
               ? `${item.patient.user.firstName} ${item.patient.user.lastName}`
-              : `Patient #${item.patientId?.substring(0, 8)}`;
+              : `Patient #${item.patientId}`;
             const patientContact = item.patient?.user?.email || item.patient?.user?.mobile;
 
             return (
               <tr key={item.id} className="transition-colors hover:bg-muted/30">
                 <td className="p-4 align-middle font-mono font-medium text-foreground">
-                  #{item.id?.substring(0, 8)}
+                  #{item.id}
                 </td>
                 <td className="p-4 align-middle">
                   <div className="font-medium text-foreground">{patientName}</div>

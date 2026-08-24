@@ -17,7 +17,7 @@ export function StafTable({ items, onEdit, onDelete }: { items: Staf[], onEdit: 
         <tbody>
           {items.map(item => (
             <tr key={item.id} className="border-b transition-colors hover:bg-muted/50">
-              <td className="p-4 align-middle">{item.id?.substring(0,8)}...</td>
+              <td className="p-4 align-middle font-mono font-medium">#{item.id}</td>
               <td className="p-4 align-middle">{item.user ? `${item.user.firstName} ${item.user.lastName}` : item.userId?.toString()}</td><td className="p-4 align-middle">{item.department ? item.department.name : item.departmentId?.toString()}</td><td className="p-4 align-middle">{item.jobTitle?.toString()}</td><td className="p-4 align-middle">{item.hireDate?.toString()}</td>
               <td className="p-4 align-middle text-right">
                 <Button variant="ghost" size="icon" onClick={() => onEdit(item)}><Edit className="size-4" /></Button>

@@ -57,7 +57,7 @@ export function PrescriptionsClient() {
     const patientName = `${i.patient?.user?.firstName || ""} ${i.patient?.user?.lastName || ""}`.toLowerCase();
     const docName = `${i.doctor?.user?.firstName || ""} ${i.doctor?.user?.lastName || ""}`.toLowerCase();
     const med = i.medication?.toLowerCase() || "";
-    return patientName.includes(q) || docName.includes(q) || med.includes(q) || i.id.includes(q);
+    return patientName.includes(q) || docName.includes(q) || med.includes(q) || String(i.id).includes(q);
   });
 
   return (

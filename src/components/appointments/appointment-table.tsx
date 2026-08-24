@@ -22,7 +22,7 @@ export function AppointmentTable({ items, onEdit, onDelete }: { items: Appointme
         <tbody>
           {items.map(item => (
             <tr key={item.id} className="border-b transition-colors hover:bg-muted/50">
-              <td className="p-4 align-middle">{item.id?.substring(0,8)}...</td>
+              <td className="p-4 align-middle font-mono font-medium">#{item.id}</td>
               <td className="p-4 align-middle">{item.patient?.user ? `${item.patient.user.firstName} ${item.patient.user.lastName}` : item.patientId?.toString()}</td>              <td className="p-4 align-middle">{item.doctor?.user ? `Dr. ${item.doctor.user.firstName} ${item.doctor.user.lastName}` : item.doctorId?.toString()}</td>
               <td className="p-4 align-middle">{item.appointmentDate ? new Date(item.appointmentDate).toLocaleDateString() : ''}</td>
               <td className="p-4 align-middle">{item.appointmentDate ? new Date(item.appointmentDate).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : ''}</td>

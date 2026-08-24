@@ -23,7 +23,7 @@ import {
 } from "lucide-react";
 
 interface PatientSummaryDialogProps {
-  patientId: string | null;
+  patientId: number | string | null;
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }
@@ -63,7 +63,7 @@ export function PatientSummaryDialog({
 
   const patientName = patient?.user
     ? `${patient.user.firstName} ${patient.user.lastName}`
-    : `Patient #${patientId?.substring(0, 8)}`;
+    : `Patient #${patientId}`;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>

@@ -62,10 +62,10 @@ export function CreateBillDialog({ open, onOpenChange, onSuccess }: CreateBillDi
   }, [open]);
 
   // Filter admissions and appointments by selected patient if applicable
-  const patientAdmissions = admissions.filter((adm) => !patientId || adm.patientId === patientId);
-  const patientAppointments = appointments.filter((apt) => !patientId || apt.patientId === patientId);
+  const patientAdmissions = admissions.filter((adm) => !patientId || String(adm.patientId) === String(patientId));
+  const patientAppointments = appointments.filter((apt) => !patientId || String(apt.patientId) === String(patientId));
 
-  const selectedPatient = patients.find((p) => p.id === patientId);
+  const selectedPatient = patients.find((p) => String(p.id) === String(patientId));
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -142,7 +142,7 @@ export function CreateBillDialog({ open, onOpenChange, onSuccess }: CreateBillDi
               <SelectTrigger className="w-full">
                 <SelectValue placeholder={loadingData ? "Loading patients..." : "Select patient"}>
                   {selectedPatient
-                    ? `${selectedPatient.user?.firstName ?? ""} ${selectedPatient.user?.lastName ?? ""}`.trim() || selectedPatient.id
+                    ? `${selectedPatient.user?.firstName ?? ""} ${selectedPatient.user?.lastName ?? ""}`.trim() || `#${selectedPatient.id}`
                     : "Select patient"}
                 </SelectValue>
               </SelectTrigger>
@@ -151,10 +151,10 @@ export function CreateBillDialog({ open, onOpenChange, onSuccess }: CreateBillDi
                   <div className="p-2 text-sm text-muted-foreground text-center">No patients found</div>
                 ) : (
                   patients.map((p) => {
-                    const name = `${p.user?.firstName ?? ""} ${p.user?.lastName ?? ""}`.trim() || "Unknown Patient";
+                    const name = `${p.user?.firstName ?? ""} ${p.user?.lastName ?? ""}`.trim() || `Patient #${p.id}`;
                     const emailOrMobile = p.user?.email || p.user?.mobile || "";
                     return (
-                      <SelectItem key={p.id} value={p.id}>
+                      <SelectItem key={p.id} value={String(p.id)}>
                         <div className="flex flex-col text-left">
                           <span className="font-medium text-foreground">{name}</span>
                           {emailOrMobile && <span className="text-xs text-muted-foreground">{emailOrMobile}</span>}
@@ -214,15 +214,15 @@ export function CreateBillDialog({ open, onOpenChange, onSuccess }: CreateBillDi
                 <SelectTrigger className="w-full">
                   <SelectValue placeholder="None / Direct bill">
                     {admissionId && admissionId !== "none"
-                      ? `Admission: ${admissionId.substring(0, 8)}...`
+                      ? `Admission #${admissionId}`
                       : "None / Direct bill"}
                   </SelectValue>
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="none">None / Direct bill</SelectItem>
                   {patientAdmissions.map((adm) => (
-                    <SelectItem key={adm.id} value={adm.id}>
-                      Admission {adm.id.substring(0, 8)} — Reason: {adm.reason || "General"}
+                    <SelectItem key={adm.id} value={String(adm.id)}>
+                      Admission #{adm.id} — Reason: {adm.reason || "General"}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -240,15 +240,15 @@ export function CreateBillDialog({ open, onOpenChange, onSuccess }: CreateBillDi
                 <SelectTrigger className="w-full">
                   <SelectValue placeholder="None / Direct bill">
                     {appointmentId && appointmentId !== "none"
-                      ? `Appointment: ${appointmentId.substring(0, 8)}...`
+                      ? `Appointment #${appointmentId}`
                       : "None / Direct bill"}
                   </SelectValue>
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="none">None / Direct bill</SelectItem>
                   {patientAppointments.map((apt) => (
-                    <SelectItem key={apt.id} value={apt.id}>
-                      Appt: {apt.reason || "Checkup"} ({apt.appointmentDate?.split("T")[0] || ""})
+                    <SelectItem key={apt.id} value={String(apt.id)}>
+                      Appointment #{apt.id} ({apt.reason || "Checkup"})
                     </SelectItem>
                   ))}
                 </SelectContent>

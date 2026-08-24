@@ -32,7 +32,7 @@ export function ViewBillDialog({ bill, open, onOpenChange, onRecordPayment }: Vi
 
   const patientName = bill.patient?.user
     ? `${bill.patient.user.firstName} ${bill.patient.user.lastName}`
-    : `Patient #${bill.patientId.substring(0, 8)}`;
+    : `Patient #${bill.patientId}`;
 
   const isOverdue = bill.status !== "paid" && bill.dueDate && new Date(bill.dueDate) < new Date();
 
@@ -43,7 +43,7 @@ export function ViewBillDialog({ bill, open, onOpenChange, onRecordPayment }: Vi
           <div className="flex items-center justify-between pr-6">
             <DialogTitle className="flex items-center gap-2 text-lg">
               <Receipt className="size-5 text-primary" />
-              Invoice #{bill.id.substring(0, 8)}
+              Invoice #{bill.id}
             </DialogTitle>
             {getStatusBadge(bill.status)}
           </div>
@@ -99,13 +99,13 @@ export function ViewBillDialog({ bill, open, onOpenChange, onRecordPayment }: Vi
             {bill.admissionId && (
               <div className="flex justify-between items-center border-t border-border/50 pt-1.5">
                 <span className="text-muted-foreground">Admission Link:</span>
-                <span className="font-mono text-muted-foreground">{bill.admissionId.substring(0, 8)}...</span>
+                <span className="font-mono text-foreground font-medium">Admission #{bill.admissionId}</span>
               </div>
             )}
             {bill.appointmentId && (
               <div className="flex justify-between items-center border-t border-border/50 pt-1.5">
                 <span className="text-muted-foreground">Appointment Link:</span>
-                <span className="font-mono text-muted-foreground">{bill.appointmentId.substring(0, 8)}...</span>
+                <span className="font-mono text-foreground font-medium">Appointment #{bill.appointmentId}</span>
               </div>
             )}
           </div>

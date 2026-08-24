@@ -5,7 +5,7 @@ export interface Role {
 
 // ── User ──────────────────────────────────────────────
 export interface User {
-  id: string;
+  id: number | string;
   email: string;
   firstName: string;
   lastName: string;
@@ -24,7 +24,7 @@ export interface UsersSummary {
 }
 
 export interface AuthUser {
-  userId: string;
+  userId: number | string;
   email: string;
   firstName: string;
   lastName: string;
@@ -112,7 +112,7 @@ export interface UpdateUserDto {
 }
 
 export interface CreatePatientDto {
-  userId?: string;
+  userId?: number | string;
   dateOfBirth?: string;
   gender?: "MALE" | "FEMALE" | "OTHER";
   bloodGroup?: "A+" | "A-" | "B+" | "B-" | "AB+" | "AB-" | "O+" | "O-";
@@ -121,7 +121,7 @@ export interface CreatePatientDto {
 }
 
 export interface UpdatePatientDto {
-  userId?: string;
+  userId?: number | string;
   dateOfBirth?: string;
   gender?: "MALE" | "FEMALE" | "OTHER";
   bloodGroup?: "A+" | "A-" | "B+" | "B-" | "AB+" | "AB-" | "O+" | "O-";
@@ -130,7 +130,7 @@ export interface UpdatePatientDto {
 }
 
 export interface CreateDoctorDto {
-  userId?: string;
+  userId?: number | string;
   specialization: string;
   licenseNumber: string;
   experienceYears?: number;
@@ -138,7 +138,7 @@ export interface CreateDoctorDto {
 }
 
 export interface UpdateDoctorDto {
-  userId?: string;
+  userId?: number | string;
   specialization?: string;
   licenseNumber?: string;
   experienceYears?: number;
@@ -146,15 +146,15 @@ export interface UpdateDoctorDto {
 }
 
 export interface CreateStaffDto {
-  userId?: string;
-  departmentId?: string;
+  userId?: number | string;
+  departmentId?: number | string;
   jobTitle: string;
   hireDate?: string;
 }
 
 export interface UpdateStaffDto {
-  userId?: string;
-  departmentId?: string;
+  userId?: number | string;
+  departmentId?: number | string;
   jobTitle?: string;
   hireDate?: string;
 }
@@ -170,16 +170,16 @@ export interface UpdateDepartmentDto {
 }
 
 export interface CreateAppointmentDto {
-  patientId: string;
-  doctorId: string;
+  patientId: number | string;
+  doctorId: number | string;
   appointmentDate: string;
   reason: string;
   notes?: string;
 }
 
 export interface UpdateAppointmentDto {
-  patientId?: string;
-  doctorId?: string;
+  patientId?: number | string;
+  doctorId?: number | string;
   appointmentDate?: string;
   reason?: string;
   notes?: string;
@@ -190,40 +190,40 @@ export interface CreateWardDto {
   name: string;
   type: string;
   capacity: number;
-  floor: string;
+  floor?: number | string;
 }
 
 export interface UpdateWardDto {
   name?: string;
   type?: string;
   capacity?: number;
-  floor?: string;
+  floor?: number | string;
 }
 
 export interface CreateBedDto {
-  wardId: string;
+  wardId: number | string;
   bedNumber: string;
 }
 
 export interface UpdateBedDto {
-  wardId?: string;
+  wardId?: number | string;
   bedNumber?: string;
   status?: string;
 }
 
 export interface CreateAdmissionDto {
-  patientId: string;
-  admittingDoctorId: string;
-  bedId: string;
+  patientId: number | string;
+  admittingDoctorId?: number | string;
+  bedId?: number | string;
   admissionDate: string;
   reason: string;
   status?: string;
 }
 
 export interface UpdateAdmissionDto {
-  patientId?: string;
-  admittingDoctorId?: string;
-  bedId?: string;
+  patientId?: number | string;
+  admittingDoctorId?: number | string;
+  bedId?: number | string;
   admissionDate?: string;
   reason?: string;
   status?: string;
@@ -231,8 +231,8 @@ export interface UpdateAdmissionDto {
 }
 
 export interface CreateMedicalRecordDto {
-  patientId: string;
-  doctorId: string;
+  patientId: number | string;
+  doctorId: number | string;
   diagnosis: string;
   symptoms: string;
   treatment: string;
@@ -241,8 +241,8 @@ export interface CreateMedicalRecordDto {
 }
 
 export interface UpdateMedicalRecordDto {
-  patientId?: string;
-  doctorId?: string;
+  patientId?: number | string;
+  doctorId?: number | string;
   diagnosis?: string;
   symptoms?: string;
   treatment?: string;
@@ -251,8 +251,8 @@ export interface UpdateMedicalRecordDto {
 }
 
 export interface CreatePrescriptionDto {
-  patientId: string;
-  doctorId: string;
+  patientId: number | string;
+  doctorId: number | string;
   medication: string;
   dosage: string;
   frequency: string;
@@ -262,8 +262,8 @@ export interface CreatePrescriptionDto {
 }
 
 export interface UpdatePrescriptionDto {
-  patientId?: string;
-  doctorId?: string;
+  patientId?: number | string;
+  doctorId?: number | string;
   medication?: string;
   dosage?: string;
   frequency?: string;
@@ -291,8 +291,8 @@ export interface UpdateMedicineDto {
 }
 
 export interface CreateLabTestDto {
-  patientId: string;
-  doctorId: string;
+  patientId: number | string;
+  doctorId: number | string;
   testName: string;
   testType: string;
   result?: string;
@@ -302,8 +302,8 @@ export interface CreateLabTestDto {
 }
 
 export interface UpdateLabTestDto {
-  patientId?: string;
-  doctorId?: string;
+  patientId?: number | string;
+  doctorId?: number | string;
   testName?: string;
   testType?: string;
   result?: string;
@@ -313,56 +313,56 @@ export interface UpdateLabTestDto {
 }
 
 export interface CreateBillDto {
-  patientId: string;
-  admissionId?: string;
-  appointmentId?: string;
+  patientId: number | string;
+  admissionId?: number | string;
+  appointmentId?: number | string;
   totalAmount: number;
   dueDate: string;
 }
 
 export interface UpdateBillDto {
-  patientId?: string;
-  admissionId?: string;
-  appointmentId?: string;
+  patientId?: number | string;
+  admissionId?: number | string;
+  appointmentId?: number | string;
   totalAmount?: number;
   dueDate?: string;
   status?: string;
 }
 
 export interface CreatePaymentDto {
-  billId: string;
+  billId: number | string;
   amount: number;
   paymentMethod: string;
   referenceNumber?: string;
 }
-export interface Patient { id: string; createdAt?: string; updatedAt?: string; [key: string]: any; }
-export interface Doctor { id: string; createdAt?: string; updatedAt?: string; [key: string]: any; }
-export interface Staf { id: string; createdAt?: string; updatedAt?: string; [key: string]: any; }
-export interface Staff { id: string; createdAt?: string; updatedAt?: string; [key: string]: any; }
-export interface Department { id: string; createdAt?: string; updatedAt?: string; [key: string]: any; }
-export interface Appointment { id: string; createdAt?: string; updatedAt?: string; [key: string]: any; }
-export interface Ward { id: string; createdAt?: string; updatedAt?: string; [key: string]: any; }
-export interface Bed { id: string; createdAt?: string; updatedAt?: string; [key: string]: any; }
-export interface Admission { id: string; createdAt?: string; updatedAt?: string; [key: string]: any; }
-export interface MedicalRecord { id: string; createdAt?: string; updatedAt?: string; [key: string]: any; }
-export interface Prescription { id: string; createdAt?: string; updatedAt?: string; [key: string]: any; }
-export interface Medicine { id: string; createdAt?: string; updatedAt?: string; [key: string]: any; }
-export interface Laborator { id: string; createdAt?: string; updatedAt?: string; [key: string]: any; }
-export interface LabTest { id: string; createdAt?: string; updatedAt?: string; [key: string]: any; }
+export interface Patient { id: number | string; userId?: number | string; createdAt?: string; updatedAt?: string; [key: string]: any; }
+export interface Doctor { id: number | string; userId?: number | string; createdAt?: string; updatedAt?: string; [key: string]: any; }
+export interface Staf { id: number | string; userId?: number | string; createdAt?: string; updatedAt?: string; [key: string]: any; }
+export interface Staff { id: number | string; userId?: number | string; createdAt?: string; updatedAt?: string; [key: string]: any; }
+export interface Department { id: number | string; createdAt?: string; updatedAt?: string; [key: string]: any; }
+export interface Appointment { id: number | string; patientId?: number | string; doctorId?: number | string; createdAt?: string; updatedAt?: string; [key: string]: any; }
+export interface Ward { id: number | string; createdAt?: string; updatedAt?: string; [key: string]: any; }
+export interface Bed { id: number | string; wardId?: number | string; createdAt?: string; updatedAt?: string; [key: string]: any; }
+export interface Admission { id: number | string; patientId?: number | string; admittingDoctorId?: number | string; bedId?: number | string; createdAt?: string; updatedAt?: string; [key: string]: any; }
+export interface MedicalRecord { id: number | string; patientId?: number | string; doctorId?: number | string; createdAt?: string; updatedAt?: string; [key: string]: any; }
+export interface Prescription { id: number | string; patientId?: number | string; doctorId?: number | string; createdAt?: string; updatedAt?: string; [key: string]: any; }
+export interface Medicine { id: number | string; createdAt?: string; updatedAt?: string; [key: string]: any; }
+export interface Laborator { id: number | string; patientId?: number | string; doctorId?: number | string; createdAt?: string; updatedAt?: string; [key: string]: any; }
+export interface LabTest { id: number | string; patientId?: number | string; doctorId?: number | string; createdAt?: string; updatedAt?: string; [key: string]: any; }
 export interface Bill {
-  id: string;
-  patientId: string;
-  admissionId?: string | null;
-  appointmentId?: string | null;
+  id: number | string;
+  patientId: number | string;
+  admissionId?: number | string | null;
+  appointmentId?: number | string | null;
   totalAmount: number | string;
   paidAmount: number | string;
   status: "unpaid" | "partially_paid" | "paid" | string;
   dueDate: string;
   patient?: {
-    id: string;
-    userId?: string;
+    id: number | string;
+    userId?: number | string;
     user?: {
-      id?: string;
+      id?: number | string;
       firstName?: string;
       lastName?: string;
       email?: string;
@@ -379,8 +379,8 @@ export interface Bill {
 }
 
 export interface Payment {
-  id: string;
-  billId: string;
+  id: number | string;
+  billId: number | string;
   amount: number | string;
   paymentDate: string;
   paymentMethod: "cash" | "credit_card" | "insurance" | "transfer" | string;

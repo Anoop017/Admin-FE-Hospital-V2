@@ -37,15 +37,15 @@ export function PrescriptionTable({
           {items.map((item) => {
             const patientName = item.patient?.user
               ? `${item.patient.user.firstName} ${item.patient.user.lastName}`
-              : `Patient #${item.patientId?.substring(0, 8)}`;
+              : `Patient #${item.patientId}`;
             const docName = item.doctor?.user
               ? `Dr. ${item.doctor.user.firstName} ${item.doctor.user.lastName}`
-              : `Doctor #${item.doctorId?.substring(0, 8)}`;
+              : `Doctor #${item.doctorId}`;
 
             return (
               <tr key={item.id} className="transition-colors hover:bg-muted/30">
                 <td className="p-4 align-middle font-mono font-medium">
-                  #{item.id?.substring(0, 8)}
+                  #{item.id}
                 </td>
                 <td className="p-4 align-middle font-medium text-foreground">{patientName}</td>
                 <td className="p-4 align-middle text-muted-foreground">{docName}</td>
