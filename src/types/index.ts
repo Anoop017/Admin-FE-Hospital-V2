@@ -390,3 +390,51 @@ export interface Payment {
   deletedAt?: string | null;
   [key: string]: any;
 }
+
+// ── Notifications ───────────────────────────────────
+export type NotificationType =
+  | "appointment"
+  | "admission"
+  | "billing"
+  | "lab"
+  | "prescription"
+  | "system"
+  | string;
+
+export type NotificationPriority = "info" | "warning" | "urgent" | string;
+
+export interface AppNotification {
+  id: number;
+  userId: number;
+  title: string;
+  message: string;
+  type: NotificationType;
+  priority: NotificationPriority;
+  isRead: boolean;
+  link?: string | null;
+  metadata?: Record<string, any> | null;
+  createdAt: string;
+  updatedAt: string;
+  deletedAt?: string | null;
+}
+
+export interface NotificationsResponse {
+  data: AppNotification[];
+  meta: {
+    page: number;
+    take: number;
+    itemCount: number;
+    pageCount: number;
+    hasPreviousPage: boolean;
+    hasNextPage: boolean;
+  };
+}
+
+export interface QueryNotificationsDto {
+  page?: number;
+  take?: number;
+  isRead?: boolean;
+  type?: string;
+  search?: string;
+}
+

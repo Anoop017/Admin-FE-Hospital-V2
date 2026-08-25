@@ -46,7 +46,11 @@ import type {
   CreateBillDto,
   UpdateBillDto,
   CreatePaymentDto,
+  AppNotification,
+  NotificationsResponse,
+  QueryNotificationsDto,
 } from "@/types";
+
 
 const api = axios.create({
   baseURL: process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000/api/v1",
@@ -629,3 +633,91 @@ export async function makePaymentBilling(
   const { data } = await api.post<any>("/billing/payments", payload);
   return data;
 }
+
+// ── Notifications API ────────────────────────────────
+export async function getUnreadNotificationCount(): Promise<{ count: number }> {
+  try {
+    const { data } = await api.get<{ count: number }>("/notifications/unread-count");
+    if (typeof data === "number") return { count: data };
+    if (data && typeof data === "object" && typeof (data as any).count === "number") return data;
+    return { count: 0 };
+  } catch (error) {
+    return { count: 0 };
+  }
+}
+
+export async function getNotifications(
+  params?: QueryNotificationsDto,
+): Promise<NotificationsResponse> {
+  try {
+    const { data } = await api.get<any>("/notifications", { params });
+    if (Array.isArray(data)) {
+      return {
+        data,
+        meta: (data as any)._meta || {
+          page: params?.page || 1,
+          take: params?.take || 15,
+          itemCount: data.length,
+          pageCount: 1,
+          hasPreviousPage: false,
+          hasNextPage: false,
+        },
+      };
+    }
+    if (data && Array.isArray(data.data)) {
+      return data;
+    }
+    return {
+      data: [],
+      meta: {
+        page: 1,
+        take: 15,
+        itemCount: 0,
+        pageCount: 1,
+        hasPreviousPage: false,
+        hasNextPage: false,
+      },
+    };
+  } catch (error) {
+    return {
+      data: [],
+      meta: {
+        page: 1,
+        take: 15,
+        itemCount: 0,
+        pageCount: 1,
+        hasPreviousPage: false,
+        hasNextPage: false,
+      },
+    };
+  }
+}
+
+export async function markNotificationAsRead(
+  id: number | string,
+): Promise<AppNotification | null> {
+  try {
+    const { data } = await api.patch<AppNotification>(`/notifications/${id}/read`);
+    return data;
+  } catch (error) {
+    return null;
+  }
+}
+
+export async function markAllNotificationsAsRead(): Promise<{ affected: number }> {
+  try {
+    const { data } = await api.patch<{ affected: number }>("/notifications/read-all");
+    return data || { affected: 0 };
+  } catch (error) {
+    return { affected: 0 };
+  }
+}
+
+export async function deleteNotification(id: number | string): Promise<void> {
+  try {
+    await api.delete(`/notifications/${id}`);
+  } catch (error) {
+    // ignore
+  }
+}
+

@@ -17,6 +17,7 @@ import { clearSession, getUser } from "@/lib/auth";
 import type { AuthUser } from "@/types";
 
 import { ChangePasswordDialog } from "@/components/account/change-password-dialog";
+import { NotificationDropdown } from "@/components/notifications/notification-dropdown";
 
 export function Topbar() {
   const router = useRouter();
@@ -76,15 +77,8 @@ export function Topbar() {
             {isDark ? <Sun className="size-[18px]" /> : <Moon className="size-[18px]" />}
           </Button>
 
-          {/* Notifications */}
-          <Button
-            variant="ghost"
-            size="icon"
-            className="relative text-muted-foreground hover:text-foreground cursor-pointer"
-          >
-            <Bell className="size-[18px]" />
-            <span className="absolute right-1.5 top-1.5 size-2 rounded-full bg-primary" />
-          </Button>
+          {/* Notifications Dropdown */}
+          <NotificationDropdown />
 
           {/* Mail */}
           <Button
@@ -94,6 +88,7 @@ export function Topbar() {
           >
             <Mail className="size-[18px]" />
           </Button>
+
 
           {/* User menu */}
           <DropdownMenu>
