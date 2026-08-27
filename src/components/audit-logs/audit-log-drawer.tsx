@@ -128,9 +128,9 @@ export function AuditLogDrawer({ log, open, onClose }: AuditLogDrawerProps) {
       {/* Drawer Panel */}
       <div className="fixed inset-y-0 right-0 z-50 flex w-full max-w-lg flex-col bg-card shadow-2xl border-l border-border transition-transform duration-300 ease-out animate-in slide-in-from-right">
         {/* Header */}
-        <div className="flex items-center justify-between border-b border-border px-6 py-4.5 bg-card/80 backdrop-blur-sm">
-          <div className="flex items-center gap-3">
-            <h2 className="text-lg font-bold tracking-tight text-foreground">
+        <div className="flex items-center justify-between border-b border-border px-4 sm:px-6 py-4 bg-card/80 backdrop-blur-sm">
+          <div className="flex items-center gap-2.5 sm:gap-3">
+            <h2 className="text-base sm:text-lg font-bold tracking-tight text-foreground">
               Log Details
             </h2>
             {getStatusBadge(log.status)}
@@ -146,9 +146,9 @@ export function AuditLogDrawer({ log, open, onClose }: AuditLogDrawerProps) {
         </div>
 
         {/* Content Body */}
-        <div className="flex-1 overflow-y-auto px-6 py-5 space-y-6">
+        <div className="flex-1 overflow-y-auto px-4 sm:px-6 py-4 sm:py-5 space-y-5 sm:space-y-6">
           {/* Key Details Grid */}
-          <div className="rounded-xl border border-border/80 bg-secondary/30 p-4 space-y-3">
+          <div className="rounded-xl border border-border/80 bg-secondary/30 p-3.5 sm:p-4 space-y-3">
             {/* Event ID */}
             <div className="flex items-center justify-between text-xs">
               <span className="font-medium text-muted-foreground">Event ID</span>

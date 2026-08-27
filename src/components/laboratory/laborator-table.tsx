@@ -16,19 +16,19 @@ export function LaboratorTable({
     return <div className="p-8 text-center text-muted-foreground text-sm">No laboratory tests found.</div>;
 
   return (
-    <div className="w-full overflow-auto">
-      <table className="w-full text-left text-sm">
+    <div className="w-full overflow-x-auto touch-pan-x">
+      <table className="w-full text-left text-sm min-w-[800px]">
         <thead className="border-b border-border bg-muted/40 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
           <tr>
-            <th className="h-10 px-4">Test #</th>
-            <th className="h-10 px-4">Patient</th>
-            <th className="h-10 px-4">Ordering Doctor</th>
-            <th className="h-10 px-4">Test Name</th>
-            <th className="h-10 px-4">Category</th>
-            <th className="h-10 px-4">Findings / Result</th>
-            <th className="h-10 px-4">Test Date</th>
-            <th className="h-10 px-4">Status</th>
-            <th className="h-10 px-4 text-right">Actions</th>
+            <th className="h-10 px-4 whitespace-nowrap">Test #</th>
+            <th className="h-10 px-4 whitespace-nowrap">Patient</th>
+            <th className="h-10 px-4 whitespace-nowrap">Ordering Doctor</th>
+            <th className="h-10 px-4 whitespace-nowrap">Test Name</th>
+            <th className="h-10 px-4 whitespace-nowrap">Category</th>
+            <th className="h-10 px-4 whitespace-nowrap">Findings / Result</th>
+            <th className="h-10 px-4 whitespace-nowrap">Test Date</th>
+            <th className="h-10 px-4 whitespace-nowrap">Status</th>
+            <th className="h-10 px-4 text-right whitespace-nowrap min-w-[100px]">Actions</th>
           </tr>
         </thead>
         <tbody className="divide-y divide-border">

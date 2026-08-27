@@ -231,3 +231,12 @@
 }
 button:not(:disabled), [role="button"]:not([aria-disabled="true"]) { cursor: pointer; }
 
+/* ── Hide scrollbar for clean touch carousels/tabs ── */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+

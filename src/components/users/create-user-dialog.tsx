@@ -114,7 +114,7 @@ export function CreateUserDialog({
 
         <form onSubmit={handleSubmit} className="flex flex-col gap-5">
           {/* Name row */}
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
             <div className="flex flex-col gap-2">
               <Label htmlFor="create-first-name">First Name</Label>
               <Input

@@ -18,19 +18,19 @@ export function PrescriptionTable({
     return <div className="p-8 text-center text-muted-foreground text-sm">No prescription records found.</div>;
 
   return (
-    <div className="w-full overflow-auto">
-      <table className="w-full text-left text-sm">
+    <div className="w-full overflow-x-auto touch-pan-x">
+      <table className="w-full text-left text-sm min-w-[800px]">
         <thead className="border-b border-border bg-muted/40 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
           <tr>
-            <th className="h-10 px-4">Prescription #</th>
-            <th className="h-10 px-4">Patient</th>
-            <th className="h-10 px-4">Doctor</th>
-            <th className="h-10 px-4">Medication</th>
-            <th className="h-10 px-4">Dosage</th>
-            <th className="h-10 px-4">Frequency</th>
-            <th className="h-10 px-4">Duration</th>
-            <th className="h-10 px-4">Issued Date</th>
-            <th className="h-10 px-4 text-right">Actions</th>
+            <th className="h-10 px-4 whitespace-nowrap">Prescription #</th>
+            <th className="h-10 px-4 whitespace-nowrap">Patient</th>
+            <th className="h-10 px-4 whitespace-nowrap">Doctor</th>
+            <th className="h-10 px-4 whitespace-nowrap">Medication</th>
+            <th className="h-10 px-4 whitespace-nowrap">Dosage</th>
+            <th className="h-10 px-4 whitespace-nowrap">Frequency</th>
+            <th className="h-10 px-4 whitespace-nowrap">Duration</th>
+            <th className="h-10 px-4 whitespace-nowrap">Issued Date</th>
+            <th className="h-10 px-4 text-right whitespace-nowrap min-w-[150px]">Actions</th>
           </tr>
         </thead>
         <tbody className="divide-y divide-border">

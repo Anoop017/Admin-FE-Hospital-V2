@@ -5,21 +5,27 @@ import type { Staf } from "@/types";
 export function StafTable({ items, onEdit, onDelete }: { items: Staf[], onEdit: (i: Staf) => void, onDelete: (i: Staf) => void }) {
   if (items.length === 0) return <div className="p-6 text-center text-muted-foreground">No records found.</div>;
   return (
-    <div className="w-full overflow-auto">
-      <table className="w-full text-left text-sm">
+    <div className="w-full overflow-x-auto touch-pan-x">
+      <table className="w-full text-left text-sm min-w-[650px]">
         <thead className="border-b bg-secondary/50">
           <tr>
-            <th className="h-10 px-4 font-medium">ID</th>
-            <th className="h-10 px-4 font-medium capitalize">User</th><th className="h-10 px-4 font-medium capitalize">Department</th><th className="h-10 px-4 font-medium capitalize">jobTitle</th><th className="h-10 px-4 font-medium capitalize">hireDate</th>
-            <th className="h-10 px-4 text-right font-medium">Actions</th>
+            <th className="h-10 px-4 font-medium whitespace-nowrap">ID</th>
+            <th className="h-10 px-4 font-medium capitalize whitespace-nowrap">User</th>
+            <th className="h-10 px-4 font-medium capitalize whitespace-nowrap">Department</th>
+            <th className="h-10 px-4 font-medium capitalize whitespace-nowrap">Job Title</th>
+            <th className="h-10 px-4 font-medium capitalize whitespace-nowrap">Hire Date</th>
+            <th className="h-10 px-4 text-right font-medium whitespace-nowrap min-w-[100px]">Actions</th>
           </tr>
         </thead>
         <tbody>
           {items.map(item => (
             <tr key={item.id} className="border-b transition-colors hover:bg-muted/50">
-              <td className="p-4 align-middle font-mono font-medium">#{item.id}</td>
-              <td className="p-4 align-middle">{item.user ? `${item.user.firstName} ${item.user.lastName}` : item.userId?.toString()}</td><td className="p-4 align-middle">{item.department ? item.department.name : item.departmentId?.toString()}</td><td className="p-4 align-middle">{item.jobTitle?.toString()}</td><td className="p-4 align-middle">{item.hireDate?.toString()}</td>
-              <td className="p-4 align-middle text-right">
+              <td className="p-4 align-middle font-mono font-medium whitespace-nowrap">#{item.id}</td>
+              <td className="p-4 align-middle font-medium text-foreground whitespace-nowrap">{item.user ? `${item.user.firstName} ${item.user.lastName}` : item.userId?.toString()}</td>
+              <td className="p-4 align-middle whitespace-nowrap">{item.department ? item.department.name : item.departmentId?.toString()}</td>
+              <td className="p-4 align-middle whitespace-nowrap">{item.jobTitle?.toString()}</td>
+              <td className="p-4 align-middle whitespace-nowrap text-muted-foreground">{item.hireDate ? new Date(item.hireDate).toLocaleDateString() : '—'}</td>
+              <td className="p-4 align-middle text-right whitespace-nowrap">
                 <Button variant="ghost" size="icon" onClick={() => onEdit(item)}><Edit className="size-4" /></Button>
                 <Button variant="ghost" size="icon" onClick={() => onDelete(item)} className="text-destructive"><Trash2 className="size-4" /></Button>
               </td>

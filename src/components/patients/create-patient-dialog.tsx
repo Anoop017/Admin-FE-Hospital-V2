@@ -77,11 +77,11 @@ export function CreatePatientDialog({ open, onOpenChange, onSuccess }: any) {
             </TabsContent>
 
             <TabsContent value="create" className="flex flex-col gap-4 mt-0">
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                 <div className="flex flex-col gap-2"><label className="text-sm font-medium capitalize">First Name</label><Input value={firstName} onChange={e => setFirstName(e.target.value)} required={creationMode === 'create'} /></div>
                 <div className="flex flex-col gap-2"><label className="text-sm font-medium capitalize">Last Name</label><Input value={lastName} onChange={e => setLastName(e.target.value)} required={creationMode === 'create'} /></div>
               </div>
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                 <div className="flex flex-col gap-2"><label className="text-sm font-medium capitalize">Email</label><Input type="email" value={email} onChange={e => setEmail(e.target.value)} required={creationMode === 'create'} /></div>
                 <div className="flex flex-col gap-2"><label className="text-sm font-medium capitalize">Mobile</label><Input value={mobile} onChange={e => setMobile(e.target.value)} required={creationMode === 'create'} /></div>
               </div>
@@ -90,11 +90,11 @@ export function CreatePatientDialog({ open, onOpenChange, onSuccess }: any) {
 
             <div className="border-t pt-4 flex flex-col gap-4">
               <h3 className="font-semibold text-sm">Patient Details</h3>
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                 <div className="flex flex-col gap-2"><label className="text-sm font-medium capitalize">Date of Birth</label><Input type="date" value={dateOfBirth} onChange={e => setDateOfBirth(e.target.value)} required /></div>
                 <div className="flex flex-col gap-2"><label className="text-sm font-medium capitalize">Gender</label><Select value={gender} onValueChange={(val) => setGender(val || "")} required><SelectTrigger className="w-full"><SelectValue placeholder="Select gender" /></SelectTrigger><SelectContent><SelectItem value="MALE">Male</SelectItem><SelectItem value="FEMALE">Female</SelectItem><SelectItem value="OTHER">Other</SelectItem></SelectContent></Select></div>
               </div>
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                 <div className="flex flex-col gap-2"><label className="text-sm font-medium capitalize">Blood Group</label><Input value={bloodGroup} onChange={e => setBloodGroup(e.target.value)} required /></div>
                 <div className="flex flex-col gap-2"><label className="text-sm font-medium capitalize">Address</label><Input value={address} onChange={e => setAddress(e.target.value)} required /></div>
               </div>

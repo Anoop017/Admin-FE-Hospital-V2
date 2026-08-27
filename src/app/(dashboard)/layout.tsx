@@ -6,6 +6,7 @@ import { Sidebar } from "@/components/sidebar";
 import { Topbar } from "@/components/topbar";
 import { isAuthenticated } from "@/lib/auth";
 import { NotificationProvider } from "@/contexts/notification-context";
+import { MobileNavProvider } from "@/contexts/mobile-nav-context";
 
 export default function DashboardLayout({
   children,
@@ -41,15 +42,17 @@ export default function DashboardLayout({
 
   return (
     <NotificationProvider>
-      <div className="flex h-screen overflow-hidden">
-        <Sidebar />
-        <div className="flex flex-1 flex-col overflow-hidden">
-          <Topbar />
-          <main className="flex-1 overflow-y-auto bg-background p-6">
-            {children}
-          </main>
+      <MobileNavProvider>
+        <div className="flex h-screen overflow-hidden bg-background">
+          <Sidebar />
+          <div className="flex flex-1 flex-col overflow-hidden min-w-0">
+            <Topbar />
+            <main className="flex-1 overflow-y-auto overflow-x-hidden bg-background p-3.5 sm:p-5 md:p-6">
+              {children}
+            </main>
+          </div>
         </div>
-      </div>
+      </MobileNavProvider>
     </NotificationProvider>
   );
 }

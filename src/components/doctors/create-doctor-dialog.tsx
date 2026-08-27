@@ -75,11 +75,11 @@ export function CreateDoctorDialog({ open, onOpenChange, onSuccess }: any) {
             </TabsContent>
 
             <TabsContent value="create" className="flex flex-col gap-4 mt-0">
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                 <div className="flex flex-col gap-2"><label className="text-sm font-medium capitalize">First Name</label><Input value={firstName} onChange={e => setFirstName(e.target.value)} required={creationMode === 'create'} /></div>
                 <div className="flex flex-col gap-2"><label className="text-sm font-medium capitalize">Last Name</label><Input value={lastName} onChange={e => setLastName(e.target.value)} required={creationMode === 'create'} /></div>
               </div>
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                 <div className="flex flex-col gap-2"><label className="text-sm font-medium capitalize">Email</label><Input type="email" value={email} onChange={e => setEmail(e.target.value)} required={creationMode === 'create'} /></div>
                 <div className="flex flex-col gap-2"><label className="text-sm font-medium capitalize">Mobile</label><Input value={mobile} onChange={e => setMobile(e.target.value)} required={creationMode === 'create'} /></div>
               </div>
@@ -88,11 +88,11 @@ export function CreateDoctorDialog({ open, onOpenChange, onSuccess }: any) {
 
             <div className="border-t pt-4 flex flex-col gap-4">
               <h3 className="font-semibold text-sm">Doctor Details</h3>
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                 <div className="flex flex-col gap-2"><label className="text-sm font-medium capitalize">Specialization</label><Input value={specialization} onChange={e => setSpecialization(e.target.value)} required /></div>
                 <div className="flex flex-col gap-2"><label className="text-sm font-medium capitalize">License Number</label><Input value={licenseNumber} onChange={e => setLicenseNumber(e.target.value)} required /></div>
               </div>
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                 <div className="flex flex-col gap-2"><label className="text-sm font-medium capitalize">Experience Years</label><Input type="number" value={experienceYears} onChange={e => setExperienceYears(e.target.value)} required /></div>
                 <div className="flex flex-col gap-2"><label className="text-sm font-medium capitalize">Consultation Fee</label><Input type="number" value={consultationFee} onChange={e => setConsultationFee(e.target.value)} required /></div>
               </div>

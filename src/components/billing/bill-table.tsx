@@ -49,18 +49,18 @@ export function BillTable({ items, onView, onEdit, onDelete, onPay }: BillTableP
   };
 
   return (
-    <div className="w-full overflow-x-auto">
-      <table className="w-full text-left text-sm">
+    <div className="w-full overflow-x-auto touch-pan-x">
+      <table className="w-full text-left text-sm min-w-[800px]">
         <thead className="border-b border-border bg-muted/40">
           <tr>
-            <th className="h-11 px-4 font-semibold text-muted-foreground text-xs uppercase tracking-wider">Invoice #</th>
-            <th className="h-11 px-4 font-semibold text-muted-foreground text-xs uppercase tracking-wider">Patient</th>
-            <th className="h-11 px-4 font-semibold text-muted-foreground text-xs uppercase tracking-wider">Total Amount</th>
-            <th className="h-11 px-4 font-semibold text-muted-foreground text-xs uppercase tracking-wider">Paid</th>
-            <th className="h-11 px-4 font-semibold text-muted-foreground text-xs uppercase tracking-wider">Balance Due</th>
-            <th className="h-11 px-4 font-semibold text-muted-foreground text-xs uppercase tracking-wider">Due Date</th>
-            <th className="h-11 px-4 font-semibold text-muted-foreground text-xs uppercase tracking-wider">Status</th>
-            <th className="h-11 px-4 text-right font-semibold text-muted-foreground text-xs uppercase tracking-wider">Actions</th>
+            <th className="h-11 px-4 font-semibold text-muted-foreground text-xs uppercase tracking-wider whitespace-nowrap">Invoice #</th>
+            <th className="h-11 px-4 font-semibold text-muted-foreground text-xs uppercase tracking-wider whitespace-nowrap">Patient</th>
+            <th className="h-11 px-4 font-semibold text-muted-foreground text-xs uppercase tracking-wider whitespace-nowrap">Total Amount</th>
+            <th className="h-11 px-4 font-semibold text-muted-foreground text-xs uppercase tracking-wider whitespace-nowrap">Paid</th>
+            <th className="h-11 px-4 font-semibold text-muted-foreground text-xs uppercase tracking-wider whitespace-nowrap">Balance Due</th>
+            <th className="h-11 px-4 font-semibold text-muted-foreground text-xs uppercase tracking-wider whitespace-nowrap">Due Date</th>
+            <th className="h-11 px-4 font-semibold text-muted-foreground text-xs uppercase tracking-wider whitespace-nowrap">Status</th>
+            <th className="h-11 px-4 text-right font-semibold text-muted-foreground text-xs uppercase tracking-wider whitespace-nowrap min-w-[150px]">Actions</th>
           </tr>
         </thead>
         <tbody className="divide-y divide-border">

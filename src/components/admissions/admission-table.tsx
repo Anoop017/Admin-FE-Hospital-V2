@@ -18,19 +18,19 @@ export function AdmissionTable({
     return <div className="p-8 text-center text-muted-foreground text-sm">No admission records found.</div>;
 
   return (
-    <div className="w-full overflow-auto">
-      <table className="w-full text-left text-sm">
+    <div className="w-full overflow-x-auto touch-pan-x">
+      <table className="w-full text-left text-sm min-w-[800px]">
         <thead className="border-b border-border bg-muted/40 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
           <tr>
-            <th className="h-10 px-4">Admission #</th>
-            <th className="h-10 px-4">Patient</th>
-            <th className="h-10 px-4">Doctor</th>
-            <th className="h-10 px-4">Bed</th>
-            <th className="h-10 px-4">Admit Date</th>
-            <th className="h-10 px-4">Reason</th>
-            <th className="h-10 px-4">Status</th>
-            <th className="h-10 px-4">Discharge Date</th>
-            <th className="h-10 px-4 text-right">Actions</th>
+            <th className="h-10 px-4 whitespace-nowrap">Admission #</th>
+            <th className="h-10 px-4 whitespace-nowrap">Patient</th>
+            <th className="h-10 px-4 whitespace-nowrap">Doctor</th>
+            <th className="h-10 px-4 whitespace-nowrap">Bed</th>
+            <th className="h-10 px-4 whitespace-nowrap">Admit Date</th>
+            <th className="h-10 px-4 whitespace-nowrap">Reason</th>
+            <th className="h-10 px-4 whitespace-nowrap">Status</th>
+            <th className="h-10 px-4 whitespace-nowrap">Discharge Date</th>
+            <th className="h-10 px-4 text-right whitespace-nowrap min-w-[150px]">Actions</th>
           </tr>
         </thead>
         <tbody className="divide-y divide-border">

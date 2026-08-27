@@ -78,32 +78,32 @@ export function UserTable({ users, onEdit, onDelete }: UserTableProps) {
   }
 
   return (
-    <div className="overflow-x-auto">
-      <table className="w-full">
+    <div className="overflow-x-auto touch-pan-x">
+      <table className="w-full min-w-[750px]">
         <thead>
           <tr className="border-b border-border">
-            <th className="px-6 py-3.5 text-left text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+            <th className="px-6 py-3.5 text-left text-xs font-semibold uppercase tracking-wider text-muted-foreground whitespace-nowrap">
               #
             </th>
-            <th className="px-6 py-3.5 text-left text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+            <th className="px-6 py-3.5 text-left text-xs font-semibold uppercase tracking-wider text-muted-foreground whitespace-nowrap">
               Name
             </th>
-            <th className="px-6 py-3.5 text-left text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+            <th className="px-6 py-3.5 text-left text-xs font-semibold uppercase tracking-wider text-muted-foreground whitespace-nowrap">
               Email
             </th>
-            <th className="px-6 py-3.5 text-left text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+            <th className="px-6 py-3.5 text-left text-xs font-semibold uppercase tracking-wider text-muted-foreground whitespace-nowrap">
               Mobile
             </th>
-            <th className="px-6 py-3.5 text-left text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+            <th className="px-6 py-3.5 text-left text-xs font-semibold uppercase tracking-wider text-muted-foreground whitespace-nowrap">
               Roles
             </th>
-            <th className="px-6 py-3.5 text-left text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+            <th className="px-6 py-3.5 text-left text-xs font-semibold uppercase tracking-wider text-muted-foreground whitespace-nowrap">
               Status
             </th>
-            <th className="px-6 py-3.5 text-left text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+            <th className="px-6 py-3.5 text-left text-xs font-semibold uppercase tracking-wider text-muted-foreground whitespace-nowrap">
               Created
             </th>
-            <th className="px-6 py-3.5 text-right text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+            <th className="px-6 py-3.5 text-right text-xs font-semibold uppercase tracking-wider text-muted-foreground whitespace-nowrap min-w-[100px]">
               Actions
             </th>
           </tr>

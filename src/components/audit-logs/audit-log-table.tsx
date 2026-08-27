@@ -213,20 +213,22 @@ export function AuditLogTable({
 
   return (
     <div className="rounded-xl border border-border/80 bg-card shadow-xs overflow-hidden transition-colors">
-      <div className="overflow-x-auto">
-        <table className="w-full text-left text-sm">
+      <div className="overflow-x-auto touch-pan-x">
+        <table className="w-full text-left text-sm min-w-[850px]">
           <thead>
             <tr className="border-b border-border/80 bg-muted/30 text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
-              <th className="px-5 py-3.5 whitespace-nowrap">Time</th>
-              <th className="px-5 py-3.5 whitespace-nowrap">User</th>
-              <th className="px-5 py-3.5 whitespace-nowrap">Action</th>
-              <th className="px-4 py-3.5 whitespace-nowrap">Module</th>
-              <th className="px-4 py-3.5 whitespace-nowrap">Entity</th>
-              <th className="px-4 py-3.5 whitespace-nowrap">Status</th>
-              <th className="px-4 py-3.5 whitespace-nowrap">Method</th>
-              <th className="px-4 py-3.5 whitespace-nowrap">Duration</th>
-              <th className="px-4 py-3.5 whitespace-nowrap">IP Address</th>
-              <th className="px-3 py-3.5 text-right"></th>
+              <th className="px-3.5 py-3 whitespace-nowrap">Time</th>
+              <th className="px-3.5 py-3 whitespace-nowrap">User</th>
+              <th className="px-3.5 py-3 whitespace-nowrap">Action</th>
+              <th className="px-3 py-3 whitespace-nowrap">Module</th>
+              <th className="px-3 py-3 whitespace-nowrap">Entity</th>
+              <th className="px-3 py-3 whitespace-nowrap">Status</th>
+              <th className="px-3 py-3 whitespace-nowrap">Method</th>
+              <th className="px-3 py-3 whitespace-nowrap">Duration</th>
+              <th className="px-3 py-3 whitespace-nowrap">IP Address</th>
+              <th className="sticky right-0 z-20 bg-muted/90 backdrop-blur-xs px-3 py-3 text-center w-12 border-l border-border/40 shadow-[-4px_0_6px_-2px_rgba(0,0,0,0.05)] dark:shadow-[-4px_0_6px_-2px_rgba(0,0,0,0.3)]">
+                <span className="sr-only">Actions</span>
+              </th>
             </tr>
           </thead>
           <tbody className="divide-y divide-border/60">
@@ -256,7 +258,7 @@ export function AuditLogTable({
                   className="group hover:bg-secondary/40 transition-colors cursor-pointer"
                 >
                   {/* Time */}
-                  <td className="px-5 py-3.5 whitespace-nowrap">
+                  <td className="px-3.5 py-2.5 whitespace-nowrap">
                     <div className="flex flex-col text-xs font-mono">
                       <span className="font-semibold text-foreground">
                         {datePart}
@@ -268,10 +270,10 @@ export function AuditLogTable({
                   </td>
 
                   {/* User */}
-                  <td className="px-5 py-3.5">
-                    <div className="flex items-center gap-3">
-                      <Avatar className="size-8 shrink-0">
-                        <AvatarFallback className={`text-xs font-bold ${avatarBg}`}>
+                  <td className="px-3.5 py-2.5 max-w-[190px]">
+                    <div className="flex items-center gap-2.5">
+                      <Avatar className="size-7 shrink-0">
+                        <AvatarFallback className={`text-[11px] font-bold ${avatarBg}`}>
                           {userInitial}
                         </AvatarFallback>
                       </Avatar>
@@ -279,7 +281,7 @@ export function AuditLogTable({
                         <span className="font-semibold text-foreground text-xs leading-tight truncate">
                           {log.userName || "System User"}
                         </span>
-                        <span className="text-[11px] text-muted-foreground truncate max-w-[150px]">
+                        <span className="text-[11px] text-muted-foreground truncate max-w-[130px]">
                           {log.userEmail || "—"}
                         </span>
                         {log.userRole && (
@@ -294,7 +296,7 @@ export function AuditLogTable({
                   </td>
 
                   {/* Action */}
-                  <td className="px-5 py-3.5 max-w-[220px]">
+                  <td className="px-3.5 py-2.5 max-w-[190px]">
                     <div className="flex flex-col">
                       <span className="font-mono text-xs font-bold text-foreground truncate" title={log.action}>
                         {log.action}
@@ -306,16 +308,16 @@ export function AuditLogTable({
                   </td>
 
                   {/* Module */}
-                  <td className="px-4 py-3.5 whitespace-nowrap">
+                  <td className="px-3 py-2.5 whitespace-nowrap">
                     <span
-                      className={`inline-block rounded-md border px-2.5 py-1 text-xs font-semibold capitalize ${moduleStyle}`}
+                      className={`inline-block rounded-md border px-2 py-0.5 text-xs font-semibold capitalize ${moduleStyle}`}
                     >
                       {log.module}
                     </span>
                   </td>
 
                   {/* Entity */}
-                  <td className="px-4 py-3.5 whitespace-nowrap">
+                  <td className="px-3 py-2.5 whitespace-nowrap">
                     <div className="flex flex-col text-xs">
                       <span className="font-medium text-foreground">
                         {log.entityType || "—"}
@@ -329,39 +331,40 @@ export function AuditLogTable({
                   </td>
 
                   {/* Status */}
-                  <td className="px-4 py-3.5 whitespace-nowrap">
+                  <td className="px-3 py-2.5 whitespace-nowrap">
                     {getStatusBadge(log.status)}
                   </td>
 
                   {/* Method */}
-                  <td className="px-4 py-3.5 whitespace-nowrap">
+                  <td className="px-3 py-2.5 whitespace-nowrap">
                     {getMethodBadge(log.method)}
                   </td>
 
                   {/* Duration */}
-                  <td className="px-4 py-3.5 whitespace-nowrap">
+                  <td className="px-3 py-2.5 whitespace-nowrap">
                     <span className="font-mono text-xs text-muted-foreground">
                       {log.duration ?? 0}ms
                     </span>
                   </td>
 
                   {/* IP Address */}
-                  <td className="px-4 py-3.5 whitespace-nowrap">
+                  <td className="px-3 py-2.5 whitespace-nowrap">
                     <span className="font-mono text-xs text-muted-foreground">
                       {log.ipAddress || "::1"}
                     </span>
                   </td>
 
-                  {/* View Details Action */}
-                  <td className="px-4 py-3.5 text-right whitespace-nowrap">
+                  {/* View Details Action (Sticky Right) */}
+                  <td className="sticky right-0 z-10 bg-card group-hover:bg-secondary/60 transition-colors px-3 py-2.5 text-center whitespace-nowrap border-l border-border/40 shadow-[-4px_0_6px_-2px_rgba(0,0,0,0.05)] dark:shadow-[-4px_0_6px_-2px_rgba(0,0,0,0.3)]">
                     <button
                       type="button"
                       onClick={(e) => {
                         e.stopPropagation();
                         onSelectLog(log);
                       }}
-                      className="inline-flex items-center justify-center p-1.5 rounded-lg text-muted-foreground hover:bg-primary/10 hover:text-primary transition-colors cursor-pointer"
+                      className="inline-flex items-center justify-center size-8 rounded-lg text-muted-foreground hover:bg-primary/10 hover:text-primary transition-colors cursor-pointer"
                       title="View Details"
+                      aria-label="View Details"
                     >
                       <Eye className="size-4" />
                     </button>
@@ -374,8 +377,8 @@ export function AuditLogTable({
       </div>
 
       {/* Pagination Footer */}
-      <div className="flex flex-col sm:flex-row items-center justify-between gap-4 border-t border-border/80 px-6 py-4 bg-muted/10">
-        <p className="text-xs text-muted-foreground">
+      <div className="flex flex-col sm:flex-row items-center justify-between gap-3 border-t border-border/80 px-4 sm:px-6 py-3.5 bg-muted/10">
+        <p className="text-xs text-muted-foreground text-center sm:text-left">
           Showing <span className="font-semibold text-foreground">{startRecord}</span> to{" "}
           <span className="font-semibold text-foreground">{endRecord}</span> of{" "}
           <span className="font-semibold text-foreground">{meta.total.toLocaleString()}</span> results
@@ -393,7 +396,13 @@ export function AuditLogTable({
             <ChevronLeft className="size-4" />
           </Button>
 
-          {renderPaginationButtons()}
+          <span className="sm:hidden text-xs font-semibold px-2 text-foreground">
+            Page {meta.page} of {meta.totalPages || 1}
+          </span>
+
+          <div className="hidden sm:flex items-center gap-1.5">
+            {renderPaginationButtons()}
+          </div>
 
           <Button
             variant="outline"

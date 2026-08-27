@@ -1,9 +1,8 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { Bell, Mail, Sun, Moon } from "lucide-react";
+import { Sun, Moon, Menu } from "lucide-react";
 import { useState, useEffect } from "react";
-import { Input } from "@/components/ui/input";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import {
   DropdownMenu,
@@ -15,7 +14,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { clearSession, getUser } from "@/lib/auth";
 import type { AuthUser } from "@/types";
-
+import { useMobileNav } from "@/contexts/mobile-nav-context";
 import { ChangePasswordDialog } from "@/components/account/change-password-dialog";
 import { NotificationDropdown } from "@/components/notifications/notification-dropdown";
 
@@ -24,6 +23,7 @@ export function Topbar() {
   const [user, setUser] = useState<AuthUser | null>(null);
   const [isDark, setIsDark] = useState(false);
   const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false);
+  const { toggleMobileNav } = useMobileNav();
 
   useEffect(() => {
     setUser(getUser());
@@ -53,20 +53,30 @@ export function Topbar() {
 
   return (
     <>
-      <header className="flex h-16 shrink-0 items-center justify-between border-b border-border bg-card px-6">
-        {/* Left side brand / spacer */}
+      <header className="flex h-16 shrink-0 items-center justify-between border-b border-border bg-card px-3.5 sm:px-6">
+        {/* Left side: Mobile Menu Trigger + Brand hint */}
         <div className="flex items-center gap-2">
-          {/* Topbar left area */}
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={toggleMobileNav}
+            className="md:hidden size-9 text-muted-foreground hover:text-foreground cursor-pointer"
+            aria-label="Toggle navigation menu"
+          >
+            <Menu className="size-5" />
+          </Button>
         </div>
 
         {/* Right side actions */}
-        <div className="flex items-center gap-6">
+        <div className="flex items-center gap-2 sm:gap-4 md:gap-5">
           {/* Theme toggle */}
           <Button
             variant="ghost"
             size="icon"
             onClick={toggleTheme}
-            className="text-muted-foreground hover:text-foreground cursor-pointer"
+            className="size-9 text-muted-foreground hover:text-foreground cursor-pointer"
+            title={isDark ? "Switch to light mode" : "Switch to dark mode"}
+            aria-label="Toggle theme"
           >
             {isDark ? <Sun className="size-[18px]" /> : <Moon className="size-[18px]" />}
           </Button>
@@ -74,21 +84,14 @@ export function Topbar() {
           {/* Notifications Dropdown */}
           <NotificationDropdown />
 
-          {/* Mail */}
-          <Button
-            variant="ghost"
-            size="icon"
-            className="text-muted-foreground hover:text-foreground cursor-pointer"
-          >
-            <Mail className="size-[18px]" />
-          </Button>
-
-
           {/* User menu */}
           <DropdownMenu>
             <DropdownMenuTrigger
               render={
-                <button className="ml-2 flex items-center gap-3 rounded-lg px-2 py-1.5 transition-colors hover:bg-secondary" />
+                <button
+                  className="flex items-center gap-2.5 rounded-lg p-1 sm:px-2 sm:py-1.5 transition-colors hover:bg-secondary cursor-pointer"
+                  aria-label="User account menu"
+                />
               }
             >
               <Avatar className="size-8">

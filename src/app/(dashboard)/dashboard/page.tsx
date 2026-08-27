@@ -11,6 +11,7 @@ import {
   Pencil,
   Trash2,
   CalendarCheck,
+  Calendar,
   DollarSign,
   Activity,
   CheckCircle2,
@@ -340,13 +341,13 @@ export default function DashboardPage() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Time-Series Analytics Chart */}
         <Card className="lg:col-span-2 border border-border bg-card shadow-xs">
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
+          <CardHeader className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-2">
             <div>
               <CardTitle className="text-base font-bold text-foreground">Clinical Activity Trend</CardTitle>
               <p className="text-xs text-muted-foreground mt-0.5">Appointments & Admissions comparison</p>
             </div>
             {/* Period Selector Tabs */}
-            <div className="flex bg-muted/60 p-1 rounded-lg border border-border">
+            <div className="flex self-start sm:self-auto bg-muted/60 p-1 rounded-lg border border-border">
               {(["day", "week", "month"] as const).map((p) => (
                 <button
                   key={p}
@@ -363,9 +364,9 @@ export default function DashboardPage() {
             </div>
           </CardHeader>
           <CardContent>
-            <div className="h-[280px] w-full mt-2">
+            <div className="h-[240px] sm:h-[280px] w-full mt-2">
               <ResponsiveContainer width="100%" height="100%">
-                <AreaChart data={chartSeries} margin={{ top: 10, right: 20, bottom: 5, left: -20 }}>
+                <AreaChart data={chartSeries} margin={{ top: 10, right: 10, bottom: 5, left: -25 }}>
                   <defs>
                     <linearGradient id="colorApt" x1="0" y1="0" x2="0" y2="1">
                       <stop offset="5%" stopColor="#0d9488" stopOpacity={0.3} />
@@ -398,45 +399,57 @@ export default function DashboardPage() {
           <CardContent className="flex-1 overflow-y-auto max-h-[320px] divide-y divide-border/60">
             {upcomingAppointments.length === 0 ? (
               <div className="flex flex-col items-center justify-center p-8 text-center text-muted-foreground">
-                <CalendarCheck className="size-6 mb-2 opacity-50" />
-                <p className="text-xs">No upcoming appointments scheduled.</p>
+                <Calendar className="size-8 text-muted-foreground/50 mb-2" />
+                <p className="text-xs">No pending appointments today</p>
               </div>
             ) : (
-              upcomingAppointments.map((apt: any, i: number) => (
-                <div key={apt.id || i} className="py-3 flex justify-between items-start first:pt-0 last:pb-0">
-                  <div className="space-y-0.5">
-                    <p className="text-sm font-semibold text-foreground">{apt.patientName || "Patient"}</p>
-                    <p className="text-xs text-muted-foreground flex items-center gap-1">
-                      <Stethoscope className="size-3" /> {apt.doctorName || "General Practitioner"}
-                    </p>
-                    <p className="text-[11px] text-muted-foreground font-mono">
-                      {apt.date ? new Date(apt.date).toLocaleString([], { dateStyle: "short", timeStyle: "short" }) : "N/A"}
-                    </p>
+              upcomingAppointments.map((apt: any) => {
+                const patientName = apt.patient?.user
+                  ? `${apt.patient.user.firstName} ${apt.patient.user.lastName}`
+                  : `Patient #${apt.patientId}`;
+                const docName = apt.doctor?.user
+                  ? `Dr. ${apt.doctor.user.firstName} ${apt.doctor.user.lastName}`
+                  : `Doctor #${apt.doctorId}`;
+                const timeStr = apt.appointmentDate
+                  ? new Date(apt.appointmentDate).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
+                  : "";
+
+                return (
+                  <div key={apt.id} className="py-2.5 flex items-center justify-between gap-2">
+                    <div className="min-w-0">
+                      <p className="text-xs font-semibold text-foreground truncate">{patientName}</p>
+                      <p className="text-[11px] text-muted-foreground truncate">{docName} • {apt.reason || "General Consultation"}</p>
+                    </div>
+                    <div className="text-right shrink-0">
+                      <span className="text-xs font-mono font-medium text-foreground">{timeStr}</span>
+                      <div>
+                        <Badge variant="outline" className="text-[10px] capitalize px-1.5 py-0">
+                          {apt.status || "scheduled"}
+                        </Badge>
+                      </div>
+                    </div>
                   </div>
-                  <Badge variant={apt.status === "scheduled" ? "default" : "secondary"} className="capitalize text-[10px]">
-                    {apt.status || "scheduled"}
-                  </Badge>
-                </div>
-              ))
+                );
+              })
             )}
           </CardContent>
         </Card>
       </div>
 
-      {/* Patient Overview table */}
+      {/* Patient Activity Overview Table */}
       <Card className="border border-border bg-card shadow-xs">
-        <CardHeader className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-4">
+        <CardHeader className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-border/80 pb-4">
           <div>
             <CardTitle className="text-base font-bold text-foreground">Patient Activity Log</CardTitle>
             <p className="text-xs text-muted-foreground mt-0.5">Recent clinical visits, triage, and patient activity.</p>
           </div>
-          <div className="flex bg-muted/60 p-1 rounded-lg border border-border">
+          <div className="flex overflow-x-auto no-scrollbar max-w-full bg-muted/60 p-1 rounded-lg border border-border">
             {selectedIds.length > 0 ? (
               <Button
                 variant="destructive"
                 size="sm"
                 onClick={handleBulkDelete}
-                className="text-xs h-7"
+                className="text-xs h-7 whitespace-nowrap"
               >
                 Delete Selected ({selectedIds.length})
               </Button>
@@ -445,7 +458,7 @@ export default function DashboardPage() {
                 <button
                   key={period}
                   onClick={() => handleFilterChange(period)}
-                  className={`px-3 py-1 text-xs font-medium rounded-md transition-all ${
+                  className={`px-3 py-1 text-xs font-medium rounded-md whitespace-nowrap shrink-0 transition-all ${
                     period === filter
                       ? "bg-background text-foreground shadow-xs font-semibold"
                       : "text-muted-foreground hover:text-foreground"
@@ -458,11 +471,11 @@ export default function DashboardPage() {
           </div>
         </CardHeader>
         <CardContent className="p-0">
-          <div className="overflow-x-auto">
-            <table className="w-full text-left text-sm">
+          <div className="overflow-x-auto touch-pan-x">
+            <table className="w-full text-left text-sm min-w-[720px]">
               <thead className="border-b border-border bg-muted/40 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
                 <tr>
-                  <th className="py-3 px-4 w-10">
+                  <th className="py-3 px-4 w-10 whitespace-nowrap">
                     <input
                       type="checkbox"
                       className="rounded border-border text-primary focus:ring-primary cursor-pointer"
@@ -473,14 +486,14 @@ export default function DashboardPage() {
                       }}
                     />
                   </th>
-                  <th className="py-3 px-4">No</th>
-                  <th className="py-3 px-4">Patient</th>
-                  <th className="py-3 px-4">Age</th>
-                  <th className="py-3 px-4">Date of Birth</th>
-                  <th className="py-3 px-4">Status</th>
-                  <th className="py-3 px-4">Email</th>
-                  <th className="py-3 px-4">Phone</th>
-                  <th className="py-3 px-4 text-center">Action</th>
+                  <th className="py-3 px-4 whitespace-nowrap">No</th>
+                  <th className="py-3 px-4 whitespace-nowrap">Patient</th>
+                  <th className="py-3 px-4 whitespace-nowrap">Age</th>
+                  <th className="py-3 px-4 whitespace-nowrap">Date of Birth</th>
+                  <th className="py-3 px-4 whitespace-nowrap">Status</th>
+                  <th className="py-3 px-4 whitespace-nowrap">Email</th>
+                  <th className="py-3 px-4 whitespace-nowrap">Phone</th>
+                  <th className="py-3 px-4 text-center whitespace-nowrap min-w-[80px]">Action</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-border">

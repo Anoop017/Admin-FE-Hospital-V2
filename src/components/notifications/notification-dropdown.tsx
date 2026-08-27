@@ -172,7 +172,7 @@ export function NotificationDropdown() {
 
       {/* Floating Dropdown Panel */}
       {isOpen && (
-        <div className="absolute right-0 top-full mt-2 w-80 sm:w-96 rounded-xl border border-border bg-card text-card-foreground shadow-xl z-50 overflow-hidden animate-in fade-in-0 zoom-in-95 origin-top-right">
+        <div className="fixed inset-x-3.5 top-16 sm:absolute sm:inset-auto sm:right-0 sm:top-full sm:mt-2 sm:w-96 max-w-[calc(100vw-1.75rem)] rounded-xl border border-border bg-card text-card-foreground shadow-xl z-50 overflow-hidden animate-in fade-in-0 zoom-in-95 origin-top-right">
           {/* Header */}
           <div className="flex items-center justify-between border-b border-border/80 px-4 py-3 bg-muted/30">
             <div className="flex items-center gap-2">

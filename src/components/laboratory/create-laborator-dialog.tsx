@@ -41,7 +41,7 @@ export function CreateLaboratorDialog({ open, onOpenChange, onSuccess }: any) {
       <DialogContent className="max-w-md">
         <DialogHeader><DialogTitle>Create Lab Test</DialogTitle></DialogHeader>
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
             <div className="flex flex-col gap-2">
               <label className="text-sm font-medium">Patient</label>
               <Select value={patientId} onValueChange={(val) => setPatientId(val || "")} required>
@@ -69,7 +69,7 @@ export function CreateLaboratorDialog({ open, onOpenChange, onSuccess }: any) {
               </Select>
             </div>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
             <div className="flex flex-col gap-2">
               <label className="text-sm font-medium">Test Name</label>
               <Input value={testName} onChange={e => setTestName(e.target.value)} required />
@@ -79,7 +79,7 @@ export function CreateLaboratorDialog({ open, onOpenChange, onSuccess }: any) {
               <Input value={testType} onChange={e => setTestType(e.target.value)} required />
             </div>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
             <div className="flex flex-col gap-2">
               <label className="text-sm font-medium">Test Date</label>
               <Input type="datetime-local" value={testDate} onChange={e => setTestDate(e.target.value)} required />

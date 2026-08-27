@@ -130,10 +130,10 @@ export function PatientSummaryDialog({
             </div>
 
             {/* Department Navigation Tabs */}
-            <div className="flex bg-muted/60 p-1 rounded-lg border border-border overflow-x-auto">
+            <div className="flex bg-muted/60 p-1 rounded-lg border border-border overflow-x-auto no-scrollbar gap-1">
               <button
                 onClick={() => setActiveTab("appointments")}
-                className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-md whitespace-nowrap transition-all ${
+                className={`flex shrink-0 items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-md whitespace-nowrap transition-all ${
                   activeTab === "appointments"
                     ? "bg-background text-foreground shadow-xs font-semibold"
                     : "text-muted-foreground hover:text-foreground"

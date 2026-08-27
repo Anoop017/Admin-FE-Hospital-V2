@@ -73,7 +73,7 @@ export function CreatePrescriptionDialog({ open, onOpenChange, onSuccess }: any)
             <label className="text-sm font-medium">Medication</label>
             <Input value={medication} onChange={e => setMedication(e.target.value)} required />
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
             <div className="flex flex-col gap-2">
               <label className="text-sm font-medium">Dosage</label>
               <Input value={dosage} onChange={e => setDosage(e.target.value)} required />

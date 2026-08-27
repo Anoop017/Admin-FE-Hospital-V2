@@ -40,7 +40,7 @@ export function CreateMedicalRecordDialog({ open, onOpenChange, onSuccess }: any
       <DialogContent className="max-w-md">
         <DialogHeader><DialogTitle>Create Medical Record</DialogTitle></DialogHeader>
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
             <div className="flex flex-col gap-2">
               <label className="text-sm font-medium">Patient</label>
               <Select value={patientId} onValueChange={(val) => setPatientId(val || "")} required>

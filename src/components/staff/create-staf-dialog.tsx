@@ -76,11 +76,11 @@ export function CreateStafDialog({ open, onOpenChange, onSuccess }: any) {
             </TabsContent>
 
             <TabsContent value="create" className="flex flex-col gap-4 mt-0">
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                 <div className="flex flex-col gap-2"><label className="text-sm font-medium capitalize">First Name</label><Input value={firstName} onChange={e => setFirstName(e.target.value)} required={creationMode === 'create'} /></div>
                 <div className="flex flex-col gap-2"><label className="text-sm font-medium capitalize">Last Name</label><Input value={lastName} onChange={e => setLastName(e.target.value)} required={creationMode === 'create'} /></div>
               </div>
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                 <div className="flex flex-col gap-2"><label className="text-sm font-medium capitalize">Email</label><Input type="email" value={email} onChange={e => setEmail(e.target.value)} required={creationMode === 'create'} /></div>
                 <div className="flex flex-col gap-2"><label className="text-sm font-medium capitalize">Mobile</label><Input value={mobile} onChange={e => setMobile(e.target.value)} required={creationMode === 'create'} /></div>
               </div>
@@ -89,7 +89,7 @@ export function CreateStafDialog({ open, onOpenChange, onSuccess }: any) {
 
             <div className="border-t pt-4 flex flex-col gap-4">
               <h3 className="font-semibold text-sm">Staff Details</h3>
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                 <div className="flex flex-col gap-2">
                   <label className="text-sm font-medium capitalize">Department</label>
                   <Select value={departmentId} onValueChange={(val) => setDepartmentId(val || "")} required>

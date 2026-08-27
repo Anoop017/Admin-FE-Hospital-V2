@@ -18,18 +18,18 @@ export function PatientTable({
     return <div className="p-8 text-center text-muted-foreground text-sm">No patient records found.</div>;
 
   return (
-    <div className="w-full overflow-auto">
-      <table className="w-full text-left text-sm">
+    <div className="w-full overflow-x-auto touch-pan-x">
+      <table className="w-full text-left text-sm min-w-[800px]">
         <thead className="border-b border-border bg-muted/40 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
           <tr>
-            <th className="h-10 px-4">Patient #</th>
-            <th className="h-10 px-4">Patient Name</th>
-            <th className="h-10 px-4">DOB</th>
-            <th className="h-10 px-4">Gender</th>
-            <th className="h-10 px-4">Blood Group</th>
-            <th className="h-10 px-4">Address</th>
-            <th className="h-10 px-4">Medical Notes</th>
-            <th className="h-10 px-4 text-right">Actions</th>
+            <th className="h-10 px-4 whitespace-nowrap">Patient #</th>
+            <th className="h-10 px-4 whitespace-nowrap">Patient Name</th>
+            <th className="h-10 px-4 whitespace-nowrap">DOB</th>
+            <th className="h-10 px-4 whitespace-nowrap">Gender</th>
+            <th className="h-10 px-4 whitespace-nowrap">Blood Group</th>
+            <th className="h-10 px-4 whitespace-nowrap">Address</th>
+            <th className="h-10 px-4 whitespace-nowrap">Medical Notes</th>
+            <th className="h-10 px-4 text-right whitespace-nowrap min-w-[190px]">Actions</th>
           </tr>
         </thead>
         <tbody className="divide-y divide-border">

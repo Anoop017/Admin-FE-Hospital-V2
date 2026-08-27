@@ -56,18 +56,18 @@ export function EditPatientDialog({ item, open, onOpenChange, onSuccess }: any) 
         <DialogHeader><DialogTitle>Edit Patient</DialogTitle></DialogHeader>
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
           
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
             <div className="flex flex-col gap-2">
               <label className="text-sm font-medium">First Name</label>
-              <Input value={firstName} disabled className="bg-gray-50" />
+              <Input value={firstName} disabled className="bg-gray-50 dark:bg-muted" />
             </div>
             <div className="flex flex-col gap-2">
               <label className="text-sm font-medium">Last Name</label>
-              <Input value={lastName} disabled className="bg-gray-50" />
+              <Input value={lastName} disabled className="bg-gray-50 dark:bg-muted" />
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
             <div className="flex flex-col gap-2">
               <label className="text-sm font-medium capitalize">Date of Birth</label>
               <Input type="date" value={dateOfBirth} onChange={e => setDateOfBirth(e.target.value)} required />
