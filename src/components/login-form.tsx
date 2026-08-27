@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Spinner } from "@/components/ui/spinner";
+import { ForgotPasswordDialog } from "@/components/forgot-password-dialog";
 import { login } from "@/lib/api";
 import { saveSession } from "@/lib/auth";
 
@@ -18,6 +19,7 @@ export function LoginForm() {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [forgotPasswordOpen, setForgotPasswordOpen] = useState(false);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -92,9 +94,19 @@ export function LoginForm() {
           </div>
 
           <div className="flex flex-col gap-2">
-            <Label htmlFor="login-password" className="text-sm font-medium">
-              Password
-            </Label>
+            <div className="flex items-center justify-between">
+              <Label htmlFor="login-password" className="text-sm font-medium">
+                Password
+              </Label>
+              <button
+                type="button"
+                onClick={() => setForgotPasswordOpen(true)}
+                className="text-xs font-medium text-primary hover:underline transition-colors cursor-pointer"
+                tabIndex={0}
+              >
+                Forgot password?
+              </button>
+            </div>
             <div className="relative">
               <Input
                 id="login-password"
@@ -144,6 +156,14 @@ export function LoginForm() {
       <p className="mt-6 text-center text-xs text-muted-foreground">
         Protected area. Authorized personnel only.
       </p>
+
+      {/* Forgot Password Modal */}
+      <ForgotPasswordDialog
+        open={forgotPasswordOpen}
+        onOpenChange={setForgotPasswordOpen}
+        defaultEmail={email}
+      />
     </div>
   );
 }
+

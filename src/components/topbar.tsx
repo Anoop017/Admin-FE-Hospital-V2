@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { Search, Bell, Mail, Sun, Moon } from "lucide-react";
+import { Bell, Mail, Sun, Moon } from "lucide-react";
 import { useState, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
@@ -54,15 +54,9 @@ export function Topbar() {
   return (
     <>
       <header className="flex h-16 shrink-0 items-center justify-between border-b border-border bg-card px-6">
-        {/* Search */}
-        <div className="relative w-full max-w-sm">
-          <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
-          <Input
-            id="topbar-search"
-            type="search"
-            placeholder="Search…"
-            className="h-10 pl-10 bg-secondary border-transparent focus:border-border"
-          />
+        {/* Left side brand / spacer */}
+        <div className="flex items-center gap-2">
+          {/* Topbar left area */}
         </div>
 
         {/* Right side actions */}

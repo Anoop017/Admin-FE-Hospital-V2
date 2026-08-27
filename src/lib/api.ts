@@ -4,6 +4,8 @@ import type {
   AuthUser,
   LoginPayload,
   LoginResponse,
+  ForgotPasswordPayload,
+  ForgotPasswordResponse,
   User,
   UserCreatePayload,
   UserUpdatePayload,
@@ -49,6 +51,11 @@ import type {
   AppNotification,
   NotificationsResponse,
   QueryNotificationsDto,
+  AuditLog,
+  AuditLogStats,
+  AuditLogFiltersResponse,
+  AuditLogQueryParams,
+  PaginatedAuditLogsResponse,
 } from "@/types";
 
 
@@ -103,6 +110,16 @@ api.interceptors.response.use(
 // ── Auth API ─────────────────────────────────────────
 export async function login(payload: LoginPayload): Promise<LoginResponse> {
   const { data } = await api.post<LoginResponse>("/auth/login", payload);
+  return data;
+}
+
+export async function forgotPassword(
+  payload: ForgotPasswordPayload
+): Promise<ForgotPasswordResponse> {
+  const { data } = await api.post<ForgotPasswordResponse>(
+    "/auth/forgot-password",
+    payload
+  );
   return data;
 }
 
@@ -720,4 +737,131 @@ export async function deleteNotification(id: number | string): Promise<void> {
     // ignore
   }
 }
+
+// ── Audit Logs ──────────────────────────────────────────
+export async function getAuditLogs(
+  params?: AuditLogQueryParams
+): Promise<PaginatedAuditLogsResponse> {
+  try {
+    const { data } = await api.get<any>("/audit-logs", { params });
+    if (Array.isArray(data)) {
+      const meta = (data as any)._meta || {
+        total: data.length,
+        page: params?.page || 1,
+        limit: params?.limit || 20,
+        totalPages: Math.ceil(data.length / (params?.limit || 20)) || 1,
+        hasNextPage: false,
+        hasPreviousPage: false,
+      };
+      return { data, meta };
+    }
+    if (data && Array.isArray(data.data)) {
+      return {
+        data: data.data,
+        meta: data.meta || {
+          total: data.data.length,
+          page: params?.page || 1,
+          limit: params?.limit || 20,
+          totalPages: 1,
+          hasNextPage: false,
+          hasPreviousPage: false,
+        },
+      };
+    }
+    return {
+      data: [],
+      meta: {
+        total: 0,
+        page: params?.page || 1,
+        limit: params?.limit || 20,
+        totalPages: 0,
+        hasNextPage: false,
+        hasPreviousPage: false,
+      },
+    };
+  } catch (error) {
+    console.error("Failed to fetch audit logs:", error);
+    return {
+      data: [],
+      meta: {
+        total: 0,
+        page: params?.page || 1,
+        limit: params?.limit || 20,
+        totalPages: 0,
+        hasNextPage: false,
+        hasPreviousPage: false,
+      },
+    };
+  }
+}
+
+export async function getAuditLogStats(params?: {
+  isAdmin?: boolean;
+  startDate?: string;
+  endDate?: string;
+}): Promise<AuditLogStats | null> {
+  try {
+    const { data } = await api.get<AuditLogStats>("/audit-logs/stats", { params });
+    return data;
+  } catch (error) {
+    console.error("Failed to fetch audit log stats:", error);
+    return null;
+  }
+}
+
+export async function getAuditLogFilters(): Promise<AuditLogFiltersResponse | null> {
+  try {
+    const { data } = await api.get<AuditLogFiltersResponse>("/audit-logs/filters");
+    return data;
+  } catch (error) {
+    console.error("Failed to fetch audit log filters:", error);
+    return null;
+  }
+}
+
+export async function getAuditLogById(id: string): Promise<AuditLog | null> {
+  try {
+    const { data } = await api.get<AuditLog>(`/audit-logs/${id}`);
+    return data;
+  } catch (error) {
+    console.error(`Failed to fetch audit log ${id}:`, error);
+    return null;
+  }
+}
+
+export async function exportAuditLogs(params?: AuditLogQueryParams): Promise<void> {
+  const query = new URLSearchParams();
+  if (params) {
+    Object.entries(params).forEach(([key, value]) => {
+      if (value !== undefined && value !== null && value !== "") {
+        query.append(key, String(value));
+      }
+    });
+  }
+
+  const token = getToken();
+  const baseURL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000/api/v1";
+  const url = `${baseURL}/audit-logs/export?${query.toString()}`;
+
+  const response = await fetch(url, {
+    headers: {
+      Authorization: token ? `Bearer ${token}` : "",
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error(`Export failed with status ${response.status}`);
+  }
+
+  const blob = await response.blob();
+  const downloadUrl = window.URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = downloadUrl;
+  a.download = `audit_logs_${Date.now()}.xlsx`;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  window.URL.revokeObjectURL(downloadUrl);
+}
+
 

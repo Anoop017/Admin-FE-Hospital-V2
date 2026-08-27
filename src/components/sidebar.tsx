@@ -21,6 +21,7 @@ import {
   PanelLeftClose,
   PanelLeftOpen,
   HousePlus,
+  ShieldCheck,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { clearSession } from "@/lib/auth";
@@ -39,7 +40,6 @@ const navSections: NavSection[] = [
   {
     title: "PEOPLE & HR",
     items: [
-      { label: "Users (Admin)", href: "/users", icon: Users },
       { label: "Patients", href: "/patients", icon: Users },
       { label: "Doctors", href: "/doctors", icon: Stethoscope },
       { label: "Staff", href: "/staff", icon: UserCog },
@@ -68,6 +68,13 @@ const navSections: NavSection[] = [
     title: "FINANCIAL",
     items: [
       { label: "Billing", href: "/billing", icon: CreditCard },
+    ],
+  },
+  {
+    title: "ADMINISTRATION",
+    items: [
+      { label: "Users", href: "/users", icon: Users },
+      { label: "Audit Logs", href: "/audit-logs", icon: ShieldCheck },
     ],
   },
 ];

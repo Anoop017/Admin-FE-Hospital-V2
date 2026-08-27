@@ -43,6 +43,14 @@ export interface LoginResponse {
   user: AuthUser;
 }
 
+export interface ForgotPasswordPayload {
+  email: string;
+}
+
+export interface ForgotPasswordResponse {
+  message: string;
+}
+
 // ── User CRUD ────────────────────────────────────────
 export interface UserCreatePayload {
   firstName: string;
@@ -437,4 +445,7 @@ export interface QueryNotificationsDto {
   type?: string;
   search?: string;
 }
+
+export * from "./audit-logs";
+
 
