@@ -1,7 +1,8 @@
-import { Edit, Trash2, FileText, ExternalLink } from "lucide-react";
+import { Edit, Trash2, FileText, ExternalLink, FileDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import type { Laborator } from "@/types";
+import { downloadLabReportPdf } from "@/lib/reports";
 
 export function LaboratorTable({
   items,
@@ -90,6 +91,17 @@ export function LaboratorTable({
                 </td>
                 <td className="p-4 align-middle text-right">
                   <div className="flex items-center justify-end gap-1">
+                    {/* Download Lab Report PDF from Go Service */}
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="size-8 text-muted-foreground hover:text-primary hover:bg-primary/10"
+                      onClick={() => downloadLabReportPdf(item.id)}
+                      title="Download Official Lab Report PDF"
+                    >
+                      <FileDown className="size-4" />
+                    </Button>
+
                     <Button
                       variant="ghost"
                       size="icon"

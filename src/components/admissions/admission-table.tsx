@@ -1,7 +1,8 @@
-import { Edit, Trash2, LogOut, CheckCircle2 } from "lucide-react";
+import { Edit, Trash2, LogOut, CheckCircle2, FileDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import type { Admission } from "@/types";
+import { downloadDischargeSummaryPdf } from "@/lib/reports";
 
 export function AdmissionTable({
   items,
@@ -88,6 +89,17 @@ export function AdmissionTable({
                         <LogOut className="size-3.5" /> Discharge
                       </Button>
                     )}
+                    {/* Discharge Summary PDF */}
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      title="Download Discharge Summary PDF"
+                      className="size-8 text-muted-foreground hover:text-primary hover:bg-primary/10"
+                      onClick={() => downloadDischargeSummaryPdf(item.id)}
+                    >
+                      <FileDown className="size-4" />
+                    </Button>
+
                     <Button
                       variant="ghost"
                       size="icon"

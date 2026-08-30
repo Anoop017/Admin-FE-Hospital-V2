@@ -2,7 +2,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogD
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import type { Bill } from "@/types";
-import { Receipt, Calendar, CreditCard, User, CheckCircle2, Clock, AlertTriangle, ArrowRight } from "lucide-react";
+import { Receipt, Calendar, CreditCard, User, CheckCircle2, Clock, AlertTriangle, ArrowRight, FileDown } from "lucide-react";
+import { downloadInvoicePdf } from "@/lib/reports";
 
 interface ViewBillDialogProps {
   bill: Bill | null;
@@ -146,10 +147,21 @@ export function ViewBillDialog({ bill, open, onOpenChange, onRecordPayment }: Vi
           </div>
         </div>
 
-        <DialogFooter className="mt-2 pt-2 border-t border-border flex items-center justify-between sm:justify-between">
-          <Button variant="outline" onClick={() => onOpenChange(false)}>
-            Close
-          </Button>
+        <DialogFooter className="mt-2 pt-2 border-t border-border flex items-center justify-between sm:justify-between gap-2">
+          <div className="flex items-center gap-2">
+            <Button variant="outline" onClick={() => onOpenChange(false)}>
+              Close
+            </Button>
+            <Button
+              variant="outline"
+              onClick={() => downloadInvoicePdf(bill.id)}
+              className="gap-1.5 text-primary hover:text-primary hover:bg-primary/10"
+              title="Download Invoice PDF from Go Microservice"
+            >
+              <FileDown className="size-4" />
+              Download PDF
+            </Button>
+          </div>
           {balanceNum > 0 && (
             <Button
               onClick={() => {

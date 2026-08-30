@@ -17,7 +17,9 @@ import {
   CheckCircle2,
   Clock,
   RefreshCw,
+  Radio,
 } from "lucide-react";
+import { ICULiveMonitor } from "@/components/ICULiveMonitor";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   LineChart,
@@ -336,6 +338,18 @@ export default function DashboardPage() {
           </div>
         </CardContent>
       </Card>
+
+      {/* Live ICU Telemetry Section */}
+      <div className="flex flex-col gap-2">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <Radio className="size-4 text-rose-500 animate-pulse" />
+            <h2 className="text-base font-bold text-foreground">Live ICU Telemetry & Critical Care</h2>
+          </div>
+          <span className="text-xs text-muted-foreground font-mono">Telemetry Port: 4000 (ws/vitals)</span>
+        </div>
+        <ICULiveMonitor />
+      </div>
 
       {/* Analytics & Upcoming Appointments Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">

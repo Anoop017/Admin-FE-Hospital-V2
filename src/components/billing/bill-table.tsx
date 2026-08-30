@@ -1,7 +1,8 @@
-import { Edit, Trash2, CreditCard, Eye, AlertCircle, CheckCircle2, Clock } from "lucide-react";
+import { Edit, Trash2, CreditCard, Eye, AlertCircle, CheckCircle2, Clock, FileDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import type { Bill } from "@/types";
+import { downloadInvoicePdf } from "@/lib/reports";
 
 interface BillTableProps {
   items: Bill[];
@@ -114,6 +115,17 @@ export function BillTable({ items, onView, onEdit, onDelete, onPay }: BillTableP
                       onClick={() => onView(item)}
                     >
                       <Eye className="size-4" />
+                    </Button>
+
+                    {/* Download Invoice PDF */}
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      title="Download Invoice PDF"
+                      className="size-8 text-muted-foreground hover:text-primary hover:bg-primary/10"
+                      onClick={() => downloadInvoicePdf(item.id)}
+                    >
+                      <FileDown className="size-4" />
                     </Button>
 
                     {/* Record Payment */}

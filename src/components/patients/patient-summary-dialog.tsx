@@ -20,7 +20,11 @@ import {
   RefreshCw,
   Clock,
   HeartPulse,
+  Radio,
+  FileDown,
 } from "lucide-react";
+import { ICULiveMonitor } from "@/components/ICULiveMonitor";
+import { downloadInvoicePdf, downloadDischargeSummaryPdf } from "@/lib/reports";
 
 interface PatientSummaryDialogProps {
   patientId: number | string | null;
@@ -36,7 +40,7 @@ export function PatientSummaryDialog({
   const [data, setData] = useState<any>(null);
   const [loading, setLoading] = useState(false);
   const [activeTab, setActiveTab] = useState<
-    "appointments" | "records" | "prescriptions" | "admissions" | "bills"
+    "appointments" | "records" | "prescriptions" | "admissions" | "bills" | "telemetry"
   >("appointments");
 
   useEffect(() => {
@@ -163,7 +167,7 @@ export function PatientSummaryDialog({
               </button>
               <button
                 onClick={() => setActiveTab("admissions")}
-                className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-md whitespace-nowrap transition-all ${
+                className={`flex shrink-0 items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-md whitespace-nowrap transition-all ${
                   activeTab === "admissions"
                     ? "bg-background text-foreground shadow-xs font-semibold"
                     : "text-muted-foreground hover:text-foreground"
@@ -173,7 +177,7 @@ export function PatientSummaryDialog({
               </button>
               <button
                 onClick={() => setActiveTab("bills")}
-                className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-md whitespace-nowrap transition-all ${
+                className={`flex shrink-0 items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-md whitespace-nowrap transition-all ${
                   activeTab === "bills"
                     ? "bg-background text-foreground shadow-xs font-semibold"
                     : "text-muted-foreground hover:text-foreground"
@@ -181,10 +185,27 @@ export function PatientSummaryDialog({
               >
                 <CreditCard className="size-3.5" /> Billing ({bills.length})
               </button>
+              <button
+                onClick={() => setActiveTab("telemetry")}
+                className={`flex shrink-0 items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-md whitespace-nowrap transition-all ${
+                  activeTab === "telemetry"
+                    ? "bg-teal-600 text-white shadow-xs font-semibold"
+                    : "text-teal-600 dark:text-teal-400 hover:text-teal-500 font-medium"
+                }`}
+              >
+                <Radio className="size-3.5 animate-pulse" /> Live Telemetry
+              </button>
             </div>
 
             {/* Tab Contents */}
             <div className="rounded-lg border border-border bg-card p-4 min-h-[220px]">
+              {/* Live Telemetry Tab */}
+              {activeTab === "telemetry" && (
+                <div className="space-y-3">
+                  <ICULiveMonitor patientId={patientId || undefined} />
+                </div>
+              )}
+
               {/* Appointments */}
               {activeTab === "appointments" && (
                 <div className="space-y-3">
@@ -219,8 +240,9 @@ export function PatientSummaryDialog({
                           <strong className="text-foreground text-sm">{rec.diagnosis}</strong>
                           <span className="text-muted-foreground">{rec.recordDate ? new Date(rec.recordDate).toLocaleDateString() : ""}</span>
                         </div>
-                        {rec.symptoms && <p className="text-muted-foreground">Symptoms: <span className="text-foreground">{rec.symptoms}</span></p>}
-                        {rec.treatment && <p className="text-muted-foreground">Treatment: <span className="text-foreground">{rec.treatment}</span></p>}
+                        <p className="text-muted-foreground">Symptoms: <span className="text-foreground">{rec.symptoms}</span></p>
+                        <p className="text-foreground">Treatment: {rec.treatment}</p>
+                        {rec.notes && <p className="text-muted-foreground italic">Notes: {rec.notes}</p>}
                       </div>
                     ))
                   )}
@@ -256,7 +278,7 @@ export function PatientSummaryDialog({
                     <p className="text-center py-6 text-xs text-muted-foreground">No inpatient admissions.</p>
                   ) : (
                     admissions.map((adm: any) => (
-                      <div key={adm.id} className="p-3 rounded-lg border border-border/80 text-xs flex justify-between items-start">
+                      <div key={adm.id} className="p-3 rounded-lg border border-border/80 text-xs flex justify-between items-center gap-2">
                         <div>
                           <p className="font-semibold text-foreground">Reason: {adm.reason}</p>
                           <p className="text-muted-foreground mt-0.5">
@@ -264,9 +286,20 @@ export function PatientSummaryDialog({
                             {adm.dischargeDate && ` • Discharged: ${new Date(adm.dischargeDate).toLocaleDateString()}`}
                           </p>
                         </div>
-                        <Badge variant={adm.status === "admitted" ? "default" : "secondary"} className="capitalize">
-                          {adm.status}
-                        </Badge>
+                        <div className="flex items-center gap-2">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className="h-7 text-xs gap-1"
+                            onClick={() => downloadDischargeSummaryPdf(adm.id)}
+                            title="Download Discharge Summary PDF"
+                          >
+                            <FileDown className="size-3.5" /> PDF
+                          </Button>
+                          <Badge variant={adm.status === "admitted" ? "default" : "secondary"} className="capitalize">
+                            {adm.status}
+                          </Badge>
+                        </div>
                       </div>
                     ))
                   )}
@@ -280,19 +313,30 @@ export function PatientSummaryDialog({
                     <p className="text-center py-6 text-xs text-muted-foreground">No invoices recorded.</p>
                   ) : (
                     bills.map((b: any) => (
-                      <div key={b.id} className="p-3 rounded-lg border border-border/80 text-xs flex justify-between items-center">
+                      <div key={b.id} className="p-3 rounded-lg border border-border/80 text-xs flex justify-between items-center gap-2">
                         <div>
                           <p className="font-mono font-bold text-foreground">Invoice #{b.id.substring(0, 8)}</p>
                           <p className="text-muted-foreground mt-0.5">
                             Total: ${parseFloat(String(b.totalAmount || 0)).toFixed(2)} • Paid: ${parseFloat(String(b.paidAmount || 0)).toFixed(2)}
                           </p>
                         </div>
-                        <Badge
-                          variant={b.status === "paid" ? "default" : "destructive"}
-                          className={b.status === "paid" ? "bg-emerald-500/10 text-emerald-600 border-emerald-500/30 capitalize" : "capitalize"}
-                        >
-                          {b.status}
-                        </Badge>
+                        <div className="flex items-center gap-2">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className="h-7 text-xs gap-1"
+                            onClick={() => downloadInvoicePdf(b.id)}
+                            title="Download Invoice PDF"
+                          >
+                            <FileDown className="size-3.5" /> PDF
+                          </Button>
+                          <Badge
+                            variant={b.status === "paid" ? "default" : "destructive"}
+                            className={b.status === "paid" ? "bg-emerald-500/10 text-emerald-600 border-emerald-500/30 capitalize" : "capitalize"}
+                          >
+                            {b.status}
+                          </Badge>
+                        </div>
                       </div>
                     ))
                   )}
