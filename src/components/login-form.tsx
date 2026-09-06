@@ -120,15 +120,15 @@ export function LoginForm() {
             <div className="flex items-center gap-2">
               <span className="inline-flex size-2 rounded-full bg-emerald-500 animate-pulse" />
               <span className="text-xs font-semibold uppercase tracking-wider text-primary">
-                Live Interactive Demo
+                Live Demo
               </span>
             </div>
             <span className="text-[11px] font-medium text-primary/80 bg-primary/10 px-2 py-0.5 rounded-full">
-              One-Tap
+              1-Tap
             </span>
           </div>
-          <p className="text-xs text-muted-foreground mb-3 leading-relaxed">
-            Experience the complete hospital management platform with preconfigured administrator access.
+          <p className="text-xs text-muted-foreground mb-3">
+            Instant full-access admin preview.
           </p>
           <Button
             type="button"
