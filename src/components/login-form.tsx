@@ -114,15 +114,6 @@ export function LoginForm() {
 
       {/* Login card */}
       <div className="rounded-2xl border border-border bg-card p-6 sm:p-8 shadow-xs">
-        <div className="mb-6">
-          <h2 className="text-lg font-semibold text-foreground">
-            Welcome back
-          </h2>
-          <p className="mt-1 text-sm text-muted-foreground">
-            Sign in to access your administrative dashboard
-          </p>
-        </div>
-
         {/* One-Click Recruiter Demo Access */}
         <div className="mb-6 rounded-xl border border-primary/25 bg-primary/5 p-4 transition-all hover:border-primary/40">
           <div className="flex items-center justify-between gap-2 mb-1.5">
