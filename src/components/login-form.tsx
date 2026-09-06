@@ -240,10 +240,6 @@ export function LoginForm() {
         </form>
       </div>
 
-      <p className="mt-6 text-center text-xs text-muted-foreground">
-        Protected administrative portal. Authorized personnel only.
-      </p>
-
       {/* Forgot Password Modal */}
       <ForgotPasswordDialog
         open={forgotPasswordOpen}
