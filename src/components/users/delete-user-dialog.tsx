@@ -11,7 +11,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { deleteUser } from "@/lib/api";
+import { deleteUser, deleteAdmin } from "@/lib/api";
 import type { User } from "@/types";
 
 interface DeleteUserDialogProps {
@@ -32,7 +32,11 @@ export function DeleteUserDialog({
   async function handleDelete() {
     setIsLoading(true);
     try {
-      await deleteUser(user.id);
+      if (user.isSystemAdmin) {
+        await deleteAdmin(user.id);
+      } else {
+        await deleteUser(user.id);
+      }
       onOpenChange(false);
       onSuccess();
     } catch {

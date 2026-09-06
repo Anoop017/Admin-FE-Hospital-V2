@@ -2,7 +2,8 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Eye, EyeOff, HousePlus, LogIn } from "lucide-react";
+import Image from "next/image";
+import { Eye, EyeOff, LogIn, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -12,6 +13,11 @@ import { ForgotPasswordDialog } from "@/components/forgot-password-dialog";
 import { login } from "@/lib/api";
 import { saveSession } from "@/lib/auth";
 
+const DEMO_ADMIN_EMAIL =
+  process.env.NEXT_PUBLIC_DEMO_ADMIN_EMAIL || "admin@hospital.com";
+const DEMO_ADMIN_PASSWORD =
+  process.env.NEXT_PUBLIC_DEMO_ADMIN_PASSWORD || "password123";
+
 export function LoginForm() {
   const router = useRouter();
   const [email, setEmail] = useState("");
@@ -19,15 +25,43 @@ export function LoginForm() {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [isDemoLoading, setIsDemoLoading] = useState(false);
   const [forgotPasswordOpen, setForgotPasswordOpen] = useState(false);
 
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
+  async function performLogin(
+    targetEmail: string,
+    targetPassword: string,
+    isDemo: boolean = false
+  ) {
     setError("");
-    setIsLoading(true);
+    if (isDemo) {
+      setIsDemoLoading(true);
+    } else {
+      setIsLoading(true);
+    }
 
     try {
-      const response = await login({ email, password });
+      const response = await login({
+        email: targetEmail,
+        password: targetPassword,
+      });
+      const user = response.user;
+      const roles = (user?.roles || []).map((r: any) =>
+        typeof r === "string" ? r.toLowerCase() : r.name?.toLowerCase()
+      );
+      const isAdmin =
+        user?.userType === "admin" ||
+        roles.includes("admin") ||
+        roles.includes("super_admin") ||
+        roles.includes("manager");
+
+      if (!isAdmin) {
+        setError(
+          "Access Denied: This dashboard is restricted to hospital administrators. Patients and clinical staff should sign in through the Patient & Staff Portal."
+        );
+        return;
+      }
+
       saveSession(response);
       router.push("/dashboard");
     } catch (err: unknown) {
@@ -41,33 +75,94 @@ export function LoginForm() {
       }
     } finally {
       setIsLoading(false);
+      setIsDemoLoading(false);
     }
   }
 
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    await performLogin(email, password, false);
+  }
+
+  async function handleDemoLogin() {
+    setEmail(DEMO_ADMIN_EMAIL);
+    setPassword(DEMO_ADMIN_PASSWORD);
+    await performLogin(DEMO_ADMIN_EMAIL, DEMO_ADMIN_PASSWORD, true);
+  }
+
   return (
-    <div className="w-full max-w-[420px] px-6">
+    <div className="w-full max-w-[440px] px-4 sm:px-6">
       {/* Branding */}
-      <div className="mb-10 text-center">
-        <div className="mx-auto mb-4 flex size-14 items-center justify-center rounded-2xl bg-primary">
-          <HousePlus className="size-7 text-primary-foreground" />
+      <div className="mb-8 text-center">
+        <div className="mx-auto mb-4 flex size-16 items-center justify-center rounded-2xl bg-card border border-border shadow-sm p-3">
+          <Image
+            src="/admin-icon.png"
+            alt="Admin Hospital Dashboard"
+            width={48}
+            height={48}
+            className="size-11 object-contain dark:invert"
+            priority
+          />
         </div>
         <h1 className="text-2xl font-semibold tracking-tight text-foreground">
           Admin - Hospital Dashboard
         </h1>
         <p className="mt-1.5 text-sm text-muted-foreground">
-          Sign in to your account
+          Hospital Management & Administration Portal
         </p>
       </div>
 
       {/* Login card */}
-      <div className="rounded-2xl border border-border bg-card p-8">
+      <div className="rounded-2xl border border-border bg-card p-6 sm:p-8 shadow-xs">
         <div className="mb-6">
           <h2 className="text-lg font-semibold text-foreground">
             Welcome back
           </h2>
           <p className="mt-1 text-sm text-muted-foreground">
-            Sign in to your admin account
+            Sign in to access your administrative dashboard
           </p>
+        </div>
+
+        {/* One-Click Recruiter Demo Access */}
+        <div className="mb-6 rounded-xl border border-primary/25 bg-primary/5 p-4 transition-all hover:border-primary/40">
+          <div className="flex items-center justify-between gap-2 mb-1.5">
+            <div className="flex items-center gap-2">
+              <span className="inline-flex size-2 rounded-full bg-emerald-500 animate-pulse" />
+              <span className="text-xs font-semibold uppercase tracking-wider text-primary">
+                Recruiter Demo Access
+              </span>
+            </div>
+            <span className="text-[11px] font-mono text-muted-foreground">
+              1-Click
+            </span>
+          </div>
+          <p className="text-xs text-muted-foreground mb-3">
+            Instant evaluation access with preconfigured administrator credentials.
+          </p>
+          <Button
+            type="button"
+            onClick={handleDemoLogin}
+            disabled={isLoading || isDemoLoading}
+            className="w-full h-11 gap-2 bg-primary text-primary-foreground hover:bg-primary/90 font-medium shadow-sm transition-all text-sm cursor-pointer"
+          >
+            {isDemoLoading ? (
+              <>
+                <Spinner className="size-4" />
+                Entering Admin Portal…
+              </>
+            ) : (
+              <>
+                <Sparkles className="size-4" />
+                One-Click Admin Login
+              </>
+            )}
+          </Button>
+        </div>
+
+        <div className="relative mb-6 text-center text-xs after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t after:border-border">
+          <span className="relative z-10 bg-card px-3 text-muted-foreground uppercase text-[10px] font-medium tracking-wider">
+            Or sign in with email
+          </span>
         </div>
 
         {error && (
@@ -76,7 +171,7 @@ export function LoginForm() {
           </Alert>
         )}
 
-        <form onSubmit={handleSubmit} className="flex flex-col gap-5">
+        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
           <div className="flex flex-col gap-2">
             <Label htmlFor="login-email" className="text-sm font-medium">
               Email
@@ -135,8 +230,9 @@ export function LoginForm() {
 
           <Button
             type="submit"
-            disabled={isLoading}
-            className="mt-1 h-11 w-full text-sm font-medium"
+            variant="outline"
+            disabled={isLoading || isDemoLoading}
+            className="mt-2 h-11 w-full text-sm font-medium cursor-pointer"
           >
             {isLoading ? (
               <>
@@ -154,7 +250,7 @@ export function LoginForm() {
       </div>
 
       <p className="mt-6 text-center text-xs text-muted-foreground">
-        Protected area. Authorized personnel only.
+        Protected administrative portal. Authorized personnel only.
       </p>
 
       {/* Forgot Password Modal */}
@@ -166,4 +262,5 @@ export function LoginForm() {
     </div>
   );
 }
+
 

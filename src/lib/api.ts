@@ -170,6 +170,34 @@ export async function deleteUser(id: number | string): Promise<void> {
   await api.delete(`/users/${id}`);
 }
 
+// ── Admins API ──
+export async function getAdmins(): Promise<import('@/types').AdminUser[]> {
+  const { data } = await api.get<import('@/types').AdminUser[]>('/admins');
+  return data;
+}
+
+export async function getAdmin(id: number | string): Promise<import('@/types').AdminUser> {
+  const { data } = await api.get<import('@/types').AdminUser>(`/admins/${id}`);
+  return data;
+}
+
+export async function createAdmin(payload: import('@/types').AdminCreatePayload): Promise<import('@/types').AdminUser> {
+  const { data } = await api.post<import('@/types').AdminUser>('/admins', payload);
+  return data;
+}
+
+export async function updateAdmin(
+  id: number | string,
+  payload: import('@/types').AdminUpdatePayload,
+): Promise<import('@/types').AdminUser> {
+  const { data } = await api.patch<import('@/types').AdminUser>(`/admins/${id}`, payload);
+  return data;
+}
+
+export async function deleteAdmin(id: number | string): Promise<void> {
+  await api.delete(`/admins/${id}`);
+}
+
 export default api;
 
 // ── Auto-generated API Functions ────────────────────

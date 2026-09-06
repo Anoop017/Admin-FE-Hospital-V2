@@ -1,4 +1,4 @@
-// ── Role ──────────────────────────────────────────────
+﻿// ── Role ──────────────────────────────────────────────
 export interface Role {
   name: string;
 }
@@ -14,6 +14,7 @@ export interface User {
   isLocked: boolean;
   createdAt: string;
   roles: Role[];
+  isSystemAdmin?: boolean;
 }
 
 export interface UsersSummary {
@@ -23,13 +24,52 @@ export interface UsersSummary {
   admins: number;
 }
 
+export type AdminRole = 'super_admin' | 'admin' | 'manager';
+
+export interface AdminUser {
+  id: number | string;
+  email: string;
+  firstName: string;
+  lastName: string;
+  mobile?: string;
+  role: AdminRole;
+  isActive: boolean;
+  isLocked: boolean;
+  isSystem?: boolean;
+  lastLoginAt?: string;
+  createdAt: string;
+}
+
+export interface AdminCreatePayload {
+  firstName: string;
+  lastName: string;
+  email: string;
+  password: string;
+  mobile?: string;
+  role?: AdminRole;
+}
+
+export interface AdminUpdatePayload {
+  firstName?: string;
+  lastName?: string;
+  email?: string;
+  password?: string;
+  mobile?: string;
+  role?: AdminRole;
+  isActive?: boolean;
+  isLocked?: boolean;
+}
+
 export interface AuthUser {
   userId: number | string;
   email: string;
   firstName: string;
   lastName: string;
   mobile?: string;
-  roles: string[];
+  roles: string[] | { name: string }[];
+  role?: string;
+  userType?: 'admin' | 'user';
+  isSystem?: boolean;
 }
 
 export interface LoginPayload {

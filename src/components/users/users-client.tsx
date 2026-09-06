@@ -1,23 +1,25 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { Plus, Users, UserCheck, Lock, ShieldCheck, Search } from "lucide-react";
+import { Plus, Users, UserCheck, Lock, ShieldCheck, Search, Shield, Stethoscope } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
-import { getUsers, getUsersSummary } from "@/lib/api";
+import { getUsers, getUsersSummary, getAdmins } from "@/lib/api";
 import { UserTable } from "@/components/users/user-table";
 import { CreateUserDialog } from "@/components/users/create-user-dialog";
 import { EditUserDialog } from "@/components/users/edit-user-dialog";
 import { DeleteUserDialog } from "@/components/users/delete-user-dialog";
-import type { User, UsersSummary } from "@/types";
+import type { User, UsersSummary, AdminUser } from "@/types";
 
 export function UsersClient() {
-  const [users, setUsers] = useState<User[]>([]);
+  const [portalUsers, setPortalUsers] = useState<User[]>([]);
+  const [adminUsersList, setAdminUsersList] = useState<User[]>([]);
   const [summary, setSummary] = useState<UsersSummary | null>(null);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
+  const [selectedTab, setSelectedTab] = useState<"all" | "staff" | "admins">("all");
   const [createOpen, setCreateOpen] = useState(false);
   const [editUser, setEditUser] = useState<User | null>(null);
   const [deleteUser, setDeleteUser] = useState<User | null>(null);
@@ -25,14 +27,30 @@ export function UsersClient() {
   const fetchUsers = useCallback(async () => {
     try {
       setLoading(true);
-      const [usersData, summaryData] = await Promise.all([
+      const [usersData, summaryData, adminsData] = await Promise.all([
         getUsers(),
-        getUsersSummary()
+        getUsersSummary(),
+        getAdmins().catch(() => [] as AdminUser[])
       ]);
-      setUsers(usersData);
+
+      const formattedAdmins: User[] = adminsData.map((a) => ({
+        id: a.id,
+        email: a.email,
+        firstName: a.firstName,
+        lastName: a.lastName,
+        mobile: a.mobile || "",
+        isActive: a.isActive,
+        isLocked: a.isLocked,
+        createdAt: a.createdAt,
+        roles: [{ name: a.role || "admin" }],
+        isSystemAdmin: true,
+      }));
+
+      setPortalUsers(usersData);
+      setAdminUsersList(formattedAdmins);
       setSummary(summaryData);
     } catch {
-      // API error — handled by interceptor (401 redirects to login)
+      // API error - handled by interceptor (401 redirects to login)
     } finally {
       setLoading(false);
     }
@@ -42,7 +60,14 @@ export function UsersClient() {
     fetchUsers();
   }, [fetchUsers]);
 
-  const filteredUsers = users.filter((u) => {
+  // Combine or filter by tab
+  const displayedUsers = selectedTab === "admins"
+    ? adminUsersList
+    : selectedTab === "staff"
+    ? portalUsers
+    : [...adminUsersList, ...portalUsers];
+
+  const filteredUsers = displayedUsers.filter((u) => {
     const q = searchQuery.toLowerCase();
     return (
       u.firstName?.toLowerCase().includes(q) ||
@@ -53,14 +78,14 @@ export function UsersClient() {
   });
 
   // Stats
-  const totalUsers = summary?.total || 0;
-  const activeUsers = summary?.active || 0;
-  const lockedUsers = summary?.locked || 0;
-  const adminUsers = summary?.admins || 0;
+  const totalUsers = (summary?.total || 0) + adminUsersList.length;
+  const activeUsers = (summary?.active || 0) + adminUsersList.filter((a) => a.isActive).length;
+  const lockedUsers = (summary?.locked || 0) + adminUsersList.filter((a) => a.isLocked).length;
+  const adminUsersCount = adminUsersList.length || summary?.admins || 0;
 
   const statCards = [
     {
-      label: "Total Users",
+      label: "Total Accounts",
       value: totalUsers,
       icon: Users,
       iconBg: "bg-primary/10",
@@ -81,8 +106,8 @@ export function UsersClient() {
       iconColor: "text-destructive",
     },
     {
-      label: "Admins",
-      value: adminUsers,
+      label: "Administrators",
+      value: adminUsersCount,
       icon: ShieldCheck,
       iconBg: "bg-[#6366F1]/10",
       iconColor: "text-[#6366F1]",
@@ -98,12 +123,12 @@ export function UsersClient() {
             User Management
           </h1>
           <p className="mt-1 text-sm text-muted-foreground">
-            Manage hospital employees, assign roles, and control access.
+            Manage hospital staff, system administrators, assign roles, and control access.
           </p>
         </div>
         <Button onClick={() => setCreateOpen(true)} className="gap-2">
           <Plus data-icon="inline-start" />
-          Add User
+          Add Account
         </Button>
       </div>
 
@@ -142,26 +167,67 @@ export function UsersClient() {
         })}
       </div>
 
-      {/* Search and filters */}
+      {/* Search, Tabs, and Filters */}
       <Card className="border border-border bg-card">
         <CardContent className="p-5">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-            <div className="relative w-full max-w-sm">
-              <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
-              <Input
-                id="user-search"
-                type="search"
-                placeholder="Search users by name, email, or role…"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="h-10 pl-10 bg-secondary border-transparent focus:border-border"
-              />
+            {/* Category Tabs */}
+            <div className="flex items-center gap-1.5 p-1 rounded-lg bg-secondary/80 w-fit">
+              <button
+                type="button"
+                onClick={() => setSelectedTab("all")}
+                className={`px-3 py-1.5 rounded-md text-xs font-semibold transition-all ${
+                  selectedTab === "all"
+                    ? "bg-card text-foreground shadow-xs"
+                    : "text-muted-foreground hover:text-foreground"
+                }`}
+              >
+                All Accounts ({totalUsers})
+              </button>
+              <button
+                type="button"
+                onClick={() => setSelectedTab("admins")}
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-semibold transition-all ${
+                  selectedTab === "admins"
+                    ? "bg-card text-[#6366F1] shadow-xs"
+                    : "text-muted-foreground hover:text-foreground"
+                }`}
+              >
+                <Shield className="size-3.5" />
+                Administrators ({adminUsersList.length})
+              </button>
+              <button
+                type="button"
+                onClick={() => setSelectedTab("staff")}
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-semibold transition-all ${
+                  selectedTab === "staff"
+                    ? "bg-card text-primary shadow-xs"
+                    : "text-muted-foreground hover:text-foreground"
+                }`}
+              >
+                <Stethoscope className="size-3.5" />
+                Hospital Staff & Patients ({portalUsers.length})
+              </button>
             </div>
-            <p className="text-sm text-muted-foreground">
-              {loading
-                ? "Loading…"
-                : `${filteredUsers.length} user${filteredUsers.length !== 1 ? "s" : ""} found`}
-            </p>
+
+            <div className="flex items-center gap-3 w-full sm:w-auto">
+              <div className="relative w-full sm:w-72">
+                <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+                <Input
+                  id="user-search"
+                  type="search"
+                  placeholder="Search by name, email, or role..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="h-9 pl-9 bg-secondary border-transparent focus:border-border text-xs"
+                />
+              </div>
+              <p className="text-xs text-muted-foreground whitespace-nowrap">
+                {loading
+                  ? "Loading..."
+                  : `${filteredUsers.length} user${filteredUsers.length !== 1 ? "s" : ""}`}
+              </p>
+            </div>
           </div>
         </CardContent>
       </Card>

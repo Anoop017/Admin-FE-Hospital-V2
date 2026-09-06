@@ -16,10 +16,10 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 import { Separator } from "@/components/ui/separator";
-import { updateUser } from "@/lib/api";
+import { updateUser, updateAdmin } from "@/lib/api";
 import type { User } from "@/types";
 
-const availableRoles = ["admin", "doctor", "nurse", "staff"];
+const availableRoles = ["admin", "super_admin", "doctor", "nurse", "staff", "patient"];
 
 interface EditUserDialogProps {
   user: User;
@@ -64,15 +64,27 @@ export function EditUserDialog({
     setIsLoading(true);
 
     try {
-      await updateUser(user.id, {
-        firstName,
-        lastName,
-        email,
-        mobile,
-        isActive,
-        isLocked,
-        roles: selectedRoles,
-      });
+      if (user.isSystemAdmin) {
+        await updateAdmin(user.id, {
+          firstName,
+          lastName,
+          email,
+          mobile,
+          isActive,
+          isLocked,
+          role: (selectedRoles.includes("super_admin") ? "super_admin" : "admin") as any,
+        });
+      } else {
+        await updateUser(user.id, {
+          firstName,
+          lastName,
+          email,
+          mobile,
+          isActive,
+          isLocked,
+          roles: selectedRoles,
+        });
+      }
       onOpenChange(false);
       onSuccess();
     } catch (err: unknown) {

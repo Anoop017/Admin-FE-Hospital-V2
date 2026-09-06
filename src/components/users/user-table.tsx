@@ -18,10 +18,13 @@ interface UserTableProps {
 }
 
 const roleBadgeStyles: Record<string, string> = {
+  super_admin: "bg-[#8B5CF6]/10 text-[#8B5CF6] hover:bg-[#8B5CF6]/15",
   admin: "bg-[#6366F1]/10 text-[#6366F1] hover:bg-[#6366F1]/15",
+  manager: "bg-[#3B82F6]/10 text-[#3B82F6] hover:bg-[#3B82F6]/15",
   doctor: "bg-primary/10 text-primary hover:bg-primary/15",
   nurse: "bg-[#EC4899]/10 text-[#EC4899] hover:bg-[#EC4899]/15",
   staff: "bg-[#F59E0B]/10 text-[#F59E0B] hover:bg-[#F59E0B]/15",
+  patient: "bg-[#10B981]/10 text-[#10B981] hover:bg-[#10B981]/15",
 };
 
 function formatDate(dateStr: string) {

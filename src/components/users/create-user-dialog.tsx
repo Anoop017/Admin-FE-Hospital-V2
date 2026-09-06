@@ -14,9 +14,9 @@ import {
   DialogTitle,
   DialogFooter,
 } from "@/components/ui/dialog";
-import { createUser } from "@/lib/api";
+import { createUser, createAdmin } from "@/lib/api";
 
-const availableRoles = ["admin", "doctor", "nurse", "staff"];
+const availableRoles = ["admin", "super_admin", "doctor", "nurse", "staff", "patient"];
 
 interface CreateUserDialogProps {
   open: boolean;
@@ -66,14 +66,26 @@ export function CreateUserDialog({
     setIsLoading(true);
 
     try {
-      await createUser({
-        firstName,
-        lastName,
-        email,
-        password,
-        mobile,
-        roles: selectedRoles,
-      });
+      const isAdminRole = selectedRoles.some((r) => r === "admin" || r === "super_admin");
+      if (isAdminRole) {
+        await createAdmin({
+          firstName,
+          lastName,
+          email,
+          password,
+          mobile,
+          role: selectedRoles.includes("super_admin") ? "super_admin" : "admin",
+        });
+      } else {
+        await createUser({
+          firstName,
+          lastName,
+          email,
+          password,
+          mobile,
+          roles: selectedRoles,
+        });
+      }
       resetForm();
       onOpenChange(false);
       onSuccess();
