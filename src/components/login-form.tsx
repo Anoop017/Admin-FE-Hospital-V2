@@ -114,21 +114,21 @@ export function LoginForm() {
 
       {/* Login card */}
       <div className="rounded-2xl border border-border bg-card p-6 sm:p-8 shadow-xs">
-        {/* One-Click Recruiter Demo Access */}
+        {/* One-Tap Live Demo Access */}
         <div className="mb-6 rounded-xl border border-primary/25 bg-primary/5 p-4 transition-all hover:border-primary/40">
           <div className="flex items-center justify-between gap-2 mb-1.5">
             <div className="flex items-center gap-2">
               <span className="inline-flex size-2 rounded-full bg-emerald-500 animate-pulse" />
               <span className="text-xs font-semibold uppercase tracking-wider text-primary">
-                Recruiter Demo Access
+                Live Interactive Demo
               </span>
             </div>
-            <span className="text-[11px] font-mono text-muted-foreground">
-              1-Click
+            <span className="text-[11px] font-medium text-primary/80 bg-primary/10 px-2 py-0.5 rounded-full">
+              One-Tap
             </span>
           </div>
-          <p className="text-xs text-muted-foreground mb-3">
-            Instant evaluation access with preconfigured administrator credentials.
+          <p className="text-xs text-muted-foreground mb-3 leading-relaxed">
+            Experience the complete hospital management platform with preconfigured administrator access.
           </p>
           <Button
             type="button"
@@ -144,7 +144,7 @@ export function LoginForm() {
             ) : (
               <>
                 <Sparkles className="size-4" />
-                One-Click Admin Login
+                One-Tap Admin Login
               </>
             )}
           </Button>
