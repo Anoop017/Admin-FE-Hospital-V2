@@ -22,6 +22,7 @@ import {
   PanelLeftOpen,
   HousePlus,
   ShieldCheck,
+  Webhook,
   X,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -78,6 +79,7 @@ const navSections: NavSection[] = [
     items: [
       { label: "Users", href: "/users", icon: Users },
       { label: "Audit Logs", href: "/audit-logs", icon: ShieldCheck },
+      { label: "Webhooks & API", href: "/webhooks", icon: Webhook },
     ],
   },
 ];
