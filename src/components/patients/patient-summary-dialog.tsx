@@ -25,6 +25,7 @@ import {
 } from "lucide-react";
 import { ICULiveMonitor } from "@/components/ICULiveMonitor";
 import { downloadInvoicePdf, downloadDischargeSummaryPdf } from "@/lib/reports";
+import { formatId, formatCurrency, formatDate } from "@/lib/formatters";
 
 interface PatientSummaryDialogProps {
   patientId: number | string | null;
@@ -134,7 +135,7 @@ export function PatientSummaryDialog({
             </div>
 
             {/* Department Navigation Tabs */}
-            <div className="flex bg-muted/60 p-1 rounded-lg border border-border overflow-x-auto no-scrollbar gap-1">
+            <div className="flex bg-muted/60 p-1 rounded-lg border border-border overflow-x-auto touch-pan-x no-scrollbar gap-1">
               <button
                 onClick={() => setActiveTab("appointments")}
                 className={`flex shrink-0 items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-md whitespace-nowrap transition-all ${
@@ -315,9 +316,9 @@ export function PatientSummaryDialog({
                     bills.map((b: any) => (
                       <div key={b.id} className="p-3 rounded-lg border border-border/80 text-xs flex justify-between items-center gap-2">
                         <div>
-                          <p className="font-mono font-bold text-foreground">Invoice #{b.id.substring(0, 8)}</p>
+                          <p className="font-mono font-bold text-foreground">{formatId("bill", b.id)}</p>
                           <p className="text-muted-foreground mt-0.5">
-                            Total: ${parseFloat(String(b.totalAmount || 0)).toFixed(2)} • Paid: ${parseFloat(String(b.paidAmount || 0)).toFixed(2)}
+                            Total: {formatCurrency(b.totalAmount)} • Paid: {formatCurrency(b.paidAmount)}
                           </p>
                         </div>
                         <div className="flex items-center gap-2">

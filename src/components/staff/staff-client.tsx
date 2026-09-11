@@ -47,8 +47,8 @@ export function StaffClient() {
           <h1 className="text-2xl font-semibold tracking-tight text-foreground">Staff Management</h1>
           <p className="mt-1 text-sm text-muted-foreground">Manage hospital staff members.</p>
         </div>
-        <Button onClick={() => setCreateOpen(true)} className="gap-2">
-          <Plus data-icon="inline-start" /> Add Staf
+        <Button onClick={() => setCreateOpen(true)} className="gap-2 w-full sm:w-auto">
+          <Plus data-icon="inline-start" /> Add Staff Member
         </Button>
       </div>
 

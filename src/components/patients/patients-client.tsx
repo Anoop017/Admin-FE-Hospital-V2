@@ -57,11 +57,11 @@ export function PatientsClient() {
             Manage hospital patient records, profiles, and access 360° clinical timelines.
           </p>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 self-stretch sm:self-auto">
           <Button variant="outline" size="icon" onClick={fetchItems} disabled={loading} title="Refresh data">
             <RefreshCw className={`size-4 ${loading ? "animate-spin" : ""}`} />
           </Button>
-          <Button onClick={() => setCreateOpen(true)} className="gap-2">
+          <Button onClick={() => setCreateOpen(true)} className="gap-2 flex-1 sm:flex-initial">
             <Plus className="size-4" /> Add Patient
           </Button>
         </div>

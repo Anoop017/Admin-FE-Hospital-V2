@@ -10,9 +10,10 @@ import type { NavItem } from "@/types";
 interface SidebarNavItemProps {
   item: NavItem;
   collapsed: boolean;
+  onNavigate?: () => void;
 }
 
-export function SidebarNavItem({ item, collapsed }: SidebarNavItemProps) {
+export function SidebarNavItem({ item, collapsed, onNavigate }: SidebarNavItemProps) {
   const pathname = usePathname();
   const hasChildren = item.children && item.children.length > 0;
 
@@ -59,6 +60,7 @@ export function SidebarNavItem({ item, collapsed }: SidebarNavItemProps) {
                 <Link
                   key={child.href}
                   href={child.href}
+                  onClick={onNavigate}
                   className={cn(
                     "rounded-md px-3 py-2 text-[13px] transition-colors",
                     isChildActive
@@ -79,6 +81,7 @@ export function SidebarNavItem({ item, collapsed }: SidebarNavItemProps) {
   return (
     <Link
       href={item.href}
+      onClick={onNavigate}
       className={cn(
         "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors",
         isActive

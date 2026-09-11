@@ -64,11 +64,11 @@ export function CreateDoctorDialog({ open, onOpenChange, onSuccess }: any) {
                 <Select value={userId} onValueChange={(val) => setUserId(val || "")} required={creationMode === 'assign'}>
                   <SelectTrigger className="w-full">
                     <SelectValue placeholder="Select user">
-                      {userId ? users.find(u => u.id === userId)?.firstName + " " + users.find(u => u.id === userId)?.lastName : "Select user"}
+                      {userId ? users.find(u => String(u.id) === String(userId))?.firstName + " " + users.find(u => String(u.id) === String(userId))?.lastName : "Select user"}
                     </SelectValue>
                   </SelectTrigger>
                   <SelectContent>
-                    {users.map(u => <SelectItem key={u.id} value={u.id}>{u.firstName} {u.lastName}</SelectItem>)}
+                    {users.map(u => <SelectItem key={u.id} value={String(u.id)}>{u.firstName} {u.lastName} • {u.email}</SelectItem>)}
                   </SelectContent>
                 </Select>
               </div>

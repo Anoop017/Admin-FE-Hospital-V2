@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import "./globals.css";
@@ -13,6 +13,16 @@ export const metadata: Metadata = {
   title: "Admin - Hospital Dashboard",
   description:
     "Modern hospital administration dashboard for managing staff, patients, appointments, billing, and clinical operations.",
+};
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 5,
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#ffffff" },
+    { media: "(prefers-color-scheme: dark)", color: "#090d16" },
+  ],
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

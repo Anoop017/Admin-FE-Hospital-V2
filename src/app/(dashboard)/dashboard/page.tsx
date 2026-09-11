@@ -42,6 +42,7 @@ import {
   getPatient,
 } from "@/lib/api";
 import { EditPatientDialog } from "@/components/patients/edit-patient-dialog";
+import { DeletePatientDialog } from "@/components/patients/delete-patient-dialog";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 
@@ -53,6 +54,7 @@ export default function DashboardPage() {
   const [filter, setFilter] = useState("Today");
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [editingPatient, setEditingPatient] = useState<any>(null);
+  const [patientToDelete, setPatientToDelete] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
   const loadOverview = (f: string) => {
@@ -557,8 +559,8 @@ export default function DashboardPage() {
                             <Pencil className="size-3.5" />
                           </button>
                           <button
-                            onClick={() => handleDelete(apt.id)}
-                            className="text-muted-foreground hover:text-destructive p-1 transition-colors"
+                            onClick={() => setPatientToDelete({ id: apt.id, name: apt.name })}
+                            className="text-muted-foreground hover:text-destructive p-1 transition-colors cursor-pointer"
                             title="Delete Patient"
                           >
                             <Trash2 className="size-3.5" />
@@ -582,6 +584,19 @@ export default function DashboardPage() {
           onSuccess={() => {
             setEditingPatient(null);
             loadOverview(filter);
+          }}
+        />
+      )}
+
+      {patientToDelete && (
+        <DeletePatientDialog
+          open={!!patientToDelete}
+          onOpenChange={(open: boolean) => !open && setPatientToDelete(null)}
+          item={patientToDelete}
+          onSuccess={() => {
+            setPatientToDelete(null);
+            loadOverview(filter);
+            setSelectedIds((prev) => prev.filter((selId) => selId !== patientToDelete.id));
           }}
         />
       )}

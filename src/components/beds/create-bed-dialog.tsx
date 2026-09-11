@@ -9,7 +9,7 @@ import type { Ward } from "@/types";
 export function CreateBedDialog({ open, onOpenChange, onSuccess }: any) {
   const [wardId, setWardId] = useState("");
   const [bedNumber, setBedNumber] = useState("");
-  const [status, setStatus] = useState("");
+  const [status, setStatus] = useState("available");
   const [loading, setLoading] = useState(false);
   const [wards, setWards] = useState<Ward[]>([]);
 
@@ -28,47 +28,71 @@ export function CreateBedDialog({ open, onOpenChange, onSuccess }: any) {
       await createBed(payload);
       onSuccess();
       onOpenChange(false);
-    } catch(err) { console.error(err); } finally { setLoading(false); }
+    } catch(err) {
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
   }
+
+  const selectedWard = wards.find((w) => String(w.id) === String(wardId));
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent>
-        <DialogHeader><DialogTitle>Create Bed</DialogTitle></DialogHeader>
+      <DialogContent className="max-w-md">
+        <DialogHeader>
+          <DialogTitle>Register Hospital Bed</DialogTitle>
+        </DialogHeader>
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
           <div className="flex flex-col gap-2">
-            <label className="text-sm font-medium capitalize">ward</label>
+            <label className="text-sm font-medium">Hospital Ward</label>
             <Select value={wardId} onValueChange={(val) => setWardId(val || "")} required>
               <SelectTrigger className="w-full">
                 <SelectValue placeholder="Select ward">
-                  {wardId ? wards.find(w => w.id === wardId)?.name : "Select ward"}
+                  {selectedWard ? selectedWard.name : "Select ward"}
                 </SelectValue>
               </SelectTrigger>
               <SelectContent>
-                {wards.map(w => <SelectItem key={w.id} value={w.id}>{w.name}</SelectItem>)}
+                {wards.map((w) => (
+                  <SelectItem key={w.id} value={String(w.id)}>
+                    {w.name} {w.type ? `(${w.type})` : ""}
+                  </SelectItem>
+                ))}
               </SelectContent>
             </Select>
           </div>
+
           <div className="flex flex-col gap-2">
-            <label className="text-sm font-medium">Bed Number</label>
-            <Input value={bedNumber} onChange={e => setBedNumber(e.target.value)} required />
+            <label className="text-sm font-medium">Bed Identifier / Number</label>
+            <Input
+              placeholder="e.g. ICU-01, GEN-104, PED-12"
+              value={bedNumber}
+              onChange={(e) => setBedNumber(e.target.value)}
+              required
+            />
           </div>
+
           <div className="flex flex-col gap-2">
-            <label className="text-sm font-medium">Status</label>
-            <Select value={status} onValueChange={(val: any) => setStatus(val || "")}>
+            <label className="text-sm font-medium">Initial Bed Status</label>
+            <Select value={status} onValueChange={(val: any) => setStatus(val || "available")}>
               <SelectTrigger className="w-full">
                 <SelectValue placeholder="Select status (default: Available)" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="available">Available</SelectItem>
+                <SelectItem value="available">Available (Clean & Ready)</SelectItem>
                 <SelectItem value="occupied">Occupied</SelectItem>
-                <SelectItem value="maintenance">Maintenance</SelectItem>
+                <SelectItem value="maintenance">Maintenance / Sanitization</SelectItem>
               </SelectContent>
             </Select>
           </div>
+
           <DialogFooter className="mt-2">
-            <Button variant="outline" type="button" onClick={() => onOpenChange(false)}>Cancel</Button>
-            <Button type="submit" disabled={loading}>Create</Button>
+            <Button variant="outline" type="button" onClick={() => onOpenChange(false)}>
+              Cancel
+            </Button>
+            <Button type="submit" disabled={loading}>
+              {loading ? "Creating..." : "Register Bed"}
+            </Button>
           </DialogFooter>
         </form>
       </DialogContent>

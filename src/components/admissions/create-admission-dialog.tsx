@@ -4,6 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { createAdmission, getPatients, getDoctors, getBeds } from "@/lib/api";
+import { formatId } from "@/lib/formatters";
 import type { Patient, Doctor, Bed } from "@/types";
 
 export function CreateAdmissionDialog({ open, onOpenChange, onSuccess }: any) {
@@ -12,8 +13,7 @@ export function CreateAdmissionDialog({ open, onOpenChange, onSuccess }: any) {
   const [bedId, setBedId] = useState("");
   const [admissionDate, setAdmissionDate] = useState("");
   const [reason, setReason] = useState("");
-  const [status, setStatus] = useState("");
-  const [dischargeDate, setDischargeDate] = useState("");
+  const [status, setStatus] = useState("admitted");
   const [loading, setLoading] = useState(false);
   const [patients, setPatients] = useState<Patient[]>([]);
   const [doctors, setDoctors] = useState<Doctor[]>([]);
@@ -26,85 +26,142 @@ export function CreateAdmissionDialog({ open, onOpenChange, onSuccess }: any) {
       getBeds().then(setBeds).catch(console.error);
     }
   }, [open]);
+
   async function handleSubmit(e: any) {
     e.preventDefault();
     setLoading(true);
     try {
-      await createAdmission({ patientId, admittingDoctorId, bedId, admissionDate, reason, status: status || undefined });
+      await createAdmission({
+        patientId,
+        admittingDoctorId,
+        bedId,
+        admissionDate,
+        reason,
+        status: status || undefined,
+      });
       onSuccess();
       onOpenChange(false);
-    } catch(err) { console.error(err); } finally { setLoading(false); }
+    } catch(err) {
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
   }
+
+  const selectedPatient = patients.find((p) => String(p.id) === String(patientId));
+  const selectedDoctor = doctors.find((d) => String(d.id) === String(admittingDoctorId));
+  const selectedBed = beds.find((b) => String(b.id) === String(bedId));
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent>
-        <DialogHeader><DialogTitle>Create Admission</DialogTitle></DialogHeader>
+      <DialogContent className="max-w-lg">
+        <DialogHeader>
+          <DialogTitle>Admit Patient to Ward</DialogTitle>
+        </DialogHeader>
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
           <div className="flex flex-col gap-2">
             <label className="text-sm font-medium">Patient</label>
             <Select value={patientId} onValueChange={(val) => setPatientId(val || "")} required>
               <SelectTrigger className="w-full">
                 <SelectValue placeholder="Select patient">
-                  {patientId ? patients.find(p => p.id === patientId)?.user.firstName + " " + patients.find(p => p.id === patientId)?.user.lastName : "Select patient"}
+                  {selectedPatient
+                    ? `${selectedPatient.user?.firstName || "Patient"} ${selectedPatient.user?.lastName || ""} (${formatId("patient", selectedPatient.id)})`
+                    : "Select patient"}
                 </SelectValue>
               </SelectTrigger>
               <SelectContent>
-                {patients.map(p => <SelectItem key={p.id} value={p.id}>{p.user.firstName} {p.user.lastName}</SelectItem>)}
+                {patients.map((p) => (
+                  <SelectItem key={p.id} value={String(p.id)}>
+                    {p.user?.firstName ? `${p.user.firstName} ${p.user.lastName}` : `Patient #${p.id}`} • {formatId("patient", p.id)}
+                  </SelectItem>
+                ))}
               </SelectContent>
             </Select>
           </div>
+
           <div className="flex flex-col gap-2">
-            <label className="text-sm font-medium">Admitting Doctor</label>
+            <label className="text-sm font-medium">Attending Physician / Doctor</label>
             <Select value={admittingDoctorId} onValueChange={(val) => setAdmittingDoctorId(val || "")} required>
               <SelectTrigger className="w-full">
-                <SelectValue placeholder="Select doctor">
-                  {admittingDoctorId ? "Dr. " + doctors.find(d => d.id === admittingDoctorId)?.user.firstName + " " + doctors.find(d => d.id === admittingDoctorId)?.user.lastName : "Select doctor"}
+                <SelectValue placeholder="Select attending physician">
+                  {selectedDoctor
+                    ? `Dr. ${selectedDoctor.user?.firstName || ""} ${selectedDoctor.user?.lastName || ""} (${selectedDoctor.specialization || "General"})`
+                    : "Select attending physician"}
                 </SelectValue>
               </SelectTrigger>
               <SelectContent>
-                {doctors.map(d => <SelectItem key={d.id} value={d.id}>Dr. {d.user.firstName} {d.user.lastName} ({d.specialization})</SelectItem>)}
+                {doctors.map((d) => (
+                  <SelectItem key={d.id} value={String(d.id)}>
+                    Dr. {d.user?.firstName ? `${d.user.firstName} ${d.user.lastName}` : `Doctor #${d.id}`} • {d.specialization || "General"}
+                  </SelectItem>
+                ))}
               </SelectContent>
             </Select>
           </div>
+
           <div className="flex flex-col gap-2">
-            <label className="text-sm font-medium">Bed</label>
+            <label className="text-sm font-medium">Assigned Bed</label>
             <Select value={bedId} onValueChange={(val) => setBedId(val || "")} required>
               <SelectTrigger className="w-full">
                 <SelectValue placeholder="Select bed">
-                  {bedId ? "Bed " + beds.find(b => b.id === bedId)?.bedNumber + (beds.find(b => b.id === bedId)?.ward ? ` (${beds.find(b => b.id === bedId)?.ward?.name})` : "") : "Select bed"}
+                  {selectedBed
+                    ? `Bed ${selectedBed.bedNumber}${selectedBed.ward ? ` (${selectedBed.ward.name})` : ""}`
+                    : "Select bed"}
                 </SelectValue>
               </SelectTrigger>
               <SelectContent>
-                {beds.map(b => <SelectItem key={b.id} value={b.id}>Bed {b.bedNumber}{b.ward ? ` (${b.ward.name})` : ""}</SelectItem>)}
+                {beds.map((b) => (
+                  <SelectItem key={b.id} value={String(b.id)}>
+                    Bed {b.bedNumber} {b.ward ? `• ${b.ward.name}` : ""} {b.status ? `(${b.status})` : ""}
+                  </SelectItem>
+                ))}
               </SelectContent>
             </Select>
           </div>
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="flex flex-col gap-2">
-              <label className="text-sm font-medium">Admission Date</label>
-              <Input type="datetime-local" value={admissionDate} onChange={e => setAdmissionDate(e.target.value)} required />
+              <label className="text-sm font-medium">Admission Date & Time</label>
+              <Input
+                type="datetime-local"
+                value={admissionDate}
+                onChange={(e) => setAdmissionDate(e.target.value)}
+                required
+              />
             </div>
             <div className="flex flex-col gap-2">
-              <label className="text-sm font-medium">Status</label>
-              <select className="flex h-10 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50" value={status} onChange={e => setStatus(e.target.value)}>
-                <option value="">Select Status</option>
-                <option value="pending">Pending</option>
-                <option value="admitted">Admitted</option>
-                <option value="observation">Observation</option>
-                <option value="transferred">Transferred</option>
-                <option value="discharged">Discharged</option>
-                <option value="cancelled">Cancelled</option>
-              </select>
+              <label className="text-sm font-medium">Admission Status</label>
+              <Select value={status} onValueChange={(val) => setStatus(val || "admitted")}>
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Select status" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="admitted">Admitted</SelectItem>
+                  <SelectItem value="observation">Under Observation</SelectItem>
+                  <SelectItem value="transferred">Transferred</SelectItem>
+                  <SelectItem value="pending">Pending Bed Prep</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
           </div>
+
           <div className="flex flex-col gap-2">
-            <label className="text-sm font-medium">Reason</label>
-            <Input value={reason} onChange={e => setReason(e.target.value)} required />
+            <label className="text-sm font-medium">Admission Reason / Initial Diagnosis</label>
+            <Input
+              placeholder="e.g. Post-operative recovery, acute myocardial infarction"
+              value={reason}
+              onChange={(e) => setReason(e.target.value)}
+              required
+            />
           </div>
+
           <DialogFooter className="mt-2">
-            <Button variant="outline" type="button" onClick={() => onOpenChange(false)}>Cancel</Button>
-            <Button type="submit" disabled={loading}>Create</Button>
+            <Button variant="outline" type="button" onClick={() => onOpenChange(false)}>
+              Cancel
+            </Button>
+            <Button type="submit" disabled={loading}>
+              {loading ? "Admitting..." : "Confirm Admission"}
+            </Button>
           </DialogFooter>
         </form>
       </DialogContent>

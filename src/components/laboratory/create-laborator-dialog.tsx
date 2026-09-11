@@ -4,6 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { createLaborator, getPatients, getDoctors } from "@/lib/api";
+import { formatId } from "@/lib/formatters";
 import type { Patient, Doctor } from "@/types";
 
 export function CreateLaboratorDialog({ open, onOpenChange, onSuccess }: any) {
@@ -33,13 +34,22 @@ export function CreateLaboratorDialog({ open, onOpenChange, onSuccess }: any) {
       await createLaborator({ patientId, doctorId, testName, testType, result, status, testDate, reportUrl });
       onSuccess();
       onOpenChange(false);
-    } catch(err) { console.error(err); } finally { setLoading(false); }
+    } catch(err) {
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
   }
+
+  const selectedPatient = patients.find((p) => String(p.id) === String(patientId));
+  const selectedDoctor = doctors.find((d) => String(d.id) === String(doctorId));
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-md">
-        <DialogHeader><DialogTitle>Create Lab Test</DialogTitle></DialogHeader>
+      <DialogContent className="max-w-lg">
+        <DialogHeader>
+          <DialogTitle>Order Laboratory Test</DialogTitle>
+        </DialogHeader>
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
             <div className="flex flex-col gap-2">
@@ -47,63 +57,103 @@ export function CreateLaboratorDialog({ open, onOpenChange, onSuccess }: any) {
               <Select value={patientId} onValueChange={(val) => setPatientId(val || "")} required>
                 <SelectTrigger className="w-full">
                   <SelectValue placeholder="Select patient">
-                    {patientId ? patients.find(p => p.id === patientId)?.user.firstName + " " + patients.find(p => p.id === patientId)?.user.lastName : "Select patient"}
+                    {selectedPatient
+                      ? `${selectedPatient.user?.firstName || "Patient"} ${selectedPatient.user?.lastName || ""} (${formatId("patient", selectedPatient.id)})`
+                      : "Select patient"}
                   </SelectValue>
                 </SelectTrigger>
                 <SelectContent>
-                  {patients.map(p => <SelectItem key={p.id} value={p.id}>{p.user.firstName} {p.user.lastName}</SelectItem>)}
+                  {patients.map((p) => (
+                    <SelectItem key={p.id} value={String(p.id)}>
+                      {p.user?.firstName ? `${p.user.firstName} ${p.user.lastName}` : `Patient #${p.id}`} • {formatId("patient", p.id)}
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
             </div>
             <div className="flex flex-col gap-2">
-              <label className="text-sm font-medium">Doctor</label>
+              <label className="text-sm font-medium">Ordering Physician</label>
               <Select value={doctorId} onValueChange={(val) => setDoctorId(val || "")} required>
                 <SelectTrigger className="w-full">
                   <SelectValue placeholder="Select doctor">
-                    {doctorId ? "Dr. " + doctors.find(d => d.id === doctorId)?.user.firstName + " " + doctors.find(d => d.id === doctorId)?.user.lastName : "Select doctor"}
+                    {selectedDoctor
+                      ? `Dr. ${selectedDoctor.user?.firstName || ""} ${selectedDoctor.user?.lastName || ""} (${selectedDoctor.specialization || "Physician"})`
+                      : "Select doctor"}
                   </SelectValue>
                 </SelectTrigger>
                 <SelectContent>
-                  {doctors.map(d => <SelectItem key={d.id} value={d.id}>Dr. {d.user.firstName} {d.user.lastName} ({d.specialization})</SelectItem>)}
+                  {doctors.map((d) => (
+                    <SelectItem key={d.id} value={String(d.id)}>
+                      Dr. {d.user?.firstName ? `${d.user.firstName} ${d.user.lastName}` : `Doctor #${d.id}`} ({d.specialization || "General"})
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
             </div>
           </div>
+
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
             <div className="flex flex-col gap-2">
-              <label className="text-sm font-medium">Test Name</label>
-              <Input value={testName} onChange={e => setTestName(e.target.value)} required />
+              <label className="text-sm font-medium">Test Name / Panel</label>
+              <Input
+                placeholder="e.g. Complete Blood Count (CBC)"
+                value={testName}
+                onChange={(e) => setTestName(e.target.value)}
+                required
+              />
             </div>
             <div className="flex flex-col gap-2">
-              <label className="text-sm font-medium">Test Type</label>
-              <Input value={testType} onChange={e => setTestType(e.target.value)} required />
+              <label className="text-sm font-medium">Diagnostic Category</label>
+              <Input
+                placeholder="e.g. Hematology, Biochemistry, Immunology"
+                value={testType}
+                onChange={(e) => setTestType(e.target.value)}
+                required
+              />
             </div>
           </div>
+
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
             <div className="flex flex-col gap-2">
-              <label className="text-sm font-medium">Test Date</label>
-              <Input type="datetime-local" value={testDate} onChange={e => setTestDate(e.target.value)} required />
+              <label className="text-sm font-medium">Specimen Collection Date</label>
+              <Input
+                type="datetime-local"
+                value={testDate}
+                onChange={(e) => setTestDate(e.target.value)}
+                required
+              />
             </div>
             <div className="flex flex-col gap-2">
-              <label className="text-sm font-medium">Status</label>
-              <select className="flex h-10 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50" value={status} onChange={e => setStatus(e.target.value)}>
-                <option value="pending">Pending</option>
-                <option value="completed">Completed</option>
-                <option value="cancelled">Cancelled</option>
-              </select>
+              <label className="text-sm font-medium">Test Status</label>
+              <Select value={status} onValueChange={(val) => setStatus(val || "pending")}>
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Select status" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="pending">Pending Processing</SelectItem>
+                  <SelectItem value="completed">Completed & Verified</SelectItem>
+                  <SelectItem value="cancelled">Cancelled</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
           </div>
+
           <div className="flex flex-col gap-2">
-            <label className="text-sm font-medium">Result</label>
-            <Input value={result} onChange={e => setResult(e.target.value)} />
+            <label className="text-sm font-medium">Diagnostic Findings / Result Values</label>
+            <Input
+              placeholder="e.g. WBC: 6.8 K/uL, RBC: 4.5 M/uL, Hemoglobin: 14.2 g/dL (Normal)"
+              value={result}
+              onChange={(e) => setResult(e.target.value)}
+            />
           </div>
-          <div className="flex flex-col gap-2">
-            <label className="text-sm font-medium">Report URL</label>
-            <Input value={reportUrl} onChange={e => setReportUrl(e.target.value)} />
-          </div>
+
           <DialogFooter className="mt-2">
-            <Button variant="outline" type="button" onClick={() => onOpenChange(false)}>Cancel</Button>
-            <Button type="submit" disabled={loading}>Create</Button>
+            <Button variant="outline" type="button" onClick={() => onOpenChange(false)}>
+              Cancel
+            </Button>
+            <Button type="submit" disabled={loading}>
+              {loading ? "Ordering..." : "Order Lab Test"}
+            </Button>
           </DialogFooter>
         </form>
       </DialogContent>

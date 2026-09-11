@@ -10,6 +10,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import type { User } from "@/types";
+import { MobileTableHint } from "@/components/ui/mobile-table-hint";
 
 interface UserTableProps {
   users: User[];
@@ -81,7 +82,9 @@ export function UserTable({ users, onEdit, onDelete }: UserTableProps) {
   }
 
   return (
-    <div className="overflow-x-auto touch-pan-x">
+    <div className="w-full">
+      <MobileTableHint />
+      <div className="overflow-x-auto touch-pan-x">
       <table className="w-full min-w-[750px]">
         <thead>
           <tr className="border-b border-border">
@@ -224,5 +227,6 @@ export function UserTable({ users, onEdit, onDelete }: UserTableProps) {
         </tbody>
       </table>
     </div>
+  </div>
   );
 }

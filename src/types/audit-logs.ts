@@ -79,6 +79,7 @@ export interface AuditLogQueryParams {
   userRole?: string;
   entityType?: string;
   method?: string;
+  format?: string;
   page?: number;
   limit?: number;
   sortBy?: string;

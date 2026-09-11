@@ -54,8 +54,8 @@ export function Topbar() {
   return (
     <>
       <header className="flex h-16 shrink-0 items-center justify-between border-b border-border bg-card px-3.5 sm:px-6">
-        {/* Left side: Mobile Menu Trigger + Brand hint */}
-        <div className="flex items-center gap-2">
+        {/* Left side: Mobile Menu Trigger + Polyglot Microservice Status */}
+        <div className="flex items-center gap-3">
           <Button
             variant="ghost"
             size="icon"
@@ -65,6 +65,18 @@ export function Topbar() {
           >
             <Menu className="size-5" />
           </Button>
+
+          {/* Microservice Architecture Status Pills for Recruiters */}
+          <div className="hidden sm:flex items-center gap-2">
+            <div className="flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/25 text-emerald-600 dark:text-emerald-400 font-mono text-[11px]">
+              <span className="size-1.5 rounded-full bg-emerald-500 animate-pulse" />
+              NestJS :3042
+            </div>
+            <div className="flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-blue-500/10 border border-blue-500/25 text-blue-600 dark:text-blue-400 font-mono text-[11px]">
+              <span className="size-1.5 rounded-full bg-blue-500 animate-pulse" />
+              Go Microservice :4000
+            </div>
+          </div>
         </div>
 
         {/* Right side actions */}

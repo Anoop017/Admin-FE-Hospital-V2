@@ -3,6 +3,8 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import type { Bill } from "@/types";
 import { downloadInvoicePdf } from "@/lib/reports";
+import { formatId } from "@/lib/formatters";
+import { MobileTableHint } from "@/components/ui/mobile-table-hint";
 
 interface BillTableProps {
   items: Bill[];
@@ -50,8 +52,10 @@ export function BillTable({ items, onView, onEdit, onDelete, onPay }: BillTableP
   };
 
   return (
-    <div className="w-full overflow-x-auto touch-pan-x">
-      <table className="w-full text-left text-sm min-w-[800px]">
+    <div className="w-full">
+      <MobileTableHint />
+      <div className="w-full overflow-x-auto touch-pan-x">
+        <table className="w-full text-left text-sm min-w-[800px]">
         <thead className="border-b border-border bg-muted/40">
           <tr>
             <th className="h-11 px-4 font-semibold text-muted-foreground text-xs uppercase tracking-wider whitespace-nowrap">Invoice #</th>
@@ -78,7 +82,9 @@ export function BillTable({ items, onView, onEdit, onDelete, onPay }: BillTableP
             return (
               <tr key={item.id} className="transition-colors hover:bg-muted/30">
                 <td className="p-4 align-middle font-mono font-medium text-foreground">
-                  #{item.id}
+                  <Badge variant="outline" className="font-mono font-medium text-xs bg-muted/50">
+                    {formatId("bill", item.id)}
+                  </Badge>
                 </td>
                 <td className="p-4 align-middle">
                   <div className="font-medium text-foreground">{patientName}</div>
@@ -170,5 +176,6 @@ export function BillTable({ items, onView, onEdit, onDelete, onPay }: BillTableP
         </tbody>
       </table>
     </div>
+  </div>
   );
 }

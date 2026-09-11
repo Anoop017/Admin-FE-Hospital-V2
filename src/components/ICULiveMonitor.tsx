@@ -49,6 +49,8 @@ export function ICULiveMonitor({
 }: ICULiveMonitorProps) {
   const [vitals, setVitals] = useState<PatientVitals | null>(null);
   const [multiVitals, setMultiVitals] = useState<Record<string, PatientVitals>>({});
+  const [selectedKey, setSelectedKey] = useState<string | null>(patientId ? String(patientId) : null);
+  const selectedKeyRef = useRef<string | null>(patientId ? String(patientId) : null);
   const [status, setStatus] = useState<"connecting" | "connected" | "disconnected">("connecting");
   const [soundEnabled, setSoundEnabled] = useState(false);
   const wsRef = useRef<WebSocket | null>(null);
@@ -56,6 +58,8 @@ export function ICULiveMonitor({
 
   useEffect(() => {
     let isMounted = true;
+    selectedKeyRef.current = patientId ? String(patientId) : null;
+    setSelectedKey(patientId ? String(patientId) : null);
 
     function connect() {
       if (wsRef.current) {
@@ -80,11 +84,26 @@ export function ICULiveMonitor({
             const msg = JSON.parse(e.data);
             if (msg.type === "vitals_update" && msg.data) {
               const data: PatientVitals = msg.data;
-              setVitals(data);
-
-              // If multi-stream, track each patient
               const key = String(data.patientId || data.bedNumber || "default");
+
               setMultiVitals((prev) => ({ ...prev, [key]: data }));
+
+              // If specific patientId was requested, only accept matching data
+              if (patientId) {
+                if (String(data.patientId) === String(patientId)) {
+                  setVitals(data);
+                }
+              } else {
+                // Multi-bed stream: lock onto the first bed received if none selected yet
+                if (!selectedKeyRef.current) {
+                  selectedKeyRef.current = key;
+                  setSelectedKey(key);
+                  setVitals(data);
+                } else if (key === selectedKeyRef.current) {
+                  // Only update active vitals when the update is for the locked/selected bed
+                  setVitals(data);
+                }
+              }
             }
           } catch (err) {
             console.error("Failed to parse ICU Telemetry message:", err);
@@ -119,19 +138,30 @@ export function ICULiveMonitor({
     };
   }, [patientId]);
 
-  // Fallback demo values if socket has not yet received telemetry packet
-  const activeVitals: PatientVitals = vitals || {
-    patientName: patientId ? `Patient #${patientId}` : "ICU Telemetry Stream",
-    wardName: "Intensive Care Unit (ICU-A)",
-    bedNumber: "ICU-04",
-    heartRate: 78,
-    spo2: 98,
-    systolicBp: 120,
-    diastolicBp: 80,
-    temperature: 36.8,
-    alertLevel: "NORMAL",
-    timestamp: new Date().toISOString(),
+  const handleSelectBed = (key: string) => {
+    selectedKeyRef.current = key;
+    setSelectedKey(key);
+    if (multiVitals[key]) {
+      setVitals(multiVitals[key]);
+    }
   };
+
+  // Safe active vitals for the currently selected ICU bed
+  const currentKey = selectedKey || selectedKeyRef.current;
+  const activeVitals: PatientVitals =
+    (currentKey && multiVitals[currentKey]) ||
+    vitals || {
+      patientName: patientId ? `Patient #${patientId}` : "ICU Telemetry Stream",
+      wardName: "Intensive Care Unit (ICU-A)",
+      bedNumber: "ICU-04",
+      heartRate: 78,
+      spo2: 98,
+      systolicBp: 120,
+      diastolicBp: 80,
+      temperature: 36.8,
+      alertLevel: "NORMAL",
+      timestamp: new Date().toISOString(),
+    };
 
   const isCritical = activeVitals.alertLevel?.toUpperCase() === "CRITICAL";
   const isWarning = activeVitals.alertLevel?.toUpperCase() === "WARNING";
@@ -237,6 +267,35 @@ export function ICULiveMonitor({
           </button>
         </div>
       </div>
+
+      {/* Multi-bed selector when streaming all ICU beds */}
+      {!patientId && Object.keys(multiVitals).length > 1 && (
+        <div className="flex items-center gap-1.5 overflow-x-auto touch-pan-x no-scrollbar pb-1 mb-3.5 relative z-10">
+          <span className="text-[11px] font-mono uppercase text-slate-400 mr-1 flex items-center gap-1 shrink-0">
+            <BedDouble className="size-3 text-teal-400" /> Monitored Beds:
+          </span>
+          {Object.entries(multiVitals).map(([k, p]) => {
+            const isSelected = k === currentKey;
+            return (
+              <button
+                key={k}
+                type="button"
+                onClick={() => handleSelectBed(k)}
+                className={`flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-medium whitespace-nowrap transition-all cursor-pointer ${
+                  isSelected
+                    ? "bg-teal-500/20 text-teal-300 border border-teal-500/50 shadow-xs ring-1 ring-teal-500/30 font-semibold"
+                    : "bg-slate-950/60 text-slate-400 hover:text-slate-200 border border-slate-800/80 hover:bg-slate-800/60"
+                }`}
+              >
+                <span className={`size-1.5 rounded-full ${isSelected ? "bg-teal-400 animate-pulse" : "bg-slate-600"}`} />
+                <span className="font-mono text-[11px]">{p.bedNumber || `Bed ${k}`}</span>
+                <span className="text-slate-600">•</span>
+                <span className="truncate max-w-[130px]">{p.patientName}</span>
+              </button>
+            );
+          })}
+        </div>
+      )}
 
       {/* Telemetry Metric Cards Grid */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-3 text-center relative z-10">

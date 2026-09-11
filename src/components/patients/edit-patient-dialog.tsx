@@ -89,7 +89,18 @@ export function EditPatientDialog({ item, open, onOpenChange, onSuccess }: any) 
 
           <div className="flex flex-col gap-2">
             <label className="text-sm font-medium capitalize">Blood Group</label>
-            <Input value={bloodGroup} onChange={e => setBloodGroup(e.target.value)} required />
+            <Select value={bloodGroup} onValueChange={(val) => setBloodGroup(val || "")}>
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder="Select blood group" />
+              </SelectTrigger>
+              <SelectContent>
+                {["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"].map((bg) => (
+                  <SelectItem key={bg} value={bg}>
+                    {bg}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
           
           <div className="flex flex-col gap-2">

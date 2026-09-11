@@ -11,10 +11,12 @@ import {
   UserRound,
   UserCog,
   CalendarCheck,
+  Calendar,
   BedDouble,
   Building2,
   FileText,
   CreditCard,
+  DollarSign,
   Mail,
   Box,
   LogOut,
@@ -23,6 +25,8 @@ import {
   HousePlus,
   ShieldCheck,
   Webhook,
+  Radio,
+  FileDown,
   X,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -54,8 +58,10 @@ const navSections: NavSection[] = [
     title: "OPERATIONS",
     items: [
       { label: "Appointments", href: "/appointments", icon: CalendarCheck },
+      { label: "Doctor Schedule", href: "/schedule", icon: Calendar },
       { label: "Admissions", href: "/admissions", icon: Activity },
-      { label: "Wards", href: "/wards", icon: BedDouble },
+      { label: "Bed & ICU Monitor", href: "/bed-manager", icon: Radio },
+      { label: "Wards", href: "/wards", icon: Building2 },
       { label: "Beds", href: "/beds", icon: BedDouble },
     ],
   },
@@ -66,12 +72,14 @@ const navSections: NavSection[] = [
       { label: "Prescriptions", href: "/prescriptions", icon: FileText },
       { label: "Medicines", href: "/medicines", icon: Box },
       { label: "Laboratory", href: "/laboratory", icon: Activity },
+      { label: "Clinical Reports", href: "/report", icon: FileDown },
     ],
   },
   {
     title: "FINANCIAL",
     items: [
       { label: "Billing", href: "/billing", icon: CreditCard },
+      { label: "Transactions", href: "/payment", icon: DollarSign },
     ],
   },
   {
@@ -144,11 +152,37 @@ export function Sidebar() {
                     key={item.href}
                     item={item}
                     collapsed={!isMobile && collapsed}
+                    onNavigate={isMobile ? closeMobileNav : undefined}
                   />
                 ))}
               </div>
             </div>
           ))}
+
+          {/* Architecture Status for Recruiters on Mobile */}
+          {isMobile && (
+            <div className="mt-2 rounded-xl border border-border/80 bg-muted/30 p-3 space-y-2">
+              <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground block">
+                Backend Architecture
+              </span>
+              <div className="flex flex-col gap-1.5 font-mono text-[11px]">
+                <div className="flex items-center justify-between text-emerald-600 dark:text-emerald-400">
+                  <span className="flex items-center gap-1.5">
+                    <span className="size-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                    NestJS API Core
+                  </span>
+                  <span className="text-[10px] opacity-75">:3042</span>
+                </div>
+                <div className="flex items-center justify-between text-blue-600 dark:text-blue-400">
+                  <span className="flex items-center gap-1.5">
+                    <span className="size-1.5 rounded-full bg-blue-500 animate-pulse" />
+                    Go Microservice
+                  </span>
+                  <span className="text-[10px] opacity-75">:4000</span>
+                </div>
+              </div>
+            </div>
+          )}
 
           {/* Logout button */}
           <div className="mt-2">
